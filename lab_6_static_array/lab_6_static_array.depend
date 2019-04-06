@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1554580036 source:c:\cpp_workspace\codeblocks_workspace\lab_6_static_array\main.cpp
+	<iostream>
+	<fstream>
+	<ctime>
+	<cmath>
+
