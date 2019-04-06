@@ -1,4 +1,4 @@
-// ver 1.2 - 31.03.19 -- надо реализовать задания
+// ver 1.3 - 02.04.19 -- Вектор готов
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -125,7 +125,8 @@ bool full_square (short int chislo)
 
 short int first_full_square (const vector<short int> &A)
 {
-    for(unsigned int i = 0; i != A.size(); i++)
+    unsigned int N = A.size();
+    for(unsigned int i = 0; i != N; i++)
     {
         if (full_square( A[i] )) return A[i];
     }

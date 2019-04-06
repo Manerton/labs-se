@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1554565250 source:c:\cpp_workspace\codeblocks_workspace\lab_6_dyn_array\main.cpp
+1554574074 source:c:\cpp_workspace\codeblocks_workspace\lab_6_dyn_array\main.cpp
 	<iostream>
 	<fstream>
 	<ctime>
