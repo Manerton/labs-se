@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1552463114 source:c:\cpp_workspace\codeblocks_workspace\lab_4\main.cpp
+	<iostream>
+	<fstream>
+	<iomanip>
+
+1552462379 source:d:\cpp_workspace\codeblocks_workspace\lab_4\main.cpp
+	<iostream>
+	<fstream>
+	<iomanip>
+

@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1554390904 source:c:\cpp_workspace\codeblocks_workspace\mat_analiz\main.cpp
+	<iostream>
+	<cmath>
+

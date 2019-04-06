@@ -1,0 +1,277 @@
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+
+using namespace std;
+
+struct drob
+{ int chis, znam; };
+
+void input(int &n)
+{
+    cout << "Введите значение n (от 1 до 10) -> ";
+    cin >> n;
+    while (n <= 0 || n > 10)
+    {
+        cout << "Некорректный ввод." << endl;
+        cout << "Введите значение n -> ";
+        cin >> n;
+    }
+}
+
+int find_nod (int a, int b) {
+    if (a < 0) a == -a;
+    if (b == 0) return a;
+    return find_nod(b, a%b);
+}
+
+int find_nod (drob S) {
+    if (S.chis < 0) S.chis == -S.chis;
+    if (S.znam == 0) return S.chis;
+    return find_nod(S.znam, S.chis % S.znam);
+}
+
+void sokr_drob (int &chis, int &znam)
+{
+    int nod = find_nod(chis, znam);
+    if (nod > 1)
+    {
+        chis /= nod;
+        znam /= nod;
+    }
+}
+
+void sokr_drob (drob &ab)
+{
+    int nod = find_nod(ab.chis, ab.znam);
+    if (nod > 1)
+    {
+        ab.chis /= nod;
+        ab.znam /= nod;
+    }
+}
+
+void display_drob (int chis, int znam)
+{
+    int defis_chis(1), defis_znam(1);
+    int count_of_defis;
+    int chis_temp = chis;
+    int znam_temp = znam;
+    while (chis_temp / 10)
+    {
+        defis_chis++;
+        chis_temp /= 10;
+    }
+    while (znam_temp / 10)
+    {
+        defis_znam++;
+        znam_temp /= 10;
+    }
+    if (defis_chis >= defis_znam) count_of_defis = defis_chis;
+    else if (defis_chis < defis_znam) count_of_defis = defis_znam;
+
+    cout << " " << chis << endl;
+    cout << " " << setfill('-') << setw(++count_of_defis) << "\n";
+    cout << " " << znam << endl;
+}
+
+void display_drob (int chis, int znam, ofstream &out)
+{
+    int defis_chis(1), defis_znam(1);
+    int count_of_defis;
+    int chis_temp = chis;
+    int znam_temp = znam;
+    while (chis_temp / 10)
+    {
+        defis_chis++;
+        chis_temp /= 10;
+    }
+    while (znam_temp / 10)
+    {
+        defis_znam++;
+        znam_temp /= 10;
+    }
+    if (defis_chis >= defis_znam) count_of_defis = defis_chis;
+    else if (defis_chis < defis_znam) count_of_defis = defis_znam;
+
+    cout << " " << chis << endl;
+    cout << " " << setfill('-') << setw(++count_of_defis) << "\n";
+    cout << " " << znam << endl;
+    out << " " << chis << endl;
+    out << " " << setfill('-') << setw(++count_of_defis) << "\n";
+    out << " " << znam << endl;
+}
+
+void display_drob (drob ab)
+{
+    int defis_chis(1), defis_znam(1);
+    int count_of_defis;
+    drob ab_temp = ab;
+    while (ab_temp.chis / 10)
+    {
+        defis_chis++;
+        ab_temp.chis /= 10;
+    }
+    while (ab_temp.znam / 10)
+    {
+        defis_znam++;
+        ab_temp.znam /= 10;
+    }
+    if (defis_chis >= defis_znam) count_of_defis = defis_chis;
+    else if (defis_chis < defis_znam) count_of_defis = defis_znam;
+
+    cout << " " << ab.chis << endl;
+    cout << " " << setfill('-') << setw(++count_of_defis) << "\n";
+    cout << " " << ab.znam << endl;
+}
+
+void display_drob (drob ab, ofstream &out)
+{
+    int defis_chis(1), defis_znam(1);
+    int count_of_defis;
+    drob ab_temp = ab;
+    while (ab_temp.chis / 10)
+    {
+        defis_chis++;
+        ab_temp.chis /= 10;
+    }
+    while (ab_temp.znam / 10)
+    {
+        defis_znam++;
+        ab_temp.znam /= 10;
+    }
+    if (defis_chis >= defis_znam) count_of_defis = defis_chis;
+    else if (defis_chis < defis_znam) count_of_defis = defis_znam;
+
+    cout << " " << ab.chis << endl;
+    cout << " " << setfill('-') << setw(++count_of_defis) << "\n";
+    cout << " " << ab.znam << endl;
+    out << " " << ab.chis << endl;
+    out << " " << setfill('-') << setw(++count_of_defis) << "\n";
+    out << " " << ab.znam << endl;
+
+}
+
+void func (int n, int &chis, int &znam)
+{
+    int slag_chis, slag_znam;
+    //вычисляю сумму первых двух слагаемых как сумму обычных дробей
+    chis = 1;
+    znam = 3;
+    slag_chis = -2;
+    slag_znam = 4;
+    chis = (chis * slag_znam) + (znam * slag_chis);
+    znam = znam * slag_znam;
+    //полученную дробь сокращщаю
+    sokr_drob(chis, znam);
+    cout << "Сумма первых двух слагаемых: " << endl;
+    display_drob(chis, znam);
+
+    slag_chis = 3; // слагаемое при n = 2
+    slag_znam = 5;
+
+    for (int i = 2; i <= n; i++) // до тех пор, пока не вычислена вся сумма, прибавляю к имеющейся дроби очередное слагаемое и при необходимости сокращаю
+    {
+        if (i % 2 == 0)
+        {
+            chis = (chis * slag_znam) - (znam * slag_chis);
+        } else {
+            chis = (chis * slag_znam) + (znam * slag_chis);
+        }
+
+        znam = znam * slag_znam;
+        sokr_drob(chis, znam);
+        cout << "Сумма дробей при n = " << i << endl;
+        display_drob(chis, znam);
+        slag_chis += 2;
+        slag_znam += 2;
+    }
+}
+
+drob func (int n)
+{
+    drob S, slag;
+    //вычисляю сумму первых двух слагаемых как сумму обычных дробей
+    S.chis = 1;
+    S.znam = 3;
+    slag.chis = -2;
+    slag.znam = 4;
+    S.chis = (S.chis * slag.znam) + (S.znam * slag.chis);
+    S.znam = S.znam * slag.znam;
+    //полученную дробь сокращщаю
+    sokr_drob(S);
+    cout << "Сумма первых двух слагаемых: " << endl;
+    display_drob(S);
+
+    slag.chis = 3; // слагаемое при n = 2
+    slag.znam = 5;
+
+    for (int i = 2; i <= n; i++) // до тех пор, пока не вычислена вся сумма, прибавляю к имеющейся дроби очередное слагаемое и при необходимости сокращаю
+    {
+        if (i % 2 == 0)
+        {
+            S.chis = (S.chis * slag.znam) - (S.znam * slag.chis);
+        } else {
+            S.chis = (S.chis * slag.znam) + (S.znam * slag.chis);
+        }
+
+        S.znam = S.znam * slag.znam;
+        sokr_drob(S);
+        cout << "Сумма дробей при n = " << i << endl;
+        display_drob(S);
+        slag.chis += 2;
+        slag.znam += 2;
+    }
+    return S;
+}
+
+
+int main()
+{
+    system("chcp 1251 > nul");
+    cout << "Лабораторная работа №4 Вариант 13.\nАвтор: Катунин Сергей. ДИПРБ-11.\n" << endl;
+    int n;
+    input(n);
+
+    int menu;
+    do {
+        cout << "\nМеню:\n" << endl;
+        cout << "1. Числитель и знаменатель - две отдельные переменные.\n" << "2. Дробь представлена в виде структуры. \n" << "0. Выход" << endl;
+        cout << "Введите номер задания для выполнения -> ";
+        cin >> menu;
+    } while (menu < 0 || menu > 2);
+
+    switch (menu)
+    {
+        // тестовые данные
+        // при n = -1 и 0 - будет запрошен повторный ввод
+        // при n = 1 -> -1/6
+        // при n = 2 -> -23/30
+        // при n = 3 -> -11/210
+        // при n = 4 -> -523/630
+        // при n = 5 -> -83/6930
+        // при n = 6 -> -77309/90090
+        case 1:
+        {
+            int chis, znam;
+            func(n, chis, znam);
+            cout << "Результирующие данные: " << endl;
+            ofstream out("Out.txt");
+            display_drob(chis, znam, out);
+            out.close();
+            break;
+        }
+        case 2:
+        {
+            drob S;
+            S = func(n);
+            cout << "Результирующие данные: " << endl;
+            ofstream out("Out.txt");
+            display_drob(S, out);
+            out.close();
+            break;
+        }
+
+    }
+    return 0;
+}

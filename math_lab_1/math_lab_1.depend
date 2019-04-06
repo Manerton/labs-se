@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1551475937 source:c:\cpp_workspace\codeblocks_workspace\math_lab_1\main.cpp
+	<iostream>
+	<cmath>
+	<windows.h>
+	<time.h>
+
+1551713212 source:d:\cpp_workspace\codeblocks_workspace\math_lab_1\main.cpp
+	<iostream>
+	<cmath>
+	<windows.h>
+	<time.h>
+

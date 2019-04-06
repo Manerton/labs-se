@@ -1,0 +1,20 @@
+# depslib dependency file v1.0
+1550769957 source:c:\astu\codeblock_projects\lab_1\first.cpp
+	<fstream>
+	<iostream>
+	<cmath>
+	<windows.h>
+
+1550769957 >
+
+1550872615 source:/media/sergey/6456B3A75DDF08DC/astu/codeblock_projects/lab_1/first.cpp
+	<fstream>
+	<iostream>
+	<cmath>
+
+1550917378 source:c:\cpp_workspace\codeblocks_workspace\lab_1\first.cpp
+	<fstream>
+	<iostream>
+	<cmath>
+	<windows.h>
+

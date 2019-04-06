@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1554236923 source:c:\cpp_workspace\codeblocks_workspace\lab_6_vector\main.cpp
+	<iostream>
+	<vector>
+	<fstream>
+	<ctime>
+	<cmath>
+

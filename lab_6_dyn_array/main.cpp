@@ -1,4 +1,4 @@
-// ver 1.1 - 06.04.19
+// ver 1.0 - 04.04.19
 #include <iostream>
 #include <fstream>
 #include <ctime>
