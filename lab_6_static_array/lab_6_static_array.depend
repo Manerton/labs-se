@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1554580036 source:c:\cpp_workspace\codeblocks_workspace\lab_6_static_array\main.cpp
+1554580359 source:c:\cpp_workspace\codeblocks_workspace\lab_6_static_array\main.cpp
 	<iostream>
 	<fstream>
 	<ctime>
