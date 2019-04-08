@@ -1,4 +1,4 @@
-// ver 1.1 - 06.04.19
+// ver 1.2 - 08.04.19
 #include <iostream>
 #include <fstream>
 #include <ctime>
@@ -19,7 +19,7 @@ void filling_array_from_keyboard (short int A[], int N)
     }
 }
 
-void filling_array_random (short int A[], int N, int min, int max)
+void filling_array_random (short int *A, int N, int min, int max)
 {
     cout << "*** Осуществляется заполнение динамического массива случайными целыми числами ***" << endl;
     int chislo;
@@ -31,7 +31,7 @@ void filling_array_random (short int A[], int N, int min, int max)
     }
 }
 
-void filling_array_from_file (short int A[], int N, string filename)
+void filling_array_from_file (short int *A, int N, string filename)
 {
     cout << "*** Осуществляется заполнение динамического массива из файла " << filename << " ***" << endl;
     int chislo;
@@ -47,7 +47,7 @@ void filling_array_from_file (short int A[], int N, string filename)
     } else cout << endl << "error! Не удалось открыть файл " << filename << endl;
 }
 
-void print_array (const short int A[], int N)
+void print_array (const short int *A, int N)
 {
     for (int i = 0; i < N; i++) cout << A[i] << " ";
     cout << endl;
@@ -68,7 +68,7 @@ void diapazon_rand (int &min, int& max)
         }
 }
 
-void sposob_zapolneniya (short int A[], int N)
+void sposob_zapolneniya (short int *A, int N)
 {
     int choice;
     cout << "*** Выбор способа заполнения ***" << endl;
@@ -115,7 +115,7 @@ bool full_square (short int chislo)
 }
 
 // Поиск первого квадрата в массиве
-short int first_full_square (const short int A[], int N)
+short int first_full_square (const short int *A, int N)
 {
     for(int i = 0; i < N; i++)
     {
@@ -152,13 +152,13 @@ bool find_var (short int chislo, short int zadannaya_cifra)
     return true;
 }
 //Копирование массивов (из temp в A)
-void Copy(const short int temp[], short int A[], int N)
+void Copy(const short int *temp, short int *A, int N)
 {
     for (int i = 0; i < N; ++i)
         A[i] = temp[i];
 }
 //Выясняем размер массива после добавления элементов
-int insert_future_size_of_array (const short int A[], int N, short int zadannaya_cifra)
+int insert_future_size_of_array (const short int *A, int N, short int zadannaya_cifra)
 {
     int N_out = N;
     for (int i = 0; i < N; i++)
@@ -168,7 +168,7 @@ int insert_future_size_of_array (const short int A[], int N, short int zadannaya
     return N_out;
 }
 // Добавление первого полного квадрата после числа, в котором нет заданной цифры
-void insert_after_var (const short int A[], short int temp[], int N, short int fullsquare, short int zadannaya_cifra)
+void insert_after_var (const short int *A, short int *temp, int N, short int fullsquare, short int zadannaya_cifra)
 {
     int i_temp = 0;
     for (int i = 0; i < N; i++)
@@ -183,7 +183,7 @@ void insert_after_var (const short int A[], short int temp[], int N, short int f
     }
 }
 // Добавление до числа, в котором нет заданной цифры
-void insert_before_var (const short int A[], short int temp[], int N, short int fullsquare, short int zadannaya_cifra)
+void insert_before_var (const short int *A, short int *temp, int N, short int fullsquare, short int zadannaya_cifra)
 {
     int i_temp = 0;
     for (int i = 0; i < N; i++)
@@ -199,7 +199,7 @@ void insert_before_var (const short int A[], short int temp[], int N, short int 
     }
 }
 //Выясняем размер массива после удаления элементов
-int delete_future_size_of_array (const short int A[], int N)
+int delete_future_size_of_array (const short int *A, int N)
 {
     int N_out = N;
     for (int i = 0; i < N; i++)
@@ -212,7 +212,7 @@ int delete_future_size_of_array (const short int A[], int N)
     return N_out;
 }
 // Удаление чисел Фибоначчи
-void delete_fibonachi (const short int A[], short int temp[], int N)
+void delete_fibonachi (const short int *A, short int *temp, int N)
 {
     int i_temp = 0;
     for (int i = 0; i < N; i++)
