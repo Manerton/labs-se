@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1554845099 source:c:\cpp_workspace\codeblocks_workspace\lab_6_duo_list\main.cpp
+	<iostream>
+	<fstream>
+	<ctime>
+	<cmath>
+
