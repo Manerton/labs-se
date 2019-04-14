@@ -235,6 +235,7 @@ bool is_fibonachi (short int chislo)
 //Поиск var - числа, в котором нет заданной цифры
 bool find_var (short int chislo, short int zadannaya_cifra)
 {
+    if (chislo < 0) chislo = -chislo;
     short int ostatok;
     if (chislo == zadannaya_cifra) return false;
     while (chislo > 0)
