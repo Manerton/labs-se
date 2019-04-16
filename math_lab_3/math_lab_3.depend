@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1555323379 source:d:\flash_codeblocks_workspace\math_lab_3\main.cpp
+	<iostream>
+	<cmath>
+	<time.h>
+	<vector>
+	<algorithm>
+
