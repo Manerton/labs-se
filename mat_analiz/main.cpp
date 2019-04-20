@@ -8,7 +8,7 @@ struct point {double x; double y;};
 double z(double x, double y)
 {
     return x*x + x*y + y*y - 2*x - y; // (1;0)
-   // return -x*x+6*x-16*y+((y*y*y)/3); // миниума нет
+   //return -x*x+6*x-16*y+((y*y*y)/3); // миниума нет
     //return (x-3)*(x-3)+(y-4)*(y-4); // 3 и 4
     //return x*x+2*(y*y*y)-6*x*y;
 }
@@ -88,6 +88,7 @@ int main()
          cout << "Значение в этой точке: " << z(b2.x,b2.y) << endl;
         // Если текущее значение больше чем значение в базисной точке
         // Уменьшаем длину шага и повторяем исследование
+        cout << "Текущая длина шага: " << h << endl;
         if (point_is_equal(b1,b2))
         {
             h /= 10;
@@ -163,6 +164,7 @@ int main()
     cout << "Базисная точка (" << b2.x << ";" << b2.y << ")" << endl;
     double value_output = z(b2.x,b2.y);
     okruglenie(value_output,e);
-    cout << "Значение:" << value_output;
+    cout << "Значение:" << value_output << endl;
+    system("pause");
     return 0;
 }
