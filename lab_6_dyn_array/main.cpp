@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void filling_array_from_keyboard (short int A[], int N)
+void filling_array_from_keyboard (short int *A, int N)
 {
     cout << "*** Осуществляется заполнение динамического массива значениями с клавиатуры ***" << endl;
     cout << "Задайте значения элементов динамического массива: " << endl;

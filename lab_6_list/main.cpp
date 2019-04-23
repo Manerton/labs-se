@@ -210,7 +210,7 @@ bool full_square (short int chislo)
 }
 
 // Поиск первого квадрата в массиве
-int first_full_square ()
+short int first_full_square ()
 {
     PNode q = Head;
     while (q && (!full_square(q->elem))) q = q->next;
