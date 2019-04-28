@@ -1,4 +1,4 @@
-//ver 1
+//ver 2 - 22.04.19
 
 
 #include <iostream>
@@ -13,7 +13,7 @@ using namespace std;
 
 struct Points
 {
-    short int x, y, x_i, y_j;
+    short int x, y, i, j;
 };
 
 typedef vector<bool> row;
@@ -30,7 +30,7 @@ void generation_vector (vector<int> &M, const int &a, const int &b)
     }
 }
 
-//генерация вектора
+//генерация множеств X и Y
 void generation_vector_ex2 (const vector<int> &A, vector<int> &X, const int &n, const int &m)
 {
     int j = 0;
@@ -48,9 +48,10 @@ void print_array (const vector<int> &M)
     cout << endl;
 }
 
+// декартово произведение X и Y
 void print_dec (const vector<int> &X, const vector<int> &Y)
 {
-    cout << "Точки из последних элементов множеств : \n { ";
+    cout << "Декартово проивзедение X x Y: \n { ";
     for (vector<int>::const_iterator i = X.begin(); i != X.end(); ++i) {
         for (vector<int>::const_iterator j = Y.begin(); j != Y.end(); ++j) {
             cout << "(" << *i << "; " << *j << ")";
@@ -59,22 +60,20 @@ void print_dec (const vector<int> &X, const vector<int> &Y)
     cout << " }" << endl;
 }
 
-
+// проверка на повторяющееся индексы точки, k - size of P, возвращает ложь если повторяется
 bool checknapovtor (const vector<Points> &P, const int &k, const int &k_x, const int &k_y)
 {
     for (int i = 0; i < k; i++)
     {
-        if(P[i].x_i == k_x)
-        {
-            return false;
-        }
-        if(P[i].y_j == k_y)
+        if( (P[i].i == k_x) || (P[i].j == k_y) )
         {
             return false;
         }
     }
     return true;
 }
+
+// Поиск точек для отношения (составление пар неповторяющихся по индексу)
 void find_points (vector<Points> &P, const vector<int> &A, const vector<int> &B, const int &n)
 {
     int k = 0;
@@ -88,21 +87,23 @@ void find_points (vector<Points> &P, const vector<int> &A, const vector<int> &B,
         } while (!checknapovtor(P, k, k_x, k_y));
         P[i].x = A[k_x];
         P[i].y = B[k_y];
-        P[i].x_i = k_x;
-        P[i].y_j = k_y;
+        P[i].i = k_x;
+        P[i].j = k_y;
         k++;
     }
 }
+
+// Составленные упорядоченные неповторяющиееся по индексу пары (из которых потом строится отношение)
 void print_points(const vector<Points> &P)
 {
-    cout << "Случайный, неповноряющийся набор точек: \n { ";
+    cout << "Случайный, неповторяющийся по индексу набор точек: \n { ";
     for (vector<Points>::const_iterator i = P.begin(); i != P.end(); ++i) {
             cout << "(" << i -> x << "; " << i -> y << ")";
     }
     cout << " }" << endl;
 }
 
-
+// Создание нулевой матрицы для отношения
 void create_empty_matrix (matrix &BOOL, const int &n)
 {
     row Row(n,0);
@@ -111,13 +112,17 @@ void create_empty_matrix (matrix &BOOL, const int &n)
         BOOL.push_back(Row);
     }
 }
+
+// Условие отношения
 bool uslovie_ex (const int &i, const int &j, const vector<Points> &P) // условие отношения
 {
     for (vector<Points>::const_iterator k = P.begin(); k != P.end(); ++k) {
-            if ( (k -> x_i == i) && (k -> y_j == j) ) return 1;
+            if ( (k -> i == i) && (k -> j == j) ) return 1;
     }
     return 0;
 }
+
+// Формирование отношения
 void ex (matrix &BOOL, const vector<Points> &P, const int &n)
 {
     for (int i = 0; i < n; i++)
@@ -128,6 +133,8 @@ void ex (matrix &BOOL, const vector<Points> &P, const int &n)
         }
     }
 }
+
+// Вывод отношения
 void print_matrix (const matrix &BOOL, const vector<int> &A, const int &n)
 {
     for (int i = 0; i < n; i++)
@@ -136,7 +143,7 @@ void print_matrix (const matrix &BOOL, const vector<int> &A, const int &n)
         for(int j = 0; j < n; j++)
         {
             cout << "\t";
-            cout << setprecision (2) << fixed << BOOL[i][j];
+            cout << BOOL[i][j];
         }
         cout << endl;
         cout << setfill('-') << setw(113);
@@ -206,11 +213,12 @@ int main()
         create_empty_matrix(BOOL, n); // создание пустой матрицы
         ex(BOOL, P, n); // заполнение матрицы в соответствие с заданием 1
 
+        // Оформление шапки матрицы
         cout << setw(3) << "\\" << setw(4) << "B" << setw(2) << "|" << endl;
         cout << setw(4) << "\\" << setw(5) << "|" << endl;
         cout << setw(2) << "A" << setw (3) << "\\" << setw(4) << "|";
         print_array(B);
-        cout << setfill('-') << setw(113);
+        cout << setfill('-') << setw(60);
         cout << "\n";
         cout << setfill(' ');
         print_matrix(BOOL, A, n); // Вывод матрицы
