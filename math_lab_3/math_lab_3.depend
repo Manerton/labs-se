@@ -6,3 +6,13 @@
 	<vector>
 	<algorithm>
 
+1556896326 source:c:\cpp_workspace\codeblocks_workspace\math_lab_3\main.cpp
+	<iostream>
+	<fstream>
+	<cmath>
+	<time.h>
+	<vector>
+	<algorithm>
+	<iomanip>
+	<windows.h>
+

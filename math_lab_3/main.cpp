@@ -2,11 +2,13 @@
 
 
 #include <iostream>
+#include <fstream>
 #include <cmath>
 #include <time.h>
 #include <vector>
 #include <algorithm>
 #include <iomanip>
+#include <windows.h>
 
 
 using namespace std;
@@ -103,6 +105,20 @@ void print_points(const vector<Points> &P)
     cout << " }" << endl;
 }
 
+// Вывод координат точек в файл
+void output_points_in_file(const vector<Points> &P)
+{
+    ofstream out("dots.txt");
+    if (out) // проверка открытия
+    {
+        for (vector<Points>::const_iterator i = P.begin(); i != P.end(); ++i)
+        {
+            out << i -> x << " " << i -> y << " ";
+        }
+        out.close();
+    }
+}
+
 // Создание нулевой матрицы для отношения
 void create_empty_matrix (matrix &BOOL, const int &n)
 {
@@ -146,11 +162,58 @@ void print_matrix (const matrix &BOOL, const vector<int> &A, const int &n)
             cout << BOOL[i][j];
         }
         cout << endl;
-        cout << setfill('-') << setw(113);
+        cout << setfill('-') << setw(60);
         cout << "\n";
         cout << setfill(' ');
     }
 }
+
+bool proverka_na_func (const vector<Points> &P, const int &n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i+1; j < n; j++)
+        {
+            if (P[i].x == P[j].x)
+            {
+                if (P[i].y != P[j].y) return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool proverka_na_inject (const vector<Points> &P, const int &n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i+1; j < n; j++)
+        {
+            if (P[i].y == P[j].y)
+            {
+                if (P[i].x != P[j].x) return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool proverka_na_mono (const vector<Points> &P, const int &n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i+1; j < n; j++)
+        {
+            if ( ((P[i].x < P[j].x) && (P[i].y > P[j].y)) || ((P[i].x > P[j].x) && (P[i].y < P[j].y)) )
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
 
 int main()
 {
@@ -209,6 +272,8 @@ int main()
         vector<Points> P(n);
         find_points(P, A, B, n);
         print_points(P);
+        output_points_in_file(P);
+
         matrix BOOL; // объявление матрицы
         create_empty_matrix(BOOL, n); // создание пустой матрицы
         ex(BOOL, P, n); // заполнение матрицы в соответствие с заданием 1
@@ -222,6 +287,19 @@ int main()
         cout << "\n";
         cout << setfill(' ');
         print_matrix(BOOL, A, n); // Вывод матрицы
+        cout << "Является ли отношение R функцией: ";
+        if (proverka_na_func(P,n))
+        {
+            cout << "Да." << endl;
+            cout << "Является ли функция R биективной: " << proverka_na_inject(P,n) << endl;
+            cout << "Является ли функция R монотонной: " << proverka_na_mono(P,n) << endl;
+        } else cout << "Нет." << endl;
+
+        system("graphics\\graph.exe");
+
+
+        cout << "1. Продолжить" << endl << "2. Выйти" << endl;
+        cout << "Ввод: ";
 
         cin >> ch;
         while (ch < 1 || ch > 2)
