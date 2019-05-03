@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1033</width>
+    <height>744</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::NoContextMenu</enum>
+  </property>
+  <property name="windowTitle">
+   <string>Лабораторная работа №3 - &quot;Функции&quot;</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>icon.ico</normaloff>icon.ico</iconset>
+  </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QCustomPlot" name="plot" native="true">
+    <property name="geometry">
+     <rect>
+      <x>19</x>
+      <y>29</y>
+      <width>991</width>
+      <height>691</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>0</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>График отношения</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
