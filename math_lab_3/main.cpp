@@ -50,16 +50,31 @@ void print_array (const vector<int> &M)
     cout << endl;
 }
 
-// декартово произведение X и Y
-void print_dec (const vector<int> &X, const vector<int> &Y)
+bool check_na_povtor_dots (const vector<Points> &dec, Points A)
 {
-    cout << "Декартово проивзедение X x Y: \n { ";
-    for (vector<int>::const_iterator i = X.begin(); i != X.end(); ++i) {
-        for (vector<int>::const_iterator j = Y.begin(); j != Y.end(); ++j) {
-            cout << "(" << *i << "; " << *j << ")";
+    int N = dec.size();
+    for (int i = 0; i < N; i++)
+    {
+        if (dec[i].x == A.x && dec[i].y == A.y) return false;
+    }
+    return true;
+}
+
+// декартово произведение X и Y
+vector<Points> creating_dec (const vector<int> &X, const vector<int> &Y, const int &m)
+{
+    vector<Points> dec;
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            Points temp;
+            temp.x = X[i];
+            temp.y = Y[j];
+            if ( check_na_povtor_dots(dec,temp) ) dec.push_back(temp);
         }
     }
-    cout << " }" << endl;
+    return dec;
 }
 
 // проверка на повторяющееся индексы точки, k - size of P, возвращает ложь если повторяется
@@ -74,6 +89,8 @@ bool checknapovtor (const vector<Points> &P, const int &k, const int &k_x, const
     }
     return true;
 }
+
+
 
 // Поиск точек для отношения (составление пар неповторяющихся по индексу)
 void find_points (vector<Points> &P, const vector<int> &A, const vector<int> &B, const int &n)
@@ -98,7 +115,7 @@ void find_points (vector<Points> &P, const vector<int> &A, const vector<int> &B,
 // Составленные упорядоченные неповторяющиееся по индексу пары (из которых потом строится отношение)
 void print_points(const vector<Points> &P)
 {
-    cout << "Случайный, неповторяющийся по индексу набор точек: \n { ";
+    cout << "{ ";
     for (vector<Points>::const_iterator i = P.begin(); i != P.end(); ++i) {
             cout << "(" << i -> x << "; " << i -> y << ")";
     }
@@ -198,18 +215,22 @@ bool proverka_na_inject (const vector<Points> &P, const int &n)
     return true;
 }
 
-bool proverka_na_mono (const vector<Points> &P, const int &n)
+bool proverka_na_mono (const matrix &BOOL, const int &n)
 {
-    for (int i = 0; i < n; i++)
+    if (BOOL[0][0] == 1)
     {
-        for (int j = i+1; j < n; j++)
+        for (int i = 1; i < n; i++)
         {
-            if ( ((P[i].x < P[j].x) && (P[i].y > P[j].y)) || ((P[i].x > P[j].x) && (P[i].y < P[j].y)) )
-            {
-                return false;
-            }
+            if (BOOL [i][i] != 1) return false;
         }
-    }
+    } else if (BOOL[0][n-1] == 1)
+    {
+        for (int i = 1; i < n; i++)
+        {
+            if (BOOL [i][n-1-i] != 1) return false;
+        }
+    } else return false;
+
     return true;
 }
 
@@ -268,9 +289,12 @@ int main()
         sort( Y.begin(), Y.end() );
         print_array(X);
         print_array(Y);
-        print_dec(X, Y);
+        vector<Points> dec = creating_dec(X,Y,m);
+        cout << "Декартово проивзедение X x Y:" << endl;
+        print_points(dec);
         vector<Points> P(n);
         find_points(P, A, B, n);
+        cout << "Случайный, неповторяющийся по индексу набор точек:" << endl;
         print_points(P);
         output_points_in_file(P);
 
@@ -292,7 +316,7 @@ int main()
         {
             cout << "Да." << endl;
             cout << "Является ли функция R биективной: " << proverka_na_inject(P,n) << endl;
-            cout << "Является ли функция R монотонной: " << proverka_na_mono(P,n) << endl;
+            cout << "Является ли функция R монотонной: " << proverka_na_mono(BOOL,n) << endl;
         } else cout << "Нет." << endl;
 
         system("graphics\\graph.exe");
