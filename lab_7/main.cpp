@@ -812,7 +812,7 @@ bool summa_in_col (int **A, int M, int j, int chislo)
     return (chislo == summa);
 }
 
-void ex5 (vector<vector<int>> &A, int &M, int &N)
+void ex5_1 (vector<vector<int>> &A, int &M, int &N)
 {
     int max = find_max_elem(A,M,N);
     for (int i = 0; i < M; i++)
@@ -824,9 +824,10 @@ void ex5 (vector<vector<int>> &A, int &M, int &N)
             i--;
         }
     }
-    int chislo;
-    cout << "Введите заданное число: ";
-    cin >> chislo;
+}
+
+void ex5_2(vector<vector<int>> &A, int &M, int &N, int chislo)
+{
     for (int j = 0; j < N; j++)
     {
         if (summa_in_col(A,M,j,chislo))
@@ -1211,13 +1212,42 @@ int main()
                         vector<vector<int>> Matrix;
                         sposob_zapolneniya(Matrix, M, N);
                         display(Matrix, M, N);
-                        ex5(Matrix,M,N);
-                        cout << "Преобразованная матрица: " << endl;
-                        display(Matrix, M, N);
-                        break;
+                        int M_old = M;
+                        ex5_1(Matrix,M,N);
+                        if (M != M_old)
+                        {
+                            cout << "Преобразованная матрица (после удаления строк): " << endl;
+                            display(Matrix, M, N);
+
+                            int chislo;
+                            cout << "Введите заданное число: ";
+                            cin >> chislo;
+
+                            int N_old = N;
+                            ex5_2(Matrix,M,N,chislo);
+                            if (N_old != N)
+                            {
+                                cout << "Преобразованная матрица (после удаления строк и столбцов): " << endl;
+                                display(Matrix, M, N);
+                            } else cout << "Таких столбцов не нашлось." << endl;
+                        } else {
+                            cout << "Таких строк в матрице не нашлось." << endl;
+
+                            int chislo;
+                            cout << "Введите заданное число: ";
+                            cin >> chislo;
+
+                            int N_old = N;
+                            ex5_2(Matrix,M,N,chislo);
+                            if (N_old != N)
+                            {
+                                cout << "Преобразованная матрица (после удаления строк и столбцов): " << endl;
+                                display(Matrix, M, N);
+                            } else cout << "Таких столбцов не нашлось." << endl;
+                       }
+                       break;
                     }
-                 }
-                 break;
+                }
             }
             }
         }
