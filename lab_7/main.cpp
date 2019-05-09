@@ -523,7 +523,7 @@ int index_max_elem (int *row, int N)
 }
 
 // Третье задание для Array
-void ex3 (array<array<int, size>, size> &A, int M, int N)
+void ex3_1 (array<array<int, size>, size> &A, int M, int N)
 {
     for(int i = 0; i < M; i++)
     {
@@ -535,6 +535,10 @@ void ex3 (array<array<int, size>, size> &A, int M, int N)
         }
         if (i_max != 0) A[i][i_max] = summa;
     }
+}
+
+void ex3_2 (array<array<int, size>, size> &A, int M, int N)
+{
     for (int j = 0; j < N-1; j++)
     {
         for (int i = 0; i < M; i++)
@@ -549,7 +553,7 @@ void ex3 (array<array<int, size>, size> &A, int M, int N)
 }
 
 // Для вектора задание 3
-void ex3 (vector<vector<int>> &A, int M, int N)
+void ex3_1 (vector<vector<int>> &A, int M, int N)
 {
     for(int i = 0; i < M; i++)
     {
@@ -561,6 +565,10 @@ void ex3 (vector<vector<int>> &A, int M, int N)
         }
         if (i_max != 0) A[i][i_max] = summa;
     }
+}
+
+void ex3_2 (vector<vector<int>> &A, int M, int N)
+{
     for (int j = 0; j < N-1; j++)
     {
         for (int i = 0; i < M; i++)
@@ -575,7 +583,7 @@ void ex3 (vector<vector<int>> &A, int M, int N)
 }
 
 // Третье задание для дин массива
-void ex3 (int **A, int M, int N)
+void ex3_1 (int **A, int M, int N)
 {
     for(int i = 0; i < M; i++)
     {
@@ -587,6 +595,10 @@ void ex3 (int **A, int M, int N)
         }
         if (i_max != 0) A[i][i_max] = summa;
     }
+}
+
+void ex3_2 (int **A, int M, int N)
+{
     for (int j = 0; j < N-1; j++)
     {
         for (int i = 0; i < M; i++)
@@ -1028,8 +1040,13 @@ int main()
                         array<array<int, size>, size> Matrix;
                         sposob_zapolneniya(Matrix, M, N);
                         display(Matrix, M, N);
-                        ex3(Matrix, M, N);
-                        cout << "Преобразованная матрица: " << endl;
+
+                        ex3_1(Matrix, M, N);
+                        cout << "Преобразованная матрица (задание 3.1): " << endl;
+                        display(Matrix, M, N);
+
+                        ex3_2(Matrix, M, N);
+                        cout << "Преобразованная матрица (задание 3.2): " << endl;
                         display(Matrix, M, N);
                         break;
                     }
@@ -1045,8 +1062,13 @@ int main()
 
                         sposob_zapolneniya(Matrix, M, N);
                         display(Matrix, M, N);
-                        ex3(Matrix, M, N);
-                        cout << "Преобразованная матрица: " << endl;
+
+                        ex3_1(Matrix, M, N);
+                        cout << "Преобразованная матрица (задание 3.1): " << endl;
+                        display(Matrix, M, N);
+
+                        ex3_2(Matrix, M, N);
+                        cout << "Преобразованная матрица (задание 3.2): " << endl;
                         display(Matrix, M, N);
                         break;
                     }
@@ -1056,8 +1078,13 @@ int main()
                         vector<vector<int>> Matrix;
                         sposob_zapolneniya(Matrix, M, N);
                         display(Matrix, M, N);
-                        ex3(Matrix, M, N);
-                        cout << "Преобразованная матрица: " << endl;
+
+                        ex3_1(Matrix, M, N);
+                        cout << "Преобразованная матрица (задание 3.1): " << endl;
+                        display(Matrix, M, N);
+
+                        ex3_2(Matrix, M, N);
+                        cout << "Преобразованная матрица (задание 3.2): " << endl;
                         display(Matrix, M, N);
                         break;
                     }
@@ -1096,12 +1123,14 @@ int main()
 
                         for (int i = 0; i < M; i++) delete[] Matrix[i];
                         delete[] Matrix;
+                        Matrix = nullptr;
 
                         cout << endl;
                         display(Matrix_new, M_new, N_new);
 
                         for (int i = 0; i < M; i++) delete[] Matrix_new[i];
                         delete[] Matrix_new;
+                        Matrix_new = nullptr;
 
                         break;
                     }
@@ -1146,16 +1175,17 @@ int main()
                                 Matrix_temp[i] = new int[N];
                             }
                             ex5_1(Matrix, Matrix_temp, M, N);
+
+                            for (int i = 0; i < M; i++) delete[] Matrix[i];
+                            delete[] Matrix;
+                            Matrix = nullptr;
+
                             cout << "Преобразованная матрица (после удаления строк): " << endl;
                             display(Matrix_temp, M_new, N);
 
                             int chislo;
                             cout << "Введите заданное число: ";
                             cin >> chislo;
-
-                            for (int i = 0; i < M; i++) delete[] Matrix[i];
-                            delete[] Matrix;
-
 
                             int N_new = N;
                             new_size_N(Matrix_temp, M_new, N_new, chislo);
@@ -1175,7 +1205,12 @@ int main()
 
                                 for (int i = 0; i < M_new; i++) delete[] Matrix_new[i];
                                 delete[] Matrix_new;
-                            }
+                                Matrix_new = nullptr;
+                            } else cout << "Таких столбцов не нашлось." << endl;
+
+                            for (int i = 0; i < M_new; i++) delete[] Matrix_temp[i];
+                            delete[] Matrix_temp;
+                            Matrix_temp = nullptr;
                         } else {
                             cout << "Таких строк в матрице не нашлось." << endl;
 
@@ -1201,7 +1236,13 @@ int main()
 
                                 for (int i = 0; i < M; i++) delete[] Matrix_new[i];
                                 delete[] Matrix_new;
+                                Matrix_new = nullptr;
+
                             } else cout << "Таких столбцов не нашлось." << endl;
+
+                            for (int i = 0; i < M; i++) delete[] Matrix[i];
+                            delete[] Matrix;
+                            Matrix = nullptr;
                         }
 
                         break;
