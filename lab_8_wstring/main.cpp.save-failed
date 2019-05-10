@@ -1,0 +1,195 @@
+#include <iostream>
+#include <vector>
+#include <ctime>
+#include <string>
+#include <locale>
+
+using namespace std;
+
+int ex1 (wstring S, wchar_t c)
+{
+    if (S.find(c) != string::npos)
+    {
+        return S.find(c);
+    } else return -1;
+}
+
+bool eng_word (wstring S)
+{
+    for (wchar_t c : S) if (c < L'A' || c > L'z') return false;
+    return true;
+}
+
+bool secondname (wstring S)
+{
+    int N = S.size();
+    if (S[0] < L'А' || S[0] > L'Я' || S.length() < 2) return false;
+    for (int i = 1; i < N; i++)
+    {
+        if (S[i] < L'а' || S[i] > L'я') return false;
+    }
+    return true;
+}
+
+vector<wstring> zapolnenie_vectora ()
+{
+    vector<wstring> v;
+    wstring S;
+    wcout << L"Если вы хотите прекратить ввод, введите вместо слова число 1!";
+    while (S != L"1")
+    {
+        wcout << "Введите английское слово -> ";
+        wcin >> S;
+        if (eng_word(S)) v.push_back(S);
+        else if (S != L"1") wcout << L"Слово не является английским, либо в слове присутствует лишний знак." << endl;
+    }
+    return v;
+}
+
+vector<wstring> zapolnenie_vectora (int N, int M)
+{
+    vector<wstring> v;
+    wstring S;
+    for (int i = 0; i < N; i++)
+    {
+        wcout << L"Введите фамилию студента на русском языке (с большой буквы): ";
+        wcin >> S;
+        while (!secondname(S))
+        {
+            wcout << L"Слово не является фамилией, либо в слове присутствует лишний знак." << endl;
+            wcout << L"Повторите ввод: ";
+            wcin >> S;
+        }
+        for (int j = 0; j < M; j++)
+        {
+            int random = 2 + rand() % 4;
+            S += L" ";
+            S += random;
+        }
+        v.push_back(S);
+    }
+    return v;
+}
+
+int ex3 (const vector<wstring> &v, int N, int M)
+{
+    int result = 0;
+    for (int i = 0; i < N; i++)
+    {
+        int count = 0;
+        for (wchar_t c : v[i])
+        {
+            if (c == '5') count++;
+        }
+        if (count == M) result++;
+    }
+    return result;
+}
+
+void sort_vector (vector<wstring> &v)
+{
+    int N = v.size();
+    for (int i = 0; i != N-1; i++)
+    {
+        for (int j = i+1; j != N; j++)
+        {
+           wchar_t from_string_i = (wchar_t)tolower(v[i][0]);
+           wchar_t from_string_j = (wchar_t)tolower(v[j][0]);
+           if (from_string_i > from_string_j) swap(v[i],v[j]);
+        }
+    }
+}
+
+void output_vector (const vector<wstring> &v)
+{
+    for (wstring s : v) wcout << s << endl;
+}
+
+void display_menu ()
+{
+    wcout << L"*** Меню ***" << endl;
+    wcout << L"1) Дана строка символов. Определить, сколько символов предшествует первому вхождению некоторого заданного символа (в случае отсутствия такового вывести соответствующее сообщение)." << endl;
+    wcout << L"2) Упорядочить данный массив английских слов по алфавиту, рассматривая только первый символ каждого слова." << endl;
+    wcout << L"3) Результаты вступительных экзаменов представлены в виде списка из N строк, в каждой строке которого записаны фамилия студента и отметки по каждому из М экзаменов. Определить количество абитуриентов, сдавших вступительные экзамены на «отлично»." << endl;
+    wcout << L"4) Завершить работу программы." << endl;
+}
+
+
+int main()
+{
+    srand(time(0));
+    setlocale( LC_ALL, "rus" );
+    system("chcp 1251 > null");
+    wcout << L"Лабораторная работа №8 Вариант 13.\nАвтор: Катунин Сергей. ДИПРБ-11.\n" << endl;
+    int menu(0);
+    while (menu != 4)
+    {
+        display_menu();
+        wcout << L"Выберите пункт меню: ";
+        wcin >> menu; // выбираем пункт меню и запоминаем номер
+        //проверка на дурака
+        while (menu < 1 || menu > 4)
+        {
+            wcout << L"error!" << endl;
+            wcout << L"Выберите пункт меню: ";
+            wcin >> menu;
+        }
+        if (menu != 4)
+        {
+            switch (menu) // переходим непосредственно к выполнению заданий
+            {
+                case 1:
+                {
+                    wstring S;
+                    wchar_t c;
+                    wcout << L"Введите строку символов -> ";
+                    wcin.get();
+                    getline(wcin, S);
+                    wcout << L"Введенная строка -> " << S << endl;
+                    wcout << L"Введите символ: ";
+                    wcin >> c;
+                    wcout << L"Введенный символ: " << c << endl;;
+                    if (ex1(S,c) != -1) cout << ex1(S,c) << L" символа/ов предшествуют первому вхождению символа " << c;
+                    else wcout << L"В строке такой символ отсутствует.";
+                    break;
+                }
+                case 2:
+                {
+                    vector<wstring> v = zapolnenie_vectora();
+                    sort_vector(v);
+                    output_vector(v);
+                    break;
+                }
+                case 3:
+                {
+                    int N, M;
+                    wcout << L"Задайте количество строк N: ";
+                    wcin >> N;
+                    while (N < 1)
+                    {
+                        wcout << L"error!" << endl;
+                        wcout << L"Задайте количество строк N: ";
+                        wcin >> N;
+                    }
+                    wcout << L"Задайте количество столбцов M: ";
+                    wcin >> M;
+                    while (M < 1)
+                    {
+                        wcout << L"error!" << endl;
+                        wcout << L"Задайте количество столбцов N: ";
+                        wcin >> M;
+                    }
+                    vector<wstring> v = zapolnenie_vectora(N, M);
+                    output_vector(v);
+                    wcout << ex3(v, N, M);
+                    break;
+                }
+            }
+            wcout << endl << L"Желаете вернуться в меню?" << endl;
+            system("pause");
+            system("cls");
+        }
+    }
+    wcout << L"Программа была завершена по желанию пользователя.";
+    return 0;
+}
