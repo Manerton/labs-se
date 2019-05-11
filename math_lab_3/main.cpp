@@ -96,17 +96,15 @@ bool checknapovtor (const vector<Points> &P, const int &k, const int &k_x, const
 void find_points (vector<Points> &P, const vector<int> &A, const vector<int> &B, const int &n)
 {
     int k = 0;
-    int k_x;
     int k_y;
     for (int i = 0; i < n; i++)
     {
         do {
-            k_x = rand() % n;
             k_y = rand() % n;
-        } while (!checknapovtor(P, k, k_x, k_y));
-        P[i].x = A[k_x];
+        } while (!checknapovtor(P, k, i, k_y));
+        P[i].x = A[i];
         P[i].y = B[k_y];
-        P[i].i = k_x;
+        P[i].i = i;
         P[i].j = k_y;
         k++;
     }
@@ -215,26 +213,25 @@ bool proverka_na_inject (const vector<Points> &P, const int &n)
     return true;
 }
 
-bool proverka_na_mono (const matrix &BOOL, const int &n)
+bool proverka_na_mono (const vector<Points> &P, const int &n)
 {
-    if (BOOL[0][0] == 1)
+    int increase_count = 0;
+    int decrease_count = 0;
+    for (int i = 0; i < n-1; i++)
     {
-        for (int i = 1; i < n; i++)
+        int j = i+1;
+        if ( ((P[i].x > P[j].x) && (P[i].y >= P[j].y)) || ((P[i].x < P[j].x) && (P[i].y <= P[j].y)) )
         {
-            if (BOOL [i][i] != 1) return false;
+            increase_count++;
         }
-    } else if (BOOL[0][n-1] == 1)
-    {
-        for (int i = 1; i < n; i++)
+        if ( ((P[i].x < P[j].x) && (P[i].y >= P[j].y)) || ((P[i].x > P[j].x) && (P[i].y <= P[j].y)) )
         {
-            if (BOOL [i][n-1-i] != 1) return false;
+            decrease_count++;
         }
-    } else return false;
-
-    return true;
+    }
+    if (increase_count == n-1 || decrease_count == n-1) return true;
+    return false;
 }
-
-
 
 int main()
 {
@@ -309,6 +306,7 @@ int main()
         print_array(B);
         cout << setfill('-') << setw(60);
         cout << "\n";
+
         cout << setfill(' ');
         print_matrix(BOOL, A, n); // Вывод матрицы
         cout << "Является ли отношение R функцией: ";
@@ -316,11 +314,10 @@ int main()
         {
             cout << "Да." << endl;
             cout << "Является ли функция R биективной: " << proverka_na_inject(P,n) << endl;
-            cout << "Является ли функция R монотонной: " << proverka_na_mono(BOOL,n) << endl;
+            cout << "Является ли функция R монотонной: " << proverka_na_mono(P,n) << endl;
         } else cout << "Нет." << endl;
 
         system("graphics\\graph.exe");
-
 
         cout << "1. Продолжить" << endl << "2. Выйти" << endl;
         cout << "Ввод: ";

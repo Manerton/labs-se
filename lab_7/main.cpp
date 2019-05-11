@@ -725,11 +725,12 @@ void ex4 (int **Matrix, int **Matrix_temp, int M, int N)
     }
     for (int i = 0; i < M_temp; i++)
     {
-        for (int j = N; j != j_min; j--)
+        for (int j = N-1; j != j_min; j--) // пока не дошел до столбца с мин элементом
         {
-            Matrix_temp[i][j+1] = Matrix_temp[i][j];
+            Matrix_temp[i][j+1] = Matrix_temp[i][j]; // переношу столбцы вправо
         }
-        Matrix_temp[i][j_min] = 0;
+        Matrix_temp[i][j_min+1] = Matrix_temp[i][j_min]; // когда дошел до столбца с мин элементом, переношу этот столбец вправо
+        Matrix_temp[i][j_min] = 0; // и на это место пишу столбец нулей
     }
 }
 
@@ -1070,6 +1071,11 @@ int main()
                         ex3_2(Matrix, M, N);
                         cout << "Преобразованная матрица (задание 3.2): " << endl;
                         display(Matrix, M, N);
+
+                        for (int i = 0; i < M; i++) delete[] Matrix[i];
+                        delete[] Matrix;
+                        Matrix = nullptr;
+
                         break;
                     }
                     case 3:
@@ -1128,7 +1134,7 @@ int main()
                         cout << endl;
                         display(Matrix_new, M_new, N_new);
 
-                        for (int i = 0; i < M; i++) delete[] Matrix_new[i];
+                        for (int i = 0; i < M_new; i++) delete[] Matrix_new[i];
                         delete[] Matrix_new;
                         Matrix_new = nullptr;
 

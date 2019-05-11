@@ -35,10 +35,10 @@ bool eng_word (const char *S) // если символы в строке все 
     return true;
 }
 
-bool secondname (string S)
+bool secondname (const char *S)
 {
-    int N = S.size();
-    if (S[0] < 'А' || S[0] > 'Я' || S.length() < 2) return false; // если первая буква нерусская и незаглавная или если длина меньше двух букв, то false
+    int N = strlen(S);
+    if (S[0] < 'А' || S[0] > 'Я' || N < 2) return false; // если первая буква нерусская и незаглавная или если длина меньше двух букв, то false
     for (int i = 1; i < N; i++)
     {
         if (S[i] < 'а' || S[i] > 'я') return false; // проверяем чтобы все буквы были русские
