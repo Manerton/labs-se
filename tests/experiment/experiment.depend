@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1558512478 source:d:\flash_codeblocks_workspace\tests\experiment\main.cpp
+	<iostream>
+	<fstream>
+	<ctime>
+
