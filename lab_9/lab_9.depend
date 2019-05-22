@@ -5,3 +5,12 @@
 	<random>
 	<ctime>
 
+1558558521 source:c:\cpp_workspace\codeblocks_workspace\lab_9\main.cpp
+	<iostream>
+	<fstream>
+	<string>
+	<cmath>
+	<random>
+	<ctime>
+	<sstream>
+
