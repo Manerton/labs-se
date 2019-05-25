@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1558825075 source:c:\cpp_workspace\codeblocks_workspace\lab_11\main.cpp
+	<iostream>
+	<vector>
+	"struct.h"
+
+1558822886 c:\cpp_workspace\codeblocks_workspace\lab_11\struct.h
+
+1558824756 source:c:\cpp_workspace\codeblocks_workspace\lab_11\functions.cpp
+	<vector>
+	<fstream>
+	<string>
+	<iostream>
+	"struct.h"
+
