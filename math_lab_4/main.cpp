@@ -126,8 +126,13 @@ void print_graf (const graf &A)
     }
 }
 
-void diagramm_way (const graf &A)
+void diagramm_way (const graf &A, int f)
 {
+    string filename;
+    if (f == 0) filename = "graph.dot";
+    else filename = "podgraph.dot";
+    ofstream out(filename);
+    out << "digraph {\n";
     int n = A.size();
     for (int i=0; i<n; i++)
     {
@@ -136,13 +141,12 @@ void diagramm_way (const graf &A)
         {
             if (A[i][j] == 1)
             {
-                if (c == 0) { cout << i+1 << " -> "; }
-                cout << "\t" << j+1;
-                c++;
-            }
+                out << i+1 << "->" << j+1 << endl;
+            } else c++;
         }
-        if (c != 0) { cout << endl; }
+        if (c == n) out << i+1 << endl;
     }
+    out << "}\n";
 }
 
 void R_R (const graf &A, const int &n, graf &R)
@@ -345,9 +349,11 @@ int main()
             } while ((ok < 1) || (ok > 2));
         }
 
-        cout << " Диаграмма: " << endl;
-        diagramm_way(A);
-
+        cout << " Открываю диаграмму графа... " << endl;
+        diagramm_way(A,0);
+        system("graphics\\dot.exe -Tpng -O graph.dot");
+        system("graph.dot.png");
+        system("pause");
         do {
             cout << " Введите количество вершин подграфа [1, " << n-1 << "]: ";
             cin >> k;
@@ -355,8 +361,10 @@ int main()
         cout << " Матрица смежности подграфа: " << endl;
         graf A_podgraf = create_podgraf(A,k);
         print_graf(A_podgraf);
-        cout << " Диаграмма: " << endl;
-        diagramm_way(A_podgraf);
+        cout << " Открываю диаграмму графа... " << endl;
+        diagramm_way(A_podgraf,1);
+        system("graphics\\dot.exe -Tpng -O podgraph.dot");
+        system("podgraph.dot.png");
         system("pause");
 
         graf R;
@@ -378,7 +386,6 @@ int main()
             cout << " Да.";
         } else { cout << " Нет."; }
         cout << endl;
-        system("pause");
 
         graf S_e;
         create_empty_matrix(S_e, n);
@@ -390,13 +397,11 @@ int main()
         int i_m (0), j_m (0);
         more_way(S_e, n, i_m, j_m);
         cout << " Больше всего путей между "  << i_m+1 << " и " << j_m+1 << endl;
-        system("pause");
 
         cout << " Поиск циклов в графе: " << endl;
         find_cycles(S_e,n);
 
         //main_zikl(A, n);
-        system("pause");
 
         cout << " \n 0. Выход \n 1. Пересгенерировать" << endl;
         do {
