@@ -1,0 +1,10 @@
+graf create_podgraf (const graf &A, const int &k)
+{
+    graf p(A.end()-k, A.end());
+    int N = p.size();
+    for (int i = 0; i < N; i++)
+    {
+        p[i].erase(p[i].end()-k, p[i].end());
+    }
+    return p;
+}
