@@ -141,6 +141,7 @@ void diagramm_way (const graf &A, int f)
         {
             if (A[i][j] == 1)
             {
+                //out << i+1 << "->" << j+1 << "[label=\"0.2\",weight=\"0.2\"];" << endl;
                 out << i+1 << "->" << j+1 << endl;
             } else c++;
         }
@@ -226,19 +227,40 @@ void S_S_S (const graf &A, const int &n, graf &S_e)
     }
 }
 
-void more_way (const graf &S_e, const int &n, int &i_m, int &j_m)
+void more_way (const graf &S_e, const int &n, vector<int> &index)
 {
-    int ways = 0;
+    int max = 0;
     for (int i=0; i<n; i++)
     {
         for(int j=0; j<n; j++)
         {
-            if (S_e[i][j] > ways){
-                ways = S_e[i][j];
-                i_m = i;
-                j_m = j;
+            if (S_e[i][j] > max){
+                max = S_e[i][j];
             }
         }
+    }
+    cout << " Максимальное количество путей: " << max << endl;
+    for (int i=0; i<n; i++)
+    {
+        for(int j=0; j<n; j++)
+        {
+            if (S_e[i][j] == max){
+                index.push_back(i+1);
+                index.push_back(j+1);
+            }
+        }
+    }
+
+}
+
+void display_more_way (const vector<int> &index)
+{
+    int N = index.size();
+
+    for (int i = 0; i < N; i++)
+    {
+        cout << " • Между вершинами: " << index[i] << " и " << index[i+1] << endl;
+        i++;
     }
 }
 
@@ -394,9 +416,9 @@ int main()
         print_graf(S_e);
         system("pause");
 
-        int i_m (0), j_m (0);
-        more_way(S_e, n, i_m, j_m);
-        cout << " Больше всего путей между "  << i_m+1 << " и " << j_m+1 << endl;
+        vector<int> v_more_way;
+        more_way(S_e, n, v_more_way);
+        display_more_way(v_more_way);
 
         cout << " Поиск циклов в графе: " << endl;
         find_cycles(S_e,n);
