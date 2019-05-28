@@ -77,7 +77,7 @@ void FromBinFile(vector<NOTEBOOK>&X, string filename)
             X.push_back(onenote);
         }
         fromBin.close();
-    } else cout << "Не удалось создать файл " << filename;
+    } else cout << "Не удалось открыть файл " << filename;
 }
 
 void sort_arr (vector<NOTEBOOK> &X)
