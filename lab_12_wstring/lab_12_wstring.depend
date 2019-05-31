@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1559314339 source:c:\cpp_workspace\codeblocks_workspace\lab_12_wstring\main.cpp
+	<iostream>
+	<fstream>
+	<string>
+	<windows.h>
+	<vector>
+	<conio.h>
+	<locale>
+

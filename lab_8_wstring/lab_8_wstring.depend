@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1557433799 source:c:\cpp_workspace\codeblocks_workspace\lab_8_wstring\main.cpp
+1557434303 source:c:\cpp_workspace\codeblocks_workspace\lab_8_wstring\main.cpp
 	<iostream>
 	<vector>
 	<ctime>
