@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1559426097 source:c:\cpp_workspace\codeblocks_workspace\math_lab_6\main.cpp
+	<iostream>
+	<vector>
+
+1559411917 c:\cpp_workspace\codeblocks_workspace\math_lab_6\op_defines.h
+	<vector>
+
