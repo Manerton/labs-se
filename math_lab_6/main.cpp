@@ -45,10 +45,13 @@ bool operation (bool x, bool y, bool z, vector<int> oper)
 {
     //x Л1 ((y Л2 z) Л3 (x Л4 y))
     bool l2 = s_op(y,z,oper[1]);
+    cout << l2 << "  | ";
     bool l4 = s_op(x,y,oper[3]);
+    cout << l4 << "  | ";
     bool l3 = s_op(l2,l4,oper[2]);
-
+    cout << l3 << "  | ";
     return (s_op(x,l3,oper[0]));
+
 }
 
 void SDNF (const matrix &F, matrix_SDNF &F_out)
@@ -238,7 +241,8 @@ int main()
         vector<int> oper = choice_oper();
 
         matrix F;
-        cout << "x | y | z | F " << endl;
+        cout << "Задана булева функция F вида: x Л1 ((y Л2 z) Л3 (x Л4 y))" << endl;
+        cout << "x | y | z | Л2 | Л4 | Л3 | F " << endl;
         bool x (0), y (0), z(0);
         bool result;
         for (int i=0; i<2; i++)
