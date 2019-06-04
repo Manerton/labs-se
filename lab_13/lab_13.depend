@@ -1,6 +1,8 @@
 # depslib dependency file v1.0
-1559344978 source:c:\cpp_workspace\codeblocks_workspace\lab_13\main.cpp
+1559668705 source:c:\cpp_workspace\codeblocks_workspace\lab_13\main.cpp
 	<iostream>
+	<ctime>
 	<set>
 	<algorithm>
+	<string>
 
