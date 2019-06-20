@@ -1,16 +1,17 @@
-//ver 1
 #include <iostream>
 #include <cmath>
+#include <windows.h>
+
 
 using namespace std;
 
 double func_rec(double x, int N)
 {
-    if (N == 0) return ((x-1) / (x+1));
+    if (N == 0) return x;
     else
     {
         int step = 2*N+1;
-        return (func_rec(x, N-1) + pow(func_rec(x,0),step) / step);
+        return (func_rec(x, N-1) + pow(x,step) / step);
     }
 }
 
@@ -29,14 +30,13 @@ double func_legacy(double x, int N)
     return S;
 }
 
-
 double func_rec (double x, double e, double S, double Sn, int n)
 {
-    if (fabs(Sn) > e)
+    int step = 2*n+1;
+    Sn = Sn * x * x;
+    if (fabs(Sn/step) > e)
     {
-        int step = 2*n+1;
-        Sn = pow(((x-1) / (x+1)),step) / step;
-        S += Sn;
+        S += (Sn / step);
         return (func_rec(x, e, S, Sn, n+1));
     }
     else return S;
@@ -131,7 +131,8 @@ int main()
             cout << "N n/n" << "\t" << "x" << "\t" << "Sn" << "\t\t" << "Se" << "\t\t" << "S" << endl; // заголовок таблицы
             for (x = a; x < b || fabs(x-b) < 0.0001; x += h)
             {
-                cout << i << "\t" << x << "\t" << func_rec(x, N) << "\t" << func_rec(x, e, 0 ,1, 0) << "\t" << func(x) << endl;
+                double arg = (x-1)/(x+1);
+                cout << i << "\t" << x << "\t" << func_rec(arg, N) << "\t" << func_rec(arg, e, arg ,arg, 0) << "\t" << func(x) << endl;
                 i++;
             }
             // **** КОНЕЦ ПРОГРАММЫ 3 ****
