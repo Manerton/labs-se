@@ -1,7 +1,10 @@
 # depslib dependency file v1.0
-1560456766 source:c:\cpp_workspace\codeblocks_workspace\lab_14\main.cpp
+1561574411 source:c:\cpp_workspace\codeblocks_workspace\lab_14\main.cpp
 	<iostream>
+	<iomanip>
+	<vector>
 	<cmath>
+	<windows.h>
 
 1560496968 source:d:\flash_codeblocks_workspace\lab_14\main.cpp
 	<iostream>
