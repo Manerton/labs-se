@@ -7,11 +7,13 @@ using namespace std;
 
 int main()
 {
-    int a = 5;
-    cout << a;
-    int *b = &a;
-    cout << *b;
-    int c = 3 + *b;
-    cout << c;
-    return 0;
+    int *a = new int[5];
+    a[0] = 3;
+    a[1] = 4;
+    a[2] = 5;
+    a[3] = 6;
+    a[4] = 2;
+    a[5555] = 1;
+    cout << a[5555];
+
 }
