@@ -1,6 +1,0 @@
-# depslib dependency file v1.0
-1553377478 source:c:\cpp_workspace\codeblocks_workspace\lab5_ex4\main.cpp
-	<fstream>
-	<iostream>
-	<ctime>
-

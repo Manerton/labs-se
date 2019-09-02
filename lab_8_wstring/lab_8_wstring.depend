@@ -1,8 +1,0 @@
-# depslib dependency file v1.0
-1557434303 source:c:\cpp_workspace\codeblocks_workspace\lab_8_wstring\main.cpp
-	<iostream>
-	<vector>
-	<ctime>
-	<string>
-	<locale>
-

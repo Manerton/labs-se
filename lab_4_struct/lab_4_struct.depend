@@ -1,6 +1,0 @@
-# depslib dependency file v1.0
-1552767390 source:c:\cpp_workspace\codeblocks_workspace\lab_4_struct\main.cpp
-	<iostream>
-	<fstream>
-	<iomanip>
-

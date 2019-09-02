@@ -1,9 +1,0 @@
-# depslib dependency file v1.0
-1559317121 source:c:\cpp_workspace\codeblocks_workspace\lab_12_cstring\main.cpp
-	<iostream>
-	<fstream>
-	<cstring>
-	<windows.h>
-	<vector>
-	<conio.h>
-
