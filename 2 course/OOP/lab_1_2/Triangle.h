@@ -2,6 +2,7 @@
 #define TRIANGLE_H
 #include <sstream>
 #include <string>
+
 class Triangle
 {
     double A, B, C;
@@ -9,7 +10,8 @@ class Triangle
     bool Check(const double &a_in, const double &b_in, const double &c_in) const;
 
     public:
-        void Init(const double &a_in, const double &b_in, const double &c_in)
+        Triangle(){};
+        Triangle(const double &a_in, const double &b_in, const double &c_in)
         {
             if (Check(a_in, b_in, c_in))
             {
@@ -17,11 +19,6 @@ class Triangle
                 B = b_in;
                 C = c_in;
             }
-        }
-
-        void Init(const Triangle &t)
-        {
-            *this = t;
         }
 
         std::string toString() const
@@ -41,6 +38,8 @@ class Triangle
         void TriangleKind() const;
         void CompareTwoTriangles(const Triangle &second) const;
         void Podobie(const Triangle &second) const;
+
+
 
 };
 

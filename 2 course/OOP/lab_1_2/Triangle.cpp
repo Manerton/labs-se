@@ -23,8 +23,9 @@ void Triangle::Display() const
     cout << "ƒлины треугольника: " << s << endl;
 }
 
-void Triangle::Read()
+void Triangle::Read() // Read
 {
+
     double a, b, c;
     cout << "¬ведите длину стороны a: ";
     cin >> a;
@@ -33,7 +34,7 @@ void Triangle::Read()
     cout << "¬ведите длину стороны c: ";
     cin >> c;
 
-    Init(a, b, c);
+    *this = Triangle(a,b,c);
 }
 
 double Triangle::FindPerimeter() const
