@@ -5,33 +5,33 @@
 
 using namespace std;
 
-bool Triangle::Check(const double &a_in, const double &b_in, const double &c_in) const  // проверка на треугольник
+bool Triangle::Check(const double &a_in, const double &b_in, const double &c_in) const  // РїСЂРѕРІРµСЂРєР° РЅР° С‚СЂРµСѓРіРѕР»СЊРЅРёРє
 {
     if (a_in > 0 && b_in > 0 && c_in > 0)
     {
         if ( (a_in + b_in > c_in) && (a_in + c_in > b_in) && (b_in + c_in > a_in) )
             return true;
-        else throw "сумма длин каждых двух сторон должна быть больше длины третьей стороны.";
+        else throw "СЃСѓРјРјР° РґР»РёРЅ РєР°Р¶РґС‹С… РґРІСѓС… СЃС‚РѕСЂРѕРЅ РґРѕР»Р¶РЅР° Р±С‹С‚СЊ Р±РѕР»СЊС€Рµ РґР»РёРЅС‹ С‚СЂРµС‚СЊРµР№ СЃС‚РѕСЂРѕРЅС‹.";
     } else {
-        throw "у треугольника не может быть отрицательных сторон.";
+        throw "Сѓ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹С… СЃС‚РѕСЂРѕРЅ.";
     }
 }
 
 void Triangle::Display() const
 {
     string s = toString();
-    cout << "Длины треугольника: " << s << endl;
+    cout << "Р”Р»РёРЅС‹ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°: " << s << endl;
 }
 
 void Triangle::Read() // Read
 {
 
     double a, b, c;
-    cout << "Введите длину стороны a: ";
+    cout << "Р’РІРµРґРёС‚Рµ РґР»РёРЅСѓ СЃС‚РѕСЂРѕРЅС‹ a: ";
     cin >> a;
-    cout << "Введите длину стороны b: ";
+    cout << "Р’РІРµРґРёС‚Рµ РґР»РёРЅСѓ СЃС‚РѕСЂРѕРЅС‹ b: ";
     cin >> b;
-    cout << "Введите длину стороны c: ";
+    cout << "Р’РІРµРґРёС‚Рµ РґР»РёРЅСѓ СЃС‚РѕСЂРѕРЅС‹ c: ";
     cin >> c;
 
     *this = Triangle(a,b,c);
@@ -57,9 +57,9 @@ void Triangle::FindHeight() const
     double Height_a = Double_Square / A;
     double Height_b = Double_Square / B;
     double Height_c = Double_Square / C;
-    cout << "Высота, падающая на основание a: " << Height_a << endl;
-    cout << "Высота, падающая на основание b: " << Height_b << endl;
-    cout << "Высота, падающая на основание c: " << Height_c << endl;
+    cout << "Р’С‹СЃРѕС‚Р°, РїР°РґР°СЋС‰Р°СЏ РЅР° РѕСЃРЅРѕРІР°РЅРёРµ a: " << Height_a << endl;
+    cout << "Р’С‹СЃРѕС‚Р°, РїР°РґР°СЋС‰Р°СЏ РЅР° РѕСЃРЅРѕРІР°РЅРёРµ b: " << Height_b << endl;
+    cout << "Р’С‹СЃРѕС‚Р°, РїР°РґР°СЋС‰Р°СЏ РЅР° РѕСЃРЅРѕРІР°РЅРёРµ c: " << Height_c << endl;
 }
 
 void Triangle::FindAngle(double &Angle_ab, double &Angle_ac, double &Angle_bc) const
@@ -76,18 +76,18 @@ void Triangle::DisplayAngles() const
 {
     double ab, ac, bc;
     FindAngle(ab,ac,bc);
-    cout << "Угол между a и b: " << ab << endl;
-    cout << "Угол между a и c: " << ac << endl;
-    cout << "Угол между b и c: " << bc << endl;
+    cout << "РЈРіРѕР» РјРµР¶РґСѓ a Рё b: " << ab << endl;
+    cout << "РЈРіРѕР» РјРµР¶РґСѓ a Рё c: " << ac << endl;
+    cout << "РЈРіРѕР» РјРµР¶РґСѓ b Рё c: " << bc << endl;
 }
 
 void Triangle::TriangleKind() const
 {
     double ab, ac, bc;
     FindAngle(ab,ac,bc);
-    if (ab > 90 || ac > 90 || bc > 90) cout << "Треугольник является тупоугольным." << endl;
-    if (ab < 90 && ac < 90 && bc < 90) cout << "Треугольник является остроугольным." << endl;
-    if (ab == 90 || ac == 90 || bc == 90) cout << "Треугольник является прямоугольным." << endl;
+    if (ab > 90 || ac > 90 || bc > 90) cout << "РўСЂРµСѓРіРѕР»СЊРЅРёРє СЏРІР»СЏРµС‚СЃСЏ С‚СѓРїРѕСѓРіРѕР»СЊРЅС‹Рј." << endl;
+    if (ab < 90 && ac < 90 && bc < 90) cout << "РўСЂРµСѓРіРѕР»СЊРЅРёРє СЏРІР»СЏРµС‚СЃСЏ РѕСЃС‚СЂРѕСѓРіРѕР»СЊРЅС‹Рј." << endl;
+    if (ab == 90 || ac == 90 || bc == 90) cout << "РўСЂРµСѓРіРѕР»СЊРЅРёРє СЏРІР»СЏРµС‚СЃСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рј." << endl;
 }
 
 void Triangle::CompareTwoTriangles(const Triangle &second) const
@@ -95,14 +95,14 @@ void Triangle::CompareTwoTriangles(const Triangle &second) const
     double eps = 0.0001;
     double square_1 = FindSquare();
     double square_2 = second.FindSquare();
-    if (fabs(square_1 - square_2) < eps) cout << "Площади треугольников равны." << endl;
-    else if (square_1 > square_2) cout << "Площадь первого треугольника больше площади второго." << endl;
-    else if (square_1 < square_2) cout << "Площадь первого треугольника меньше площади второго." << endl;
+    if (fabs(square_1 - square_2) < eps) cout << "РџР»РѕС‰Р°РґРё С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ СЂР°РІРЅС‹." << endl;
+    else if (square_1 > square_2) cout << "РџР»РѕС‰Р°РґСЊ РїРµСЂРІРѕРіРѕ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° Р±РѕР»СЊС€Рµ РїР»РѕС‰Р°РґРё РІС‚РѕСЂРѕРіРѕ." << endl;
+    else if (square_1 < square_2) cout << "РџР»РѕС‰Р°РґСЊ РїРµСЂРІРѕРіРѕ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° РјРµРЅСЊС€Рµ РїР»РѕС‰Р°РґРё РІС‚РѕСЂРѕРіРѕ." << endl;
     double P1 = FindPerimeter();
     double P2 = second.FindPerimeter();
-    if (fabs(P1 - P2) < eps) cout << "Периметры треугольников равны." << endl;
-    else if (P1 > P2) cout << "Периметр первого треугольника больше периметра второго." << endl;
-    else if (P1 < P2) cout << "Периметр первого треугольника меньше периметра второго." << endl;
+    if (fabs(P1 - P2) < eps) cout << "РџРµСЂРёРјРµС‚СЂС‹ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ СЂР°РІРЅС‹." << endl;
+    else if (P1 > P2) cout << "РџРµСЂРёРјРµС‚СЂ РїРµСЂРІРѕРіРѕ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° Р±РѕР»СЊС€Рµ РїРµСЂРёРјРµС‚СЂР° РІС‚РѕСЂРѕРіРѕ." << endl;
+    else if (P1 < P2) cout << "РџРµСЂРёРјРµС‚СЂ РїРµСЂРІРѕРіРѕ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° РјРµРЅСЊС€Рµ РїРµСЂРёРјРµС‚СЂР° РІС‚РѕСЂРѕРіРѕ." << endl;
 }
 
 void Triangle::Podobie(const Triangle &second) const
@@ -111,6 +111,6 @@ void Triangle::Podobie(const Triangle &second) const
     k1 = A / second.A;
     k2 = B / second.B;
     k3 = C / second.C;
-    if (k1 == k2 && k2 == k3) cout << "Треугольники подобные, коэффициент подобия k = " << k1 << endl;
-    else cout << "Треугольники неподобные" << endl;
+    if (k1 == k2 && k2 == k3) cout << "РўСЂРµСѓРіРѕР»СЊРЅРёРєРё РїРѕРґРѕР±РЅС‹Рµ, РєРѕСЌС„С„РёС†РёРµРЅС‚ РїРѕРґРѕР±РёСЏ k = " << k1 << endl;
+    else cout << "РўСЂРµСѓРіРѕР»СЊРЅРёРєРё РЅРµРїРѕРґРѕР±РЅС‹Рµ" << endl;
 }
