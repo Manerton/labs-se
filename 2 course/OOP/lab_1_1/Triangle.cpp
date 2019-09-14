@@ -5,7 +5,7 @@
 
 using namespace std;
 
-bool Triangle::Check(const double &a_in, const double &b_in, const double &c_in) const  // проверка на треугольник
+bool Triangle::Check(const double &a_in, const double &b_in, const double &c_in) const // проверка на треугольник
 {
     if (a_in > 0 && b_in > 0 && c_in > 0)
     {
@@ -17,7 +17,14 @@ bool Triangle::Check(const double &a_in, const double &b_in, const double &c_in)
     }
 }
 
-void Triangle::Display() const
+double Triangle::FindHeight(const double &side) const noexcept // поиск высоты по стороне
+{
+    double Double_Square = FindSquare() * 2;
+    double height = Double_Square / side;
+    return height;
+}
+
+void Triangle::Display() const noexcept
 {
     string s = toString();
     cout << "Длины треугольника: " << s << endl;
@@ -36,80 +43,92 @@ void Triangle::Read()
     Init(a, b, c);
 }
 
-double Triangle::FindPerimeter() const
+double Triangle::FindPerimeter() const noexcept
 {
-    double result = A + B + C;
-    return result;
+    return A + B + C;
 }
 
-double Triangle::FindSquare() const
+double Triangle::FindSquare() const noexcept
 {
     double p = FindPerimeter() / 2;
     double result_wo_sqrt = p * (p-A) * (p-B) * (p-C);
-    double result = sqrt(result_wo_sqrt);
-    return result;
+    return sqrt(result_wo_sqrt);
 }
 
-void Triangle::FindHeight() const
+double Triangle::FindAngle(const double &A, const double &B, const double &C) const noexcept // теорема косинусов
 {
-    double Double_Square = FindSquare() * 2;
-    double Height_a = Double_Square / A;
-    double Height_b = Double_Square / B;
-    double Height_c = Double_Square / C;
-    cout << "Высота, падающая на основание a: " << Height_a << endl;
-    cout << "Высота, падающая на основание b: " << Height_b << endl;
-    cout << "Высота, падающая на основание c: " << Height_c << endl;
+    double cos_angle = ((A*A)+(B*B)-(C*C)) / (2*A*B);
+    double angle = acos(cos_angle) * 180 / M_PI;
+    return angle;
 }
 
-void Triangle::FindAngle(double &Angle_ab, double &Angle_ac, double &Angle_bc) const
+double Triangle::FindHeightA() const noexcept
 {
-    double cos_Angle_ab = ((A*A)+(B*B)-(C*C)) / (2*A*B);
-    double cos_Angle_ac = ((A*A)+(C*C)-(B*B)) / (2*A*C);
-    double cos_Angle_bc = ((B*B)+(C*C)-(A*A)) / (2*B*C);
-    Angle_ab = acos(cos_Angle_ab) * 180 / M_PI;
-    Angle_ac = acos(cos_Angle_ac) * 180 / M_PI;
-    Angle_bc = acos(cos_Angle_bc) * 180 / M_PI;
+    return FindHeight(A);
 }
 
-void Triangle::DisplayAngles() const
+double Triangle::FindHeightB() const noexcept
+{
+    return FindHeight(B);
+}
+
+double Triangle::FindHeightC() const noexcept
+{
+    return FindHeight(C);
+}
+
+double Triangle::FindAngleAB() const noexcept
+{
+    return FindAngle(A,B,C);
+}
+
+double Triangle::FindAngleAC() const noexcept
+{
+    return FindAngle(A,C,B);
+}
+
+double Triangle::FindAngleBC() const noexcept
+{
+    return FindAngle(B,C,A);
+}
+
+static double eps = 0.0001; // точность для след. трех функций
+
+int Triangle::TriangleKind() const noexcept // возвращает цифру - тип треугольника
 {
     double ab, ac, bc;
-    FindAngle(ab,ac,bc);
-    cout << "Угол между a и b: " << ab << endl;
-    cout << "Угол между a и c: " << ac << endl;
-    cout << "Угол между b и c: " << bc << endl;
+    ab = FindAngleAB();
+    ac = FindAngleAC();
+    bc = FindAngleBC();
+    if (fabs(ab - 90) < eps || fabs(ac - 90) < eps || fabs(bc - 90) < eps) return 0; // прямоугольный
+    else if (ab > 90 || ac > 90 || bc > 90) return 1; // тупоугольный
+    else return -1; // остроугольный
 }
 
-void Triangle::TriangleKind() const
+int Triangle::Compare_square(const Triangle &second) const noexcept
 {
-    double ab, ac, bc;
-    FindAngle(ab,ac,bc);
-    if (ab > 90 || ac > 90 || bc > 90) cout << "Треугольник является тупоугольным." << endl;
-    if (ab < 90 && ac < 90 && bc < 90) cout << "Треугольник является остроугольным." << endl;
-    if (ab == 90 || ac == 90 || bc == 90) cout << "Треугольник является прямоугольным." << endl;
-}
-
-void Triangle::CompareTwoTriangles(const Triangle &second) const
-{
-    double eps = 0.0001;
     double square_1 = FindSquare();
     double square_2 = second.FindSquare();
-    if (fabs(square_1 - square_2) < eps) cout << "Площади треугольников равны." << endl;
-    else if (square_1 > square_2) cout << "Площадь первого треугольника больше площади второго." << endl;
-    else if (square_1 < square_2) cout << "Площадь первого треугольника меньше площади второго." << endl;
-    double P1 = FindPerimeter();
-    double P2 = second.FindPerimeter();
-    if (fabs(P1 - P2) < eps) cout << "Периметры треугольников равны." << endl;
-    else if (P1 > P2) cout << "Периметр первого треугольника больше периметра второго." << endl;
-    else if (P1 < P2) cout << "Периметр первого треугольника меньше периметра второго." << endl;
+    if (fabs(square_1 - square_2) < eps) return 0; // площади равны
+    else if (square_1 < square_2) return -1; // площадь первого меньше
+    else return 1; // площадь первого больше
 }
 
-void Triangle::Podobie(const Triangle &second) const
+int Triangle::Compare_perimeter(const Triangle &second) const noexcept
+{
+    double P1 = FindPerimeter();
+    double P2 = second.FindPerimeter();
+    if (fabs(P1 - P2) < eps) return 0; // периметры равны
+    else if (P1 < P2) return -1; // периметр первого меньше
+    else return 1; //периметр первого больше
+}
+
+bool Triangle::Podobie(const Triangle &second) const
 {
     double k1, k2, k3;
     k1 = A / second.A;
     k2 = B / second.B;
     k3 = C / second.C;
-    if (k1 == k2 && k2 == k3) cout << "Треугольники подобные, коэффициент подобия k = " << k1 << endl;
-    else cout << "Треугольники неподобные" << endl;
+    if (fabs(k1-k2) < eps && fabs(k2-k3) < eps) return true;
+    return false;
 }

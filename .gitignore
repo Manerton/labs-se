@@ -1,5 +1,13 @@
-
 *.exe
-*.depend
+
+# C++ objects and libs
 *.o
+
+# Qt-es
+*.pro.user
+*.pro.user.*
+*build-*
+
+# CodeBlock-es
+*.depend
 *.layout
