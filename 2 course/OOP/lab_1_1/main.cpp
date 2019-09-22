@@ -6,7 +6,6 @@ using namespace std;
 
 int main()
 {
-
     system("chcp 1251 > nul");
     cout << "Лабораторная работа №1. Вариант 7.\nАвтор: Катунин Сергей. ДИПРБ-21.\n" << endl;
     cout << "Условие: Разработать класс Triangle, представляющий собой треугольник на плоскости, определенный по трем сторонам." << endl << endl;
@@ -33,9 +32,12 @@ int main()
         cout << "\n5. Поиск площади Tri3: ";
         cout << Tri3.FindSquare() << endl;
         cout << "\n6. Определение вида треугольника Tri3: " << endl;
-        if (Tri3.TriangleKind() == 0) cout << "Треугольник является прямоугольным." << endl;
-        if (Tri3.TriangleKind() == 1) cout << "Треугольник является тупоугольным." << endl;
-        if (Tri3.TriangleKind() == -1) cout << "Треугольник является остроугольным." << endl;
+        int Kind = Tri3.TriangleKind();
+        if (Kind == Triangle::pryamougolniy) cout << "Треугольник является прямоугольным." << endl;
+        if (Kind == Triangle::typougolniy) cout << "Треугольник является тупоугольным." << endl;
+        if (Kind == Triangle::ostrougolniy) cout << "Треугольник является остроугольным." << endl;
+        if (Kind == Triangle::ravnostoroniy) cout << "Треугольник является равносторонним." << endl;
+        if (Kind == Triangle::ravnobedreniy) cout << "Треугольник является равнобедренным." << endl;
         cout << "\n7. Вычисление высот треугольника Tri3: " << endl;
         cout << "Высота, лежащая на стороне A: " << Tri3.FindHeightA() << endl;
         cout << "Высота, лежащая на стороне B: " << Tri3.FindHeightB() << endl;
@@ -45,13 +47,13 @@ int main()
         cout << "Угол между A и C: " << Tri3.FindAngleAC() << endl;
         cout << "Угол между B и C: " << Tri3.FindAngleBC() << endl;
         cout << "\n9. Сравнение площадей треугольника Tri3 и Tri1: " << endl;
-        if (Tri3.Compare_square(Tri1) == 0) cout << "Площадь треугольников равны." << endl;
-        if (Tri3.Compare_square(Tri1) == -1) cout << "Площадь первого треугольника меньше площади второго." << endl;
-        if (Tri3.Compare_square(Tri1) == 1) cout << "Площадь первого треугольника больше площади второго." << endl;
+        if (Tri3.Compare_square(Tri1) == 0) cout << "Площади треугольников равны." << endl;
+        if (Tri3.Compare_square(Tri1) == -1) cout << "Площадь левого треугольника меньше площади правого." << endl;
+        if (Tri3.Compare_square(Tri1) == 1) cout << "Площадь левого треугольника больше площади правого." << endl;
         cout << "\n10. Сравнение периметров треугольника Tri3 и Tri1: " << endl;
         if (Tri3.Compare_perimeter(Tri1) == 0) cout << "Периметры треугольников равны." << endl;
-        if (Tri3.Compare_perimeter(Tri1) == -1) cout << "Периметр первого треугольника меньше периметра второго." << endl;
-        if (Tri3.Compare_perimeter(Tri1) == 1) cout << "Периметр первого треугольника больше периметра второго." << endl;
+        if (Tri3.Compare_perimeter(Tri1) == -1) cout << "Периметр левого треугольника меньше периметра правого." << endl;
+        if (Tri3.Compare_perimeter(Tri1) == 1) cout << "Периметр левого треугольника больше периметра правого." << endl;
         cout << "\n11. Определение подобия треугольников Tri3 и Tri1: " << endl;
         if(Tri3.Podobie(Tri1)) cout << "Треугольники подобные." << endl;
         else cout << "Треугольники неподобные." << endl;

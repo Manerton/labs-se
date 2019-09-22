@@ -6,6 +6,7 @@
 class Triangle
 {
     double A, B, C;
+    constexpr static double eps = 0.0001; // точность для след. трех функций
     bool Check(const double &a_in, const double &b_in, const double &c_in) const;
 
     double FindHeight(const double &side) const noexcept; // закрытый метод поиска высоты по стороне
@@ -13,6 +14,7 @@ class Triangle
     double FindAngle(const double &A, const double &B, const double &C) const noexcept; // закрытый метод поиска угла через теорему косинусов
 
     public:
+        enum TriangleKind {pryamougolniy, typougolniy, ostrougolniy, ravnobedreniy, ravnostoroniy};
         Triangle() : A(2), B(3), C(4){}
         Triangle(const double &a_in, const double &b_in, const double &c_in)
         {

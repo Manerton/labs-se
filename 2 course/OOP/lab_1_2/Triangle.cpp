@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include "Triangle.h"
 
@@ -92,17 +93,17 @@ double Triangle::FindAngleBC() const noexcept
     return FindAngle(B,C,A);
 }
 
-static double eps = 0.0001; // точность для след. трех функций
-
 int Triangle::TriangleKind() const noexcept // возвращает цифру - тип треугольника
 {
     double ab, ac, bc;
     ab = FindAngleAB();
     ac = FindAngleAC();
     bc = FindAngleBC();
-    if (fabs(ab - 90) < eps || fabs(ac - 90) < eps || fabs(bc - 90) < eps) return 0; // прямоугольный
-    else if (ab > 90 || ac > 90 || bc > 90) return 1; // тупоугольный
-    else return -1; // остроугольный
+    if (fabs(ab - 90) < eps || fabs(ac - 90) < eps || fabs(bc - 90) < eps) return pryamougolniy; // прямоугольный
+    if (ab > 90 || ac > 90 || bc > 90) return typougolniy; // тупоугольный
+    if (A == B && B == C) return ravnostoroniy; // равносторонний
+    if (A == B || A == C || B == C) return ravnobedreniy; // равнобедренный
+    return ostrougolniy; // остроугольный
 }
 
 int Triangle::Compare_square(const Triangle &second) const noexcept
@@ -110,8 +111,8 @@ int Triangle::Compare_square(const Triangle &second) const noexcept
     double square_1 = FindSquare();
     double square_2 = second.FindSquare();
     if (fabs(square_1 - square_2) < eps) return 0; // площади равны
-    else if (square_1 < square_2) return -1; // площадь первого меньше
-    else return 1; // площадь первого больше
+    else if (square_1 < square_2) return -1; // площадь левого меньше
+    else return 1; // площадь левого больше
 }
 
 int Triangle::Compare_perimeter(const Triangle &second) const noexcept
@@ -119,8 +120,8 @@ int Triangle::Compare_perimeter(const Triangle &second) const noexcept
     double P1 = FindPerimeter();
     double P2 = second.FindPerimeter();
     if (fabs(P1 - P2) < eps) return 0; // периметры равны
-    else if (P1 < P2) return -1; // периметр первого меньше
-    else return 1; //периметр первого больше
+    else if (P1 < P2) return -1; // периметр левого меньше
+    else return 1; //периметр левого больше
 }
 
 bool Triangle::Podobie(const Triangle &second) const
@@ -129,6 +130,6 @@ bool Triangle::Podobie(const Triangle &second) const
     k1 = A / second.A;
     k2 = B / second.B;
     k3 = C / second.C;
-    if (fabs(k1-k2) < eps && fabs(k2-k3) < eps) return true;
-    return false;
+    return (fabs(k1-k2) < eps && fabs(k2-k3) < eps);
+
 }
