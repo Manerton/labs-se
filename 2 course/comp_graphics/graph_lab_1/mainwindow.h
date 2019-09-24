@@ -2,8 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QGraphicsView>
-#include <QGraphicsScene>
 #include <QPainter>
 
 QT_BEGIN_NAMESPACE
