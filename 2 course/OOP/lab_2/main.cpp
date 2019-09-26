@@ -1,4 +1,3 @@
-//сдвиг доделать и сделать тесты
 #include <iostream>
 #include "bitstring.h"
 
@@ -34,33 +33,28 @@ int main()
         cout << "\n4. Операция and с BS1 и BS2 (BS1 & BS2)." << endl;
         cout << BS1 << "&" << BS2 << "= " << (BS1 & BS2);
         cout << "\n5. Операция (BS3 &= BS1) и вывод BS3." << endl;
-        BS3 &= BS1;
-        cout << "BS3: " << BS3;
+        cout << BS3 << " &= " << BS1 << "; BS3: " << (BS3 &= BS1);
         cout << "\n6. Операция or с BS1 и BS2 (BS1 | BS2)." << endl;
         cout << BS1 << "|" << BS2 << "= " << (BS1 | BS2);
         cout << "\n7. Операция (BS3 |= BS1)." << endl;
-        BS3 |= BS1;
-        cout << "BS3: " << BS3;
+        cout << BS3 << " |= " << BS1 << "; BS3: " << (BS3 |= BS1);
         cout << "\n8. Операция xor с BS1 и BS2 (BS1 ^ BS2)." << endl;
         cout << BS1 << "^" << BS2 << "= " << (BS1 ^ BS2);
         cout << "\n9. Операция (BS3 ^= BS1)." << endl;
-        BS3 ^= BS1;
-        cout << "BS3: " << BS3;
-        cout << "\n10. Операция not с BS1 (~BS1)." << endl;
-        cout << "~" << BS1 << "= " << (~BS1);
-        ~BS1;
+        cout << BS3 << " ^= " << BS1 << "; BS3: " << (BS3 ^= BS1);
+        cout << "\n10. Операция not с BS2 (~BS2)." << endl;
+        cout << "~" << BS2 << "= " << (~BS2);
+        ~BS2;
         cout << "\n11. Операция shiftLeft с BS2 на 3 бита влево (BS2 << 3)." << endl;
         cout << BS2 << "<<3 = " << (BS2<<3);
-        //cout << "\n12. Операция (BS3 <<= 3)." << endl;
-        //BS3 <<= 3;
-        //cout << "BS3: " << BS3;
+        cout << "\n12. Операция (BS3 <<= 3)." << endl;
+        cout << BS3 << " <<= 3" << "; BS3: " << (BS3 <<= 3);
         cout << "\n13. Операция shiftRight с BS2 на 4 бита право (BS2 >> 4)." << endl;
         cout << BS2 << ">>4 = " << (BS2>>4);
-        //cout << "\n14. Операция (BS3 >>= 4)." << endl;
-        //BS3 >>= 4;
-        //cout << "BS3: " << BS3;
-        cout << "\n15. Количество единичных битов в BS1." << endl;
-        cout << (BS1.count_of_SingleBit());
+        cout << "\n14. Операция (BS3 >>= 4)." << endl;
+        cout << BS3 << " >>= 4 " << "; BS3: " << (BS3 >>= 4);
+        cout << "\n15. Количество единичных битов в BS1: " << (BS1.count_of_SingleBit());
+        cout << "\n    Количество единичных битов в BS2: " << (BS2.count_of_SingleBit()) << endl;
         cout << "\nОперации сравнения по количеству единичных битов с BS1 и BS2:" << endl;
         cout << "BS1: " << BS1 << endl;
         cout << "BS2: " << BS2 << endl;
@@ -74,11 +68,18 @@ int main()
         cout << "\n23. Операция проверки включения BS2 в BS1:" << (is_included(BS2,BS1));
 
     }
-    catch (const char* exception) // обработка исключений типа const char*
+    catch (BitString::negative_int_exception) // обработка исключений типа const char*
     {
-        cerr << "Ошибка: " << exception << endl;
+        cerr << "Ошибка: введенное число не может быть отрицательным." << endl;
     }
-
+    catch (BitString::not_binary_exception) // обработка исключений типа const char*
+    {
+        cerr << "Ошибка: введенное число не является двоичным." << endl;
+    }
+    catch (BitString::overflow_exception) // обработка исключений типа const char*
+    {
+        cerr << "Ошибка: битовая строка не может быть больше чем 128 бита." << endl;
+    }
     return 0;
 }
 
