@@ -28,7 +28,7 @@ public:
     void setSpeed(int k); // метод для установки скорости
 private slots:
     void ToCentre();
-    void un_vcentr();
+    void FromCentre();
     void on_horizontalSlider_valueChanged(int value);
     void on_pushButton_3_clicked();
     void on_checkBox_toggled(bool checked);

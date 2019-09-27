@@ -9,16 +9,27 @@ using namespace std;
 
 extern QVector<Star> Stars; // объявляю глобальный вектор звезд
 QVector<Star> Stars; // пока без размера
+extern QVector<Star> v; // объявляю глобальный вектор звезд
+QVector<Star> v; // пока без размера
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     pb_frame = new PictureBox(ui->frame); // определяю фрейм, в котором рисую
     pb_frame->resize(ui->frame->size()); // указываю размер как у фрейма с оранжевой рамкой
-    RandomizeStars(500); // получаю координаты звезд, а пейнт евент сам рисует
+    RandomizeStars(); // получаю координаты звезд, а пейнт евент сам рисует
+    v.resize(500);
+    for (int i = 0; i < 500; i++)
+    {
+        v[i].x = Stars[i].x;
+        v[i].y = Stars[i].y;
+        v[i].color = Stars[i].color;
+    }
+    QVector<Star> v = Stars;
+    for ()
     pb_frame->risovanie();
     paintTimer = new QTimer(this);
-    connect(paintTimer, SIGNAL(timeout()), this, SLOT(ToCentre()));
+    connect(paintTimer, SIGNAL(timeout()), this, SLOT());
 }
 
 MainWindow::~MainWindow()
@@ -83,22 +94,23 @@ void MainWindow::ToCentre()
     }
 }
 
-void MainWindow::un_vcentr()
+void MainWindow::FromCentre()
 {
-    int N = Stars.size();
+    int N = v.size();
+    int x_centre = (pb_frame ->width())/2;
+    int y_centre = (pb_frame ->height())/2;
+    double dx, dy;
     for (int j = 0; j < speed; j++)
     {
         for (int i = 0; i < N; i++)
         {
-            if (Stars[i].x < (pb_frame->width() / 2))
-            {
-               Stars[i].y = newY_Coord(Stars[i].x -= 1, Stars[i].y, Stars[i].x -= 2);
-            }
-            else
-            {
-              Stars[i].y = newY_Coord(Stars[i].x += 1, Stars[i].y, Stars[i].x += 2);
-            }
+           dx = (x_centre - fabs(v[i].x)) / 300.0;
+           dy = (y_centre - fabs(v[i].y)) / 300.0;
+           Stars[i].x -= dx;
+           Stars[i].y -= dy;
+
         }
+        pb_frame->risovanie();
         pb_frame->update();
     }
 }
@@ -110,7 +122,7 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
 
 void MainWindow::on_pushButton_3_clicked()
 {
-    connect(paintTimer, SIGNAL(timeout()), this, SLOT(un_vcentr()));
+    connect(paintTimer, SIGNAL(timeout()), this, SLOT(FromCentre()));
     paintTimer->start(10);
 }
 
@@ -122,6 +134,7 @@ void MainWindow::on_checkBox_toggled(bool checked)
 
 void MainWindow::on_pushButton_start_clicked()
 {
+    connect(paintTimer, SIGNAL(timeout()), this, SLOT(ToCentre()));
     paintTimer->start(10);
 }
 
