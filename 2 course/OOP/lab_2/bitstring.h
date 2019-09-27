@@ -11,9 +11,6 @@ class BitString
     bool Check(const std::string &str) const;
     uint64_t BinaryString_toInt(const std::string &str); // функция перевода из двоичных чисел в строке в десятичное 64-битное число
     std::string OptimizeBinary(const std::string &str) const; // отбрасываю нули слева
-    class negative_int_exception {};
-    class not_binary_exception {};
-    class overflow_exception {};
 public:
     BitString() : F1(0), F2(0) {}
     BitString(const std::string &str) : F1(0), F2(0)
@@ -59,6 +56,10 @@ public:
     friend bool is_included(const BitString &a, const BitString &b); // операция проверки включения
     friend std::ostream& operator<<(std::ostream& t, const BitString &r); // вывод
     friend std::istream& operator>>(std::istream& t, BitString &r); //ввод
+    // исключения
+    class negative_int_exception {};
+    class not_binary_exception {};
+    class overflow_exception {};
 };
 
 #endif // BITSTRING_H

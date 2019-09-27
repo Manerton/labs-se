@@ -113,8 +113,15 @@ BitString& BitString::operator<<=(const uint8_t &i)
 {
     std::string str = toString();
     uint8_t len = static_cast<uint8_t>(str.length());
-    std::string strnew(len,'0');
-    strnew.replace(0,len-i,str.substr(i,len));
+    std::string strnew;
+    if (len+i > 128)
+    {
+        strnew.assign(len,'0');
+        strnew.replace(0,len-i,str.substr(i,len));
+    } else {
+        strnew.assign(len+i,'0');
+        strnew.replace(0,len,str);
+    }
     *this = strnew;
     return *this;
 }
@@ -130,8 +137,16 @@ BitString& BitString::operator>>=(const uint8_t &i)
 {
     std::string str = toString();
     uint8_t len = static_cast<uint8_t>(str.length());
-    std::string strnew(len,'0');
-    strnew.replace(i,len-i,str.substr(0,len-i));
+    std::string strnew;
+    if (len+i > 128)
+    {
+        strnew.assign(len,'0');
+        strnew.replace(i,len-i,str.substr(0,len-i));
+    } else {
+        strnew.assign(len+i,'0');
+        strnew.replace(i,len,str);
+    }
+
     *this = strnew;
     return *this;
 }
