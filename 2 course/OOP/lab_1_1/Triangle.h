@@ -9,7 +9,9 @@ class Triangle
 
     constexpr static double eps = 0.0001; // точность для след. трех функций
 
-    bool Check(const double &a_in, const double &b_in, const double &c_in) const;
+    bool CheckForDopustimost (const double &a_in, const double &b_in, const double &c_in) const noexcept;
+    bool CheckForTriangle (const double &a_in, const double &b_in, const double &c_in) const noexcept;
+    void CallCheck(const double &a_in, const double &b_in, const double &c_in) const;
 
     double FindHeight(const double &side) const noexcept; // закрытый метод поиска высоты по стороне
 
@@ -20,12 +22,10 @@ class Triangle
 
         void Init(const double &a_in, const double &b_in, const double &c_in)
         {
-            if (Check(a_in, b_in, c_in))
-            {
-                A = a_in;
-                B = b_in;
-                C = c_in;
-            }
+            CallCheck(a_in, b_in, c_in); // вызов проверки
+            A = a_in;
+            B = b_in;
+            C = c_in;
         }
 
         void Init(const Triangle &t)

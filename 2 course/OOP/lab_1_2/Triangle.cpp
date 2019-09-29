@@ -6,16 +6,20 @@
 
 using namespace std;
 
-bool Triangle::Check(const double &a_in, const double &b_in, const double &c_in) const // проверка на треугольник
+bool Triangle::CheckForDopustimost (const double &a_in, const double &b_in, const double &c_in) const noexcept // проверка на допустимые значения
 {
-    if (a_in > 0 && b_in > 0 && c_in > 0)
-    {
-        if ( (a_in + b_in > c_in) && (a_in + c_in > b_in) && (b_in + c_in > a_in) )
-            return true;
-        else throw "сумма длин каждых двух сторон должна быть больше длины третьей стороны.";
-    } else {
-        throw "у треугольника не может быть отрицательных сторон.";
-    }
+    return (a_in > 0 && b_in > 0 && c_in > 0);
+}
+
+bool Triangle::CheckForTriangle (const double &a_in, const double &b_in, const double &c_in) const noexcept // проверка на треугольник (сумма длин)
+{
+    return ( (a_in + b_in > c_in) && (a_in + c_in > b_in) && (b_in + c_in > a_in) );
+}
+
+void Triangle::CallCheck(const double &a_in, const double &b_in, const double &c_in) const // проверка на треугольник
+{
+    if (!CheckForDopustimost(a_in,b_in,c_in)) throw "у треугольника не может быть отрицательных сторон.";
+    if (!CheckForTriangle(a_in,b_in,c_in)) throw "сумма длин каждых двух сторон должна быть больше длины третьей стороны.";
 }
 
 double Triangle::FindHeight(const double &side) const noexcept // поиск высоты по стороне
