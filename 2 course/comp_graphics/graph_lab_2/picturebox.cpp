@@ -1,5 +1,5 @@
-#include "picturebox.h"
 #include "mainwindow.h"
+#include "picturebox.h"
 #include <QPicture>
 using namespace std;
 
@@ -12,20 +12,18 @@ PictureBox::PictureBox(QWidget *parent) : QFrame(parent)
 
 void PictureBox::risovanie()
 {
-    QPaintDevice* pointer = &m_Picture;
-    if (trail) pointer = &m_Pixmap;
+    QPaintDevice* ptr = &m_Picture;
+    if (trail) ptr = &m_Pixmap;
 
-    QPainter painter(pointer);
+    QPainter painter(ptr);
 
-    QColor(0, 0, 0, 0);
     painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
     int N = Stars.size();
     for (int i = 0; i < N; i++)
     {
         painter.setPen(Stars[i].color);
         painter.setBrush(Stars[i].color);
-        painter.drawEllipse(static_cast<int>(Stars[i].x),static_cast<int>(Stars[i].y),2,2);
+        painter.drawEllipse(QPointF(Stars[i].x, Stars[i].y),Stars[i].size,Stars[i].size);
     }
 }
 
