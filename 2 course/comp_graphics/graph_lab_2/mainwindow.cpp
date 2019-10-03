@@ -52,7 +52,7 @@ double MainWindow::newY_Coord(double x1, double y1, double x)
 {
     int height = pb_frame->height() / 2;
     int width = pb_frame->width() / 2;
-    if (fabs(x1-width - 0) < 0.0001) return height; // иначе деление на ноль
+    if (fabs(x1-width) < 0.0001) return height; // иначе деление на ноль
 
     double y = (y1 - height) * (x - width) / (x1 - width) + height;
     return y;
