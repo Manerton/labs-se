@@ -3,14 +3,13 @@
 
 #include <QFrame>
 #include <QPainter> // для пейнт евента
-#include <QPicture>
 
 
 class PictureBox : public QFrame
 {
     Q_OBJECT
-    QPixmap m_Pixmap; // для рисования со следами
-    QPicture m_Picture; // без следов
+    QPixmap m_Pixmap; // для рисования
+    QPixmap empty; // для reset
 public:
     explicit PictureBox(QWidget *parent = nullptr);
     void risovanie();

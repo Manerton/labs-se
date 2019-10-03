@@ -81,9 +81,9 @@ void MainWindow::ToCentre()
             }
             Stars[i].y = Ty;
         }
-        pb_frame->risovanie();
-        pb_frame->update();
     }
+    pb_frame->risovanie();
+    pb_frame->repaint();
 }
 
 void MainWindow::FromCentre()
@@ -96,9 +96,9 @@ void MainWindow::FromCentre()
            Stars[i].x -= Stars[i].dx;
            Stars[i].y -= Stars[i].dy;
         }
-        pb_frame->risovanie();
-        pb_frame->update();
     }
+    pb_frame->risovanie();
+    pb_frame->repaint();
 }
 
 void MainWindow::on_speedSlider_valueChanged(int value)
@@ -124,12 +124,14 @@ void MainWindow::on_pushButton_tocentre_clicked()
     disconnect(paintTimer, SIGNAL(timeout()), this, nullptr);
     connect(paintTimer, SIGNAL(timeout()), this, SLOT(ToCentre()));
     paintTimer->start(10);
+
 }
 
 void MainWindow::on_pushButton_pause_clicked()
 {
-    if (paintTimer->isActive()) paintTimer->stop();
-    else paintTimer->start(10);
+    if (paintTimer->isActive()) {paintTimer->stop();}
+    else {paintTimer->start(10);}
+
 }
 
 void MainWindow::on_pushButton_create_clicked()

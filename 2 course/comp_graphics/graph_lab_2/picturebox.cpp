@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "picturebox.h"
-#include <QPicture>
 using namespace std;
 
 extern QVector<Star> Stars; // указываю, что использую глобальный вектор звезд в этом файле
@@ -8,15 +7,13 @@ extern QVector<Star> Stars; // указываю, что использую гл�
 PictureBox::PictureBox(QWidget *parent) : QFrame(parent)
 {
     m_Pixmap = QPixmap(parent->width()-2, parent->height()-2);
+    empty = QPixmap(m_Pixmap.size());
 }
 
 void PictureBox::risovanie()
 {
-    QPaintDevice* ptr = &m_Picture;
-    if (trail) ptr = &m_Pixmap;
-
-    QPainter painter(ptr);
-
+    if (!trail) {reset();}
+    QPainter painter(&m_Pixmap);
     painter.setRenderHint(QPainter::Antialiasing, true);
     int N = Stars.size();
     for (int i = 0; i < N; i++)
@@ -29,16 +26,11 @@ void PictureBox::risovanie()
 
 void PictureBox::reset()
 {
-    QPixmap m_new = QPixmap(m_Pixmap.size());
-    m_Pixmap.swap(m_new);
+    m_Pixmap = empty;
 }
 
 void PictureBox::paintEvent(QPaintEvent *)
 {
-
     QPainter painter(this);
-    if (trail) {painter.drawPixmap(1,1,m_Pixmap);}
-
-    else {painter.drawPicture(0,0,m_Picture); reset();}
-
+    painter.drawPixmap(1,1,m_Pixmap);
 }
