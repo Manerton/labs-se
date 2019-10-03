@@ -1,20 +1,21 @@
 #include "bitstring.h"
+#include <string>
 #include <stdint.h>
 
+bool BitString::CheckForBinary(const std::string &str) const noexcept // проверка содержимого битовой строки, чтобы оно было двоичным
+{
+    uint8_t len = static_cast<uint8_t>(str.length());
+    for (uint8_t i = 0; i < len; i++)
+    {
+        if (str[i] != '0' && str[i] != '1') return false;
+    }
+    return true;
+}
 
-bool BitString::Check(const std::string &str) const // проверка числа, чтобы оно было двоичным и неотрицательным
+void BitString::CallCheck(const std::string &str) const // проверка содержимого битовой строки, чтобы оно было двоичным
 {
     if (str.length() > 128) throw overflow_exception();
-    if (str.find('-') == std::string::npos)
-    {
-        uint8_t len = static_cast<uint8_t>(str.length());
-        for (uint8_t i = 0; i < len; i++)
-        {
-            if (str[i] != '0' && str[i] != '1') throw not_binary_exception();
-        }
-    } else {throw negative_int_exception();}
-
-    return true;
+    if (!CheckForBinary(str)) throw not_binary_exception();
 }
 
 uint64_t BitString::BinaryString_toInt(const std::string &str) // перевожу битовую строку в 64-битное десятичное число
@@ -29,7 +30,7 @@ uint64_t BitString::BinaryString_toInt(const std::string &str) // перевож
     return res;
 }
 
-std::string BitString::OptimizeBinary(const std::string &str) const
+std::string BitString::GetOptimizedBinary(const std::string &str) const
 {
     bool mask = false;
     uint64_t i = 0;
@@ -56,7 +57,7 @@ std::string BitString::toString() const noexcept // перевожу десят�
     {
         ss << ((F2 & (m << (i-1))) ? 1 : 0);
     }
-    std::string str = OptimizeBinary(ss.str());
+    std::string str = GetOptimizedBinary(ss.str());
     return str;
 }
 
@@ -160,17 +161,10 @@ BitString BitString::operator>>(const uint8_t &i) // побитовый сдви
 
 int BitString::count_of_SingleBit() const noexcept // перевожу десятичные числа из полей в строку с двоичным кодом
 {
-    uint64_t m = 1;
-    uint8_t count = 0;
-    for (int i = 64; i > 0; --i)
-    {
-        if (F1 & (m << (i-1))) count++;
-    }
-    for (int i = 64; i > 0; --i)
-    {
-        if (F2 & (m << (i-1))) count++;
-    }
-    return count;
+    std::string str = toString();
+    uint8_t res = 0;
+    res = std::count(str.begin(), str.end(), '1');
+    return res;
 }
 
 bool operator==(const BitString &a, const BitString &b)
