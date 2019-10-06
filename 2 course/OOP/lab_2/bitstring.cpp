@@ -30,21 +30,6 @@ uint64_t BitString::BinaryString_toInt(const std::string &str) // перевож
     return res;
 }
 
-std::string BitString::GetOptimizedBinary(const std::string &str) const
-{
-    bool mask = false;
-    uint64_t i = 0;
-    uint64_t len = str.length();
-    std::string temp = str;
-    while (!mask && i < len)
-    {
-        if (str[i] == '1') {mask = true; temp.erase(0,i);}
-        i++;
-    }
-    if (i == len) temp = "0";
-    return temp;
-}
-
 std::string BitString::toString() const noexcept // перевожу десятичные числа из полей в строку с двоичным кодом
 {
     std::stringstream ss;
@@ -57,8 +42,8 @@ std::string BitString::toString() const noexcept // перевожу десят�
     {
         ss << ((F2 & (m << (i-1))) ? 1 : 0);
     }
-    std::string str = GetOptimizedBinary(ss.str());
-    return str;
+    //std::string str = GetOptimizedBinary(ss.str());
+    return ss.str();
 }
 
 BitString& BitString::operator&=(const BitString &b)
@@ -159,6 +144,11 @@ BitString BitString::operator>>(const uint8_t &i) // побитовый сдви
     return t;
 }
 
+void BitString::ToggleOutputFlag() noexcept
+{
+    OutputFlag = !OutputFlag;
+}
+
 int BitString::count_of_SingleBit() const noexcept // перевожу десятичные числа из полей в строку с двоичным кодом
 {
     std::string str = toString();
@@ -194,17 +184,35 @@ bool operator<=(const BitString &a, const BitString &b)
     return !(a>b);
 }
 
+std::string BitString::GetOptimizedBinaryString() const noexcept
+{
+    std::string str = toString();
+    bool mask = false;
+    uint64_t i = 0;
+    uint64_t len = str.length();
+    std::string temp = str;
+    while (!mask && i < len)
+    {
+        if (str[i] == '1') {mask = true; temp.erase(0,i);}
+        i++;
+    }
+    if (i == len) temp = "0";
+    return temp;
+}
+
 bool is_included(const BitString &a, const BitString &b) // включен ли a в b
 {
     std::string s1, s2;
-    s1 = a.toString();
-    s2 = b.toString();
+    s1 = a.GetOptimizedBinaryString();
+    s2 = b.GetOptimizedBinaryString();
     return (s2.find(s1) != std::string::npos);
 }
 
 std::ostream& operator<<(std::ostream& t, const BitString &r)
 {
-    std::string s = r.toString();
+    std::string s;
+    if (r.OutputFlag) s = r.GetOptimizedBinaryString();
+    else s = r.toString();
     return (t << s);
 }
 std::istream& operator>>(std::istream& t, BitString &r)
