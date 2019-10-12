@@ -8,5 +8,7 @@ SOURCES += main.cpp \
     modulo.cpp
 
 HEADERS += \
+    ModuloTest.h \
+    UnitTest.h \
     modulo.h
 
