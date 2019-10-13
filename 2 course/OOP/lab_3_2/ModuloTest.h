@@ -104,6 +104,7 @@ public:
         Modulo six = (two / 5);
         check (six.toString() == "6 mod 7");
         check((5 / six) == two);
+        cout << (5/six) << endl;
         Modulo four(4,7);
         check((four/two).toString() == "2 mod 7");
         check((four/=two).toString() == "2 mod 7");
