@@ -149,6 +149,7 @@ public:
             Modulo a(1, 5);
             Modulo b(3,7);
             Modulo c = a+b;
+            c = {5,3};
             fail();                 // -- проваленный тест по исключениям --
             error("different modules exception undetected");     // -- без препроцессора не обойтись --
         }
@@ -164,6 +165,7 @@ public:
             Modulo g(3,8);
             Modulo k(4,8);
             Modulo c = g / k;
+            c = {5,3};
             fail();                 // -- проваленный тест по исключениям --
             error("[inverse elem not exist] exception undetected");     // -- без препроцессора не обойтись --
         }

@@ -34,7 +34,8 @@ class Test
     }
 public:
     Test():nPass(0), nFail(0){}   // -- тривиальный конструктор --
-    virtual void run();       // -- определяется в классах-наследниках от теста --
+    virtual void run() = 0;       // -- определяется в классах-наследниках от теста --
+    ~Test();
     void report() const           // -- вывод результатов тестирования --
     {
         string name = typeid(*this).name();		// -- имя класса --
@@ -75,5 +76,9 @@ protected:		// -- наследуемые защищенные методы
               << endl;
     }
 };
+
+Test::~Test()
+{}
+
 }   // -- end namespace --
 #endif // UNITTEST_H_INCLUDED
