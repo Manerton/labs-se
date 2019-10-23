@@ -83,7 +83,7 @@ vector<uint8_t> toAdditionalCode (const vector<uint8_t> &a, uint64_t N) // пе�
     {
         *it = 9 - *it;
     }
-    temp[temp.size()-1] += 1;
+    temp[temp.size()-1]++;
     return temp;
 }
 
@@ -97,10 +97,10 @@ vector<uint8_t>& addition(const vector<uint8_t> &max, const vector<uint8_t> &min
     {
         if (j+1 > 0) // если есть что прибавлять
         {
-            temp[i] += min[j]; // прибавляем
+            temp[i] += min[j];
             --j;
         }
-        if (temp[i] >= 10) { temp[i] -= 10; temp[i-1] += 1;} // сокращаем
+        if (temp[i] >= 10) { temp[i] -= 10; temp[i-1]++;} // сокращаем
     }
     if (temp[0] == 0) temp.erase(temp.begin()); // если доп элемент не понадобился, удаляем его
     return temp;
@@ -166,7 +166,14 @@ vector<uint8_t> operator-(const vector<uint8_t> &a, const vector<uint8_t> &b) //
     return temp;
 }
 
-
+vector<uint8_t> operator/(const vector<uint8_t> &a, const vector<uint8_t> &b) // деление
+{
+    vector<uint8_t> temp = a;
+    vector<uint8_t> res(1,0);
+    vector<uint8_t> sss = {1};
+    while (temp >= b) {temp = temp - b; res = res + sss;}
+    return res;
+}
 
 int main()
 {
