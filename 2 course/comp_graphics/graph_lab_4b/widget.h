@@ -13,6 +13,7 @@ class MyWidget : public QGLWidget
     GLuint texture[2]; // текстура
     int texture_count = 0; // номер текущей текстуры
     void initLight();
+    int model;
 public:
     MyWidget(QWidget *parent = nullptr);
 protected:
@@ -20,7 +21,10 @@ protected:
    void resizeGL(int nWidth, int nHeight);
    void paintGL();
    void LoadGLTextures();
+   int getCube();
+   int loadObject(const QString &filename);
    virtual void keyPressEvent(QKeyEvent *event);
+
 };
 #endif // WIDGET_H
 
