@@ -1,4 +1,4 @@
-QT       += core gui opengl
+QT       += core gui
 
 LIBS += -lopengl32 -lglu32
 
@@ -19,9 +19,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
+    objloader.cpp \
     widget.cpp
 
 HEADERS += \
+    objloader.h \
     widget.h
 
 # Default rules for deployment.

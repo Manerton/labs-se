@@ -5,12 +5,12 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    setlocale(LC_NUMERIC,"C");
 
     //Для сглаживания//
-    QGLFormat fmt;
-    fmt.setSampleBuffers(true);
-    fmt.setSamples(16); //2, 4, 8, 16
-    QGLFormat::setDefaultFormat(fmt);
+    QSurfaceFormat fmt;
+    fmt.setSamples(16);
+    QSurfaceFormat::setDefaultFormat(fmt);
     /**/
 
     MyWidget w;

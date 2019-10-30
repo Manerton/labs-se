@@ -4,5 +4,7 @@
         <file>files/texture1.bmp</file>
         <file>files/monkey2.obj</file>
         <file>files/sidor.obj</file>
+        <file>files/illusion.jpg</file>
+        <file>files/torus.obj</file>
     </qresource>
 </RCC>
