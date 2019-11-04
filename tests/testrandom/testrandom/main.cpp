@@ -3,34 +3,85 @@
 
 using namespace std;
 
-void sort(int A[])
+class arr1
 {
-    cout << A << endl;
-    int n = 7;
-    int x;
-    for (int i = 0; i < n; i++)
+    double chislo = 0;
+public:
+//    void *operator new(size_t size)
+//    {
+//        printf("videlino %d bytes\n", size);
+//        return malloc(size);
+//    }
+//    void operator delete(void *p)
+//    {
+//        printf("free memory for 1 elem\n");
+//        free(p);
+//    }
+    void *operator new[](size_t size)
     {
-        x = A[i];
-        int j = i;
-        while ((j > 0) && (x < A[j-1]))
-        {
-            A[j] = A[j-1];
-            --j;
-        }
-        A[j] = x;
+        printf("videlino %d bytes\n", size);
+        return malloc(size);
     }
-}
+
+    void operator delete[](void *p)
+    {
+        printf("free memory\n");
+        free(p);
+    }
+
+    arr1(){cout << "constructor" << endl;}
+    ~arr1(){cout << "destructor" << endl;} // а без него 24 байта
+};
+
+class arr2
+{
+    double chislo[3];
+public:
+    void *operator new(size_t size)
+    {
+        printf("videlino %d bytes\n", size);
+        return malloc(size);
+    }
+    void operator delete(void *p)
+    {
+        printf("free memory for 1 elem\n");
+        free(p);
+    }
+    void *operator new[](size_t size)
+    {
+        printf("videlino %d bytes\n", size);
+        return malloc(size);
+    }
+
+    void operator delete[](void *p)
+    {
+        printf("free memory\n");
+        free(p);
+    }
+
+    arr2(){cout << "constructor" << endl;}
+    ~arr2(){cout << "destructor" << endl;}
+};
+
+class test {
+public:
+    arr1 A[3];
+    //arr1 *ptr = new arr1 [3];
+};
 
 int main()
 {
-    int A[7]={1, 3, 5, 4, 5, 6, 7};
-    cout << A << endl;
+    arr1 *ptr = new arr1[3];
+    delete [] ptr;
 
-    sort(A);
-    cout << A << endl;
-    for (int i = 0; i < 7; i++)
-    {
-        cout << A[i] << " ";
-    }
+
+//    arr2 obj;
+//    printf("%d\n", sizeof(obj));
+
+
+//    test test1;
+//    printf("%d\n", sizeof(test1));
     return 0;
 }
+
+
