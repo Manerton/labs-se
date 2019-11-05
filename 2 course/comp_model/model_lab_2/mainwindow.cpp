@@ -1,14 +1,65 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QString>
+#include <algorithm>
 #include <cmath>
-#include <QMessageBox>
-#include <QPainter>
 #include "telo.h"
+#include <QDebug>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), l(2), h(2), object{l,h}
+using namespace std;
+
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), object(100,20,50)
 {
     ui->setupUi(this);
+    get_koef();
+    update_temp();
+    paintTimer = new QTimer(this); // создаю таймер
+    connect(paintTimer, SIGNAL(timeout()), this, SLOT(action()));
+}
+
+void MainWindow::update_temp()
+{
+    ui->spinBox->setValue(time);
+    for (int i = 0; i < 8; ++i)
+    {
+        QLineEdit *segment = static_cast<QLineEdit*>(ui->Layout->itemAt(i)->widget());
+        segment->setText(QString::number(object.current_temperature[i],'g',3));
+        int temp_color = int((object.current_temperature[i] - min_temp) * k_temp);
+        segment->setStyleSheet("background-color: rgb(255, " + QString::number(255-temp_color) + ", " + QString::number(255-temp_color) + ");");
+    }
+}
+
+void MainWindow::get_koef()
+{
+    max_temp = int(*max_element(object.current_temperature.begin(),object.current_temperature.end()));
+    min_temp = int(*min_element(object.current_temperature.begin(),object.current_temperature.end()));
+    k_temp = 255.0 / (max_temp - min_temp);
+    qDebug() << k_temp;
+}
+
+void MainWindow::disable_buttons(bool var)
+{
+    ui->spinBox_env->setDisabled(var);
+    ui->spinBox_right->setDisabled(var);
+    ui->spinBox_left->setDisabled(var);
+}
+
+void MainWindow::action()
+{
+    --time;
+    object.work();
+    update_temp();
+    if (time == 0) {paintTimer->stop(); disable_buttons(false);}
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    if (paintTimer->isActive()) {paintTimer->stop(); disable_buttons(false);}
+    else if(time != 0)
+    {
+        paintTimer->start(500);
+        disable_buttons(true);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -16,46 +67,40 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::paintEvent(QPaintEvent *)
+void MainWindow::on_spinBox_valueChanged(int arg1)
 {
-    QPainter painter(this);
+    time = arg1;
+}
 
-    int N = object.X.size();
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setPen(Qt::black);
-    painter.setBrush(Qt::yellow);
-    int hh = this->height();
-    painter.drawEllipse(QPointF(l*50,hh-h*50),5,5);
-    painter.setPen(Qt::red);
-    painter.setBrush(Qt::red);
-    for (int i = 0; i < N; i++)
+void MainWindow::on_spinBox_left_valueChanged(int arg1)
+{
+    if(arg1 >= object.current_temperature[1])
     {
-        double Ycoord = object.Y[i] * 50;
-        double Xcoord = object.X[i]*50;
-        painter.drawEllipse(int(Xcoord),int(hh-Ycoord),3,3);
+        object.current_temperature[0] = arg1;
+        get_koef();
+        update_temp();
     }
 }
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_spinBox_env_valueChanged(int arg1)
 {
-    object = {l, h};
-    QString result = object.work(50);
-    QString result2 = object.work(80);
-    QString result3 = object.work(10);
-
-    ui->label_info->setText("Под углом 50 градусов: " + result + "\n" + "Под углом 80 градусов: " + result2 + "\n" + "Под углом 10 градусов: " + result3);
-
-    repaint();
+    if (arg1 < object.current_temperature[0] && arg1 < object.current_temperature[7])
+    {
+        for (size_t i = 1; i < 7; i++)
+        {
+            object.current_temperature[i] = arg1;
+        }
+        get_koef();
+        update_temp();
+    }
 }
 
-void MainWindow::on_SpinBox_l_valueChanged(double arg1)
+void MainWindow::on_spinBox_right_valueChanged(int arg1)
 {
-    l = arg1;
-    on_pushButton_clicked();
-}
-
-void MainWindow::on_SpinBox_h_valueChanged(double arg1)
-{
-    h = arg1;
-    on_pushButton_clicked();
+    if(arg1 >= object.current_temperature[1])
+    {
+        object.current_temperature[7] = arg1;
+        get_koef();
+        update_temp();
+    }
 }
