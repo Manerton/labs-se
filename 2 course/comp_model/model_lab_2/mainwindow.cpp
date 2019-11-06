@@ -74,33 +74,24 @@ void MainWindow::on_spinBox_valueChanged(int arg1)
 
 void MainWindow::on_spinBox_left_valueChanged(int arg1)
 {
-    if(arg1 >= object.current_temperature[1])
-    {
-        object.current_temperature[0] = arg1;
-        get_koef();
-        update_temp();
-    }
+    object.current_temperature[0] = arg1;
+    get_koef();
+    update_temp();
 }
 
 void MainWindow::on_spinBox_env_valueChanged(int arg1)
 {
-    if (arg1 < object.current_temperature[0] && arg1 < object.current_temperature[7])
+    for (size_t i = 1; i < 7; i++)
     {
-        for (size_t i = 1; i < 7; i++)
-        {
-            object.current_temperature[i] = arg1;
-        }
-        get_koef();
-        update_temp();
+        object.current_temperature[i] = arg1;
     }
+    get_koef();
+    update_temp();
 }
 
 void MainWindow::on_spinBox_right_valueChanged(int arg1)
 {
-    if(arg1 >= object.current_temperature[1])
-    {
-        object.current_temperature[7] = arg1;
-        get_koef();
-        update_temp();
-    }
+    object.current_temperature[7] = arg1;
+    get_koef();
+    update_temp();
 }
