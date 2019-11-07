@@ -5,28 +5,49 @@
 
 using namespace std;
 
+// исключение
+class invalid_input_exception {};
+class zero_divide_exception {};
+
 string toString(const vector<uint8_t> &r) // вектор цифр в строку
 {
-    std::stringstream ss;
+    stringstream ss;
     if (r[0] == 253) {ss << "-";}
     else ss << int(r[0]);
-    for (auto it = r.begin()+1; it != r.end(); ++it) // int для вывода цифр от 0 до 9, а не символов под кодами от 0 до 9
+    size_t N = r.size();
+    for (size_t i = 1; i < N; ++i) // int для вывода цифр от 0 до 9, а не символов под кодами от 0 до 9
     {
-        ss << int(*it);
+        ss << int(r[i]);
     }
     return ss.str();
 }
 
+void optimize_string(string &s)
+{
+    size_t N = s.length();
+    if (N > 1)
+    {
+        size_t i = 0;
+        if (s[0] == '-') ++i;
+        while ((i < N-1) && (s[i] == '0')) ++i;
+        if (s[0] == '-') s.erase(1,i-1);
+        else s.erase(0,i);
+    }
+    if (s.length() == 1 && s[0] == '-') s.push_back('0');
+}
+
 /// *** ввод вывод *** ///
 istream& operator>>(std::istream& t, vector<uint8_t> &r) // ввод (строка в вектор)
-{ /// сделать проверки на входе ///
+{
     string s;
     t >> s;
+    optimize_string(s);
     size_t N = s.length();
     r.resize(N);
-    for (size_t i = 0; i < N; i++)
+    for (size_t i = 0; i < N; ++i)
     {
-       r[i] = uint8_t(s[i]) - '0'; // помещаю в вектор не коды символов аски, а сами цифры от 0 до 9
+       if ((s[i] >= '0' && s[i] <= '9') || (s[i] == '-' && i == 0)) r[i] = uint8_t(s[i] - '0'); // помещаю в вектор не коды символов аски, а сами цифры от 0 до 9
+       else throw invalid_input_exception();
     }
     return t;
 }
@@ -35,27 +56,28 @@ ostream& operator<<(std::ostream& t, const vector<uint8_t> &r) // вывод в�
 {
     string s = toString(r);
     size_t N = s.length();
-    for (size_t i = N-3; N > 3; i-=3) {s.insert(i, " "); N-=3;}
-    t << s;
-    return t;
+    for (size_t i = N-3; i != 0 && i < N; i-=3) {s.insert(i, " ");} // i != 0 чтобы не вставить пробел в начало,
+    t << s;                                                         // i < N - сработает при переполнении беззнакового size_t,
+    return t;                                                       // так как полученное значение будет огромным и > N
 }
 /// конец ввода вывода ///
 
 /// *** операции сравнения *** ///
-bool operator==(const vector<uint8_t> &a, const vector<uint8_t> &b)
-{
-    return (toString(a) == toString(b));
-}
-bool operator!=(const vector<uint8_t> &a, const vector<uint8_t> &b)
-{
-    return !(a == b);
-}
+
 bool operator<(const vector<uint8_t> &a, const vector<uint8_t> &b)
 {
-    if (a[0] == 253 && a[0] != b[0]) return true;
-    if (a.size() == b.size()) return (toString(a) < toString(b));
-    return (a.size() < b.size());
+    if (a[0] == 253 && b[0] != 253) return true;
+    if (a[0] != 253 && b[0] == 253) return false;
+    if (a == b) return false;
+    bool answer = false;
+
+    if (a.size() == b.size()) answer = std::operator<(a, b); // иначе рекурсивный вызов
+    else answer = a.size() < b.size();
+
+    if (a[0] == 253 && b[0] == 253) answer = !answer;
+    return answer;
 }
+
 bool operator>=(const vector<uint8_t> &a, const vector<uint8_t> &b)
 {
     return !(a<b);
@@ -63,9 +85,16 @@ bool operator>=(const vector<uint8_t> &a, const vector<uint8_t> &b)
 
 bool operator>(const vector<uint8_t> &a, const vector<uint8_t> &b)
 {
-    if (b[0] == 253 && b[0] != a[0]) return true;
-    if (a.size() == b.size()) return (toString(a) > toString(b));
-    return (a.size() > b.size());
+    if (a[0] == 253 && b[0] != 253) return false;
+    if (a[0] != 253 && b[0] == 253) return true;
+    if (a == b) return false;
+    bool answer = false;
+
+    if (a.size() == b.size()) answer = std::operator>(a, b);
+    else answer = a.size() > b.size();
+
+    if (a[0] == 253 && b[0] == 253) answer = !answer;
+    return answer;
 }
 
 bool operator<=(const vector<uint8_t> &a, const vector<uint8_t> &b)
@@ -74,35 +103,39 @@ bool operator<=(const vector<uint8_t> &a, const vector<uint8_t> &b)
 }
 /// конец операций сравнения ///
 
-vector<uint8_t> toAdditionalCode (const vector<uint8_t> &a, uint64_t N) // перевод числа в доп код
+vector<uint8_t> toAdditionalCode (const vector<uint8_t> &a, size_t N) // перевод числа в доп код
 {
     size_t diff = N - a.size();
-    vector<uint8_t> temp(diff,0);
+    vector<uint8_t> temp(diff,9);
     temp.insert(temp.end(),a.begin(),a.end());
-    for (auto it = temp.begin(); it != temp.end(); ++it)
+    for (size_t i = diff; i < N; ++i)
     {
-        *it = 9 - *it;
+        temp[i] = 9 - temp[i];
     }
-    temp[temp.size()-1]++;
+    temp.back()++;
     return temp;
 }
 
-vector<uint8_t>& addition(const vector<uint8_t> &max, const vector<uint8_t> &min, vector<uint8_t> &temp) // сложение макс + мин
+vector<uint8_t>& addition(const vector<uint8_t> &max, const vector<uint8_t> &min, vector<uint8_t> &temp) // прибавляем к большему числу меньшее
 {
-    temp.resize(1); // доп элемент - разряд числа который может получится при сумме
-    temp.insert(temp.begin()+1,max.begin(),max.end());
-
-    size_t j = min.size() - 1;
-    for (size_t i = temp.size() - 1; i > 0; --i)
+    temp = max;
+    size_t N_min = min.size();
+    size_t N_max = max.size();
+    size_t j = N_min-1;
+    for (size_t i = N_max - 1; i < N_max; --i)
     {
-        if (j+1 > 0) // если есть что прибавлять
+        if (j < N_min) // если есть что прибавлять
         {
             temp[i] += min[j];
             --j;
         }
-        if (temp[i] >= 10) { temp[i] -= 10; temp[i-1]++;} // сокращаем
+
+        if (temp[i] >= 10)
+        {
+            if (i == 0) {temp.insert(temp.begin(),0); ++i;} // добавляю дополнительный разряд в начало который получился при сумме
+            temp[i] -= 10; temp[i-1]++;
+        } // сокращаем
     }
-    if (temp[0] == 0) temp.erase(temp.begin()); // если доп элемент не понадобился, удаляем его
     return temp;
 }
 
@@ -155,6 +188,20 @@ vector<uint8_t> operator+(const vector<uint8_t> &a, const vector<uint8_t> &b) //
     return temp;
 }
 
+void operator++(vector <uint8_t> &a)
+{
+    size_t N = a.size();
+    ++a.back();
+    for (size_t i = N-1; i < N; --i)
+    {
+        if (a[i] >= 10)
+        {
+            if (i == 0) {a.insert(a.begin(),0); ++i;}
+            a[i] -= 10; ++a[i-1];
+        } // сокращаем
+    }
+}
+
 
 vector<uint8_t> operator-(const vector<uint8_t> &a, const vector<uint8_t> &b) // вычитание
 {
@@ -166,26 +213,73 @@ vector<uint8_t> operator-(const vector<uint8_t> &a, const vector<uint8_t> &b) //
     return temp;
 }
 
-vector<uint8_t> operator/(const vector<uint8_t> &a, const vector<uint8_t> &b) // деление
+void fraction(const vector<uint8_t> &a, const vector<uint8_t> &b) // деление
 {
-    vector<uint8_t> temp = a;
-    vector<uint8_t> res(1,0);
-    vector<uint8_t> sss = {1};
-    while (temp >= b) {temp = temp - b; res = res + sss;}
-    return res;
+    if (a == b) cout << "1" << endl;
+    bool NF = false; // negative flag
+    vector<uint8_t> temp_a = a;
+    vector<uint8_t> temp_b = b;
+    if (a[0] == 253 || b[0] == 253)
+    {
+        if ((a[0] == 253 && b[0] != 253) || (a[0] != 253 && b[0] == 253)) NF = true;
+        if (a[0] == 253) temp_a.erase(temp_a.begin());
+        if (b[0] == 253) temp_b.erase(temp_b.begin());
+    }
+    if (temp_b.size() == 1 && temp_b[0] == 0) throw zero_divide_exception();
+    if (temp_a < temp_b)
+    {
+        cout << "  " << temp_a << endl;
+        size_t count = temp_b.size();
+        if (count % 3 != 0) count++;
+        count += count/3 - 1;
+        if (NF) cout << "- ";
+        else cout << "  ";
+        cout << string(count,'-') << endl;
+        cout << "  " << temp_b << endl;
+    }
+    if (temp_a > temp_b)
+    {
+        vector<uint8_t> res = {0};
+        while (temp_a >= temp_b) {temp_a = temp_a - temp_b; ++res;}
+        if (temp_a[0] == 0) cout << res << endl;
+        else {
+            size_t res_count = res.size();
+            if (res_count % 3 != 0) res_count++;
+            res_count += res_count/3 - 1;
+            cout << string(res_count+1, ' ') << temp_a << endl;
+            size_t count = temp_a.size();
+            if (count % 3 != 0) count++;
+            count += count/3 - 1;
+            if (NF) cout << "-";
+            else cout << " ";
+            cout << res << " " << string(count,'-') << endl;
+            cout << string(res_count+1, ' ') << temp_b << endl;
+        }
+    }
 }
 
 int main()
 {
     system("chcp 1251 > nul");
     cout << "Лабораторная работа №1. Вариант 7.\nАвтор: Катунин Сергей. ДИПРБ-21.\n" << endl;
-    vector<uint8_t> a,b,c;
-    cin >> a;
-    cout << a << endl;
-    cin >> b;
-    cout << b << endl;
-    c = a-b;
-    cout << "Результат: " << c << endl;
+    try // ищем исключения, которые выбрасываются в блоке try и отправляем их для обработки в блок(и) catch
+        {
+        vector<uint8_t> a,b;
+        cin >> a;
+        cout << a << endl;
+        cin >> b;
+        cout << b << endl;
+        cout << "Дробь: " << endl;
+        fraction(a,b);
+    }
+    catch (invalid_input_exception) // некорректный ввод
+    {
+        cerr << "Ошибка: ввод недопустимых символов. Допустимые символы: 0-9, и знак '-' в начале ввода." << endl;
+    }
+    catch (zero_divide_exception) // некорректный ввод
+    {
+        cerr << "Ошибка: деление на ноль." << endl;
+    }
     return 0;
 }
 
