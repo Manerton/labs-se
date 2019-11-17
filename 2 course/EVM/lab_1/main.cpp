@@ -1,19 +1,25 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
+#include <cctype>
 #include <sstream>
 #include <string>
 
 using namespace std;
 
-// исключение
-class invalid_input_exception {};
-class zero_divide_exception {};
+using big_int = vector<uint8_t>;
 
-string toString(const vector<uint8_t> &r) // вектор цифр в строку
+// исключение
+class invalid_input_exception {}; // некорректный ввод
+class zero_divide_exception {}; // деление на ноль
+
+// знаки
+enum sign { plus = 11, minus = 12 };
+
+string toString(const big_int &r) // вектор цифр в строку
 {
     stringstream ss;
-    if (r[0] == 253) {ss << "-";}
-    else ss << int(r[0]);
+    if (r[0] == sign::minus) {ss << "-";}
     size_t N = r.size();
     for (size_t i = 1; i < N; ++i) // int для вывода цифр от 0 до 9, а не символов под кодами от 0 до 9
     {
@@ -22,49 +28,62 @@ string toString(const vector<uint8_t> &r) // вектор цифр в строк
     return ss.str();
 }
 
-void optimize_string(string &s)
+void optimize_string(string &s) // убираю лишние нули в строке
 {
     size_t N = s.length();
     if (N > 1)
     {
-        size_t i = 0;
-        if (s[0] == '-') ++i;
-        while ((i < N-1) && (s[i] == '0')) ++i;
-        if (s[0] == '-') s.erase(1,i-1);
-        else s.erase(0,i);
+        // ищем первый элемент неравный нулю
+        string::iterator pos = find_if(s.begin()+1, s.end(),
+                                        [](int elem){
+                                           return (elem != '0');
+                                        });
+        s.erase(s.begin()+1, pos); // удаляем лишние нули
     }
-    if (s.length() == 1 && s[0] == '-') s.push_back('0');
+    if (s.length() == 1 && s[0] == '-') s.push_back('0'); // если введен просто знак минус, добавим 0
+    cout << "debug: ";
+    cout << s << endl;
 }
 
 /// *** ввод вывод *** ///
-istream& operator>>(std::istream& t, vector<uint8_t> &r) // ввод (строка в вектор)
+istream& operator>>(std::istream& t, big_int &r) // ввод (строка в вектор)
 {
     string s;
     t >> s;
-    optimize_string(s);
+    if (s[0] != '-') s.insert(s.begin(),'+'); // добавляю в строку явно знак "+", если первый символ не '-'
+    optimize_string(s); // убираем лишние нули из строки
     size_t N = s.length();
-    r.resize(N);
-    for (size_t i = 0; i < N; ++i)
+    r.resize(N); // выделяю сразу память для big_int
+
+    if (s[0] == '-') r[0] = sign::minus; // ставлю минус и увеличиваю счетчик, так как знак '-' явно присутствует в строке
+    else if ( isdigit(s[0]) ) r[0] = sign::plus; // ставлю плюс
+    else throw invalid_input_exception(); // если первый символ не равен цифре или знаку, то выбрасываем исключение
+
+    for (size_t i = pos; i < N; ++i)
     {
-       if ((s[i] >= '0' && s[i] <= '9') || (s[i] == '-' && i == 0)) r[i] = uint8_t(s[i] - '0'); // помещаю в вектор не коды символов аски, а сами цифры от 0 до 9
+       if ( isdigit(s[i]) ) r[i] = uint8_t(s[i] - '0'); // помещаю в вектор не коды символов аски, а сами цифры от 0 до 9
        else throw invalid_input_exception();
     }
     return t;
 }
 
-ostream& operator<<(std::ostream& t, const vector<uint8_t> &r) // вывод вектора цифр, где каждые три цифры отделяю пробелом
+ostream& operator<<(std::ostream& t, const big_int &r) // вывод вектора цифр, где каждые три цифры отделяю пробелом
 {
     string s = toString(r);
     size_t N = s.length();
-    for (size_t i = N-3; i != 0 && i < N; i-=3) {s.insert(i, " ");} // i != 0 чтобы не вставить пробел в начало,
-    t << s;                                                         // i < N - сработает при переполнении беззнакового size_t,
-    return t;                                                       // так как полученное значение будет огромным и > N
+    reverse(s.begin(),s.end());
+
+    for (size_t i = 2; i < N; i+=3) {s.insert(i, " ");}
+    reverse(s.begin(),s.end());
+    t << s;
+    return t;
+    //for (size_t i = N-3; i != 0 && i < N; i-=3) {s.insert(i, " ");}
 }
 /// конец ввода вывода ///
 
 /// *** операции сравнения *** ///
 
-bool operator<(const vector<uint8_t> &a, const vector<uint8_t> &b)
+bool operator<(const big_int &a, const big_int &b)
 {
     if (a[0] == 253 && b[0] != 253) return true;
     if (a[0] != 253 && b[0] == 253) return false;
@@ -78,12 +97,12 @@ bool operator<(const vector<uint8_t> &a, const vector<uint8_t> &b)
     return answer;
 }
 
-bool operator>=(const vector<uint8_t> &a, const vector<uint8_t> &b)
+bool operator>=(const big_int &a, const big_int &b)
 {
     return !(a<b);
 }
 
-bool operator>(const vector<uint8_t> &a, const vector<uint8_t> &b)
+bool operator>(const big_int &a, const big_int &b)
 {
     if (a[0] == 253 && b[0] != 253) return false;
     if (a[0] != 253 && b[0] == 253) return true;
@@ -97,16 +116,16 @@ bool operator>(const vector<uint8_t> &a, const vector<uint8_t> &b)
     return answer;
 }
 
-bool operator<=(const vector<uint8_t> &a, const vector<uint8_t> &b)
+bool operator<=(const big_int &a, const big_int &b)
 {
     return !(a>b);
 }
 /// конец операций сравнения ///
 
-vector<uint8_t> toAdditionalCode (const vector<uint8_t> &a, size_t N) // перевод числа в доп код
+big_int toAdditionalCode (const big_int &a, size_t N) // перевод числа в доп код
 {
     size_t diff = N - a.size();
-    vector<uint8_t> temp(diff,9);
+    big_int temp(diff,9);
     temp.insert(temp.end(),a.begin(),a.end());
     for (size_t i = diff; i < N; ++i)
     {
@@ -116,7 +135,7 @@ vector<uint8_t> toAdditionalCode (const vector<uint8_t> &a, size_t N) // пер�
     return temp;
 }
 
-vector<uint8_t>& addition(const vector<uint8_t> &max, const vector<uint8_t> &min, vector<uint8_t> &temp) // прибавляем к большему числу меньшее
+big_int& addition(const big_int &max, const big_int &min, big_int &temp) // прибавляем к большему числу меньшее
 {
     temp = max;
     size_t N_min = min.size();
@@ -139,9 +158,9 @@ vector<uint8_t>& addition(const vector<uint8_t> &max, const vector<uint8_t> &min
     return temp;
 }
 
-vector<uint8_t>& addition_with_negative(const vector<uint8_t> &a, const vector<uint8_t> &b, vector<uint8_t> &temp) // сложение с отриц числами (используя доп код)
+big_int& addition_with_negative(const big_int &a, const big_int &b, big_int &temp) // сложение с отриц числами (используя доп код)
 {
-    vector<uint8_t> temp2 = toAdditionalCode(b, a.size()); // переводим число в доп код
+    big_int temp2 = toAdditionalCode(b, a.size()); // переводим число в доп код
     temp = addition(a,temp2,temp); // складываем
     temp.erase(temp.begin()); // удаляем лишний разряд получившийся при сумме с доп кодом
 
@@ -151,12 +170,12 @@ vector<uint8_t>& addition_with_negative(const vector<uint8_t> &a, const vector<u
     return temp;
 }
 
-vector<uint8_t> operator+(const vector<uint8_t> &a, const vector<uint8_t> &b) // операция сложения
+big_int operator+(const big_int &a, const big_int &b) // операция сложения
 {
-    vector<uint8_t> temp;
+    big_int temp;
     if (a[0] != 253 && b[0] == 253) // если складываем полож с отриц числом
     {
-        vector<uint8_t> u_b = {b.begin()+1, b.end()}; // убираем знак
+        big_int u_b = {b.begin()+1, b.end()}; // убираем знак
         if (u_b > a) // если модуль a < модуля b
         {
             temp = addition_with_negative(u_b,a,temp); // использую обратный порядок, чтобы прибавлять меньшее число (a) к большему (u_b)
@@ -166,7 +185,7 @@ vector<uint8_t> operator+(const vector<uint8_t> &a, const vector<uint8_t> &b) //
     }
     else if (a[0] == 253 && b[0] != 253) // если складываем отриц с положительным
     {
-        vector<uint8_t> u_a = {a.begin()+1, a.end()};
+        big_int u_a = {a.begin()+1, a.end()};
         if (u_a > b)
         {
             temp = addition_with_negative(u_a,b,temp);
@@ -176,8 +195,8 @@ vector<uint8_t> operator+(const vector<uint8_t> &a, const vector<uint8_t> &b) //
     }
     else if (a[0] == 253 && b[0] == 253)  // Отриц складываем с отриц
     {
-        vector<uint8_t> u_a = {a.begin()+1, a.end()};
-        vector<uint8_t> u_b = {b.begin()+1, b.end()};
+        big_int u_a = {a.begin()+1, a.end()};
+        big_int u_b = {b.begin()+1, b.end()};
         if (u_b > u_a) temp = addition(u_b,u_a,temp); // чтобы всегда прибавлять меньшее число (a) к большему (b)
         else temp = addition(u_a,u_b,temp);
         temp.insert(temp.begin(),253);
@@ -203,22 +222,22 @@ void operator++(vector <uint8_t> &a)
 }
 
 
-vector<uint8_t> operator-(const vector<uint8_t> &a, const vector<uint8_t> &b) // вычитание
+big_int operator-(const big_int &a, const big_int &b) // вычитание
 {
-    vector<uint8_t> temp;
-    vector<uint8_t> negative_b (b);
+    big_int temp;
+    big_int negative_b (b);
     if (negative_b[0] != 253) negative_b.insert(negative_b.begin(),253);
     else negative_b.erase(negative_b.begin());
     temp = a+negative_b;
     return temp;
 }
 
-void fraction(const vector<uint8_t> &a, const vector<uint8_t> &b) // деление
+void fraction(const big_int &a, const big_int &b) // деление
 {
     if (a == b) cout << "1" << endl;
     bool NF = false; // negative flag
-    vector<uint8_t> temp_a = a;
-    vector<uint8_t> temp_b = b;
+    big_int temp_a = a;
+    big_int temp_b = b;
     if (a[0] == 253 || b[0] == 253)
     {
         if ((a[0] == 253 && b[0] != 253) || (a[0] != 253 && b[0] == 253)) NF = true;
@@ -239,7 +258,7 @@ void fraction(const vector<uint8_t> &a, const vector<uint8_t> &b) // делен�
     }
     if (temp_a > temp_b)
     {
-        vector<uint8_t> res = {0};
+        big_int res = {0};
         while (temp_a >= temp_b) {temp_a = temp_a - temp_b; ++res;}
         if (temp_a[0] == 0) cout << res << endl;
         else {
@@ -264,7 +283,7 @@ int main()
     cout << "Лабораторная работа №1. Вариант 7.\nАвтор: Катунин Сергей. ДИПРБ-21.\n" << endl;
     try // ищем исключения, которые выбрасываются в блоке try и отправляем их для обработки в блок(и) catch
         {
-        vector<uint8_t> a,b;
+        big_int a,b;
         cin >> a;
         cout << a << endl;
         cin >> b;
