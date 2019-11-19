@@ -1,11 +1,11 @@
-#include "bitstring.h"
 #include <string>
 #include <stdint.h>
+#include "bitstring.h"
 
 bool BitString::CheckForBinary(const std::string &str) const noexcept // проверка содержимого битовой строки, чтобы оно было двоичным
 {
-    uint8_t len = static_cast<uint8_t>(str.length());
-    for (uint8_t i = 0; i < len; i++)
+    uint8_t len = uint8_t(str.length()); // uint8_t, так как у нас длина строки не больше 128-бит
+    for (auto i = 0; i < len; ++i)
     {
         if (str[i] != '0' && str[i] != '1') return false;
     }
@@ -22,28 +22,31 @@ uint64_t BitString::BinaryString_toInt(const std::string &str) // перевож
 {
     uint64_t res = 0;
     uint64_t m = 1;
-    uint8_t len = static_cast<uint8_t>(str.length());
-    for(uint8_t i = 0; i < len; i++)
+    uint8_t len = uint8_t(str.length());
+    for(auto i = 0; i < len; ++i)
     {
-        res += (str[i] == '1') ? (m << (len - i - 1)) : 0;
+        if (str[i] == '1')
+        {
+            res += m << (len - i - 1);
+        }
     }
     return res;
 }
-
 std::string BitString::toString() const noexcept // перевожу десятичные числа из полей в строку с двоичным кодом
 {
     std::stringstream ss;
     uint64_t m = 1;
-    for (int i = 64; i > 0; --i)
+    for (int i = 0; i < 64; ++i)
     {
         ss << ((F1 & (m << (i-1))) ? 1 : 0);
     }
-    for (int i = 64; i > 0; --i)
+    for (int i = 0; i < 64; ++i)
     {
         ss << ((F2 & (m << (i-1))) ? 1 : 0);
     }
+    std::reverse(s.begin(),s.end());
     //std::string str = GetOptimizedBinary(ss.str());
-    return ss.str();
+    return s;
 }
 
 BitString& BitString::operator&=(const BitString &b)
@@ -144,9 +147,14 @@ BitString BitString::operator>>(const uint8_t &i) // побитовый сдви
     return t;
 }
 
-void BitString::ToggleOutputFlag() noexcept
+void BitString::SetOutputFlag() noexcept
 {
-    OutputFlag = !OutputFlag;
+    OutputFlag = true;
+}
+
+void BitString::ClearOutputFlag() noexcept
+{
+    OutputFlag = false;
 }
 
 int BitString::count_of_SingleBit() const noexcept // перевожу десятичные числа из полей в строку с двоичным кодом

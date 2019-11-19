@@ -12,10 +12,13 @@ class BitString
     bool OutputFlag = true; // флаг - по умолчанию убирать незначащие нули слева при выводе
     bool CheckForBinary(const std::string &str) const noexcept;
     void CallCheck(const std::string &str) const;
+
+
     uint64_t BinaryString_toInt(const std::string &str); // функция перевода из двоичных чисел в строке в десятичное 64-битное число
     std::string GetOptimizedBinaryString() const noexcept; // отбрасываю незначащие нули слева при выводе строки и для функции проверки включения
 
 public:
+    /// конструктор доделать
     BitString() : F1(0), F2(0) {}
     BitString(const std::string &str) : F1(0), F2(0)
     {
@@ -37,8 +40,9 @@ public:
     BitString& operator>>=(const uint8_t &i);
     BitString operator<<(const uint8_t &i);
     BitString operator>>(const uint8_t &i);
-    void ToggleOutputFlag() noexcept;
-    std::string toString() const noexcept; // перевод двух десятичных 64-битных чисел в строку с двоичным числом
+    void SetOutputFlag() noexcept;
+    void ClearOutputFlag() noexcept;
+    std::string toString() const noexcept; // перевод двух десятичных 64-битных чисел в двоичную строку
     int count_of_SingleBit() const noexcept;
     // побитовые операции
     friend BitString operator&(const BitString &a, const BitString &b);
@@ -57,6 +61,9 @@ public:
     // исключения
     class not_binary_exception {};
     class overflow_exception {};
+    void b();
+    void fsaf(uint64_t m, std::stringstream ss) const;
+    void func(uint8_t len, uint64_t res, const std::string &str, uint64_t m);
 };
 
 #endif // BITSTRING_H
