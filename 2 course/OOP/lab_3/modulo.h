@@ -9,11 +9,12 @@ class Modulo
     uint16_t N;
     void CheckForZeroModule(const uint16_t &N) const;
     void CheckForDifferentModules(const Modulo &b) const;
+    void CheckForExistInverseElem(const uint16_t &i) const;
     uint16_t GetInverseElement(const uint64_t &b) const; // получаю обратный элемент, который необходим для операции деления
 
 public:
     Modulo() noexcept : chislo(0), N(10) {}
-    Modulo(const uint64_t &in_chislo, const uint16_t &in_N)
+    Modulo(const uint64_t &in_chislo, const uint16_t &in_N = 10)
     {
         CheckForZeroModule(in_N);
         chislo = in_chislo;
