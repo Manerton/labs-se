@@ -1,150 +1,81 @@
-#include <string>
-#include <stdint.h>
 #include "bitstring.h"
 
-bool BitString::CheckForBinary(const std::string &str) const noexcept // проверка содержимого битовой строки, чтобы оно было двоичным
+using namespace std;
+
+bool BitString::CheckForBinary(const string &str) const noexcept // проверка содержимого битовой строки, чтобы оно было двоичным
 {
-    uint8_t len = uint8_t(str.length()); // uint8_t, так как у нас длина строки не больше 128-бит
-    for (auto i = 0; i < len; ++i)
+    uint8_t len = static_cast<uint8_t>(str.length()); // uint8_t, так как у нас длина строки не больше 128-бит
+    for (uint8_t i = 0; i < len; ++i)
     {
         if (str[i] != '0' && str[i] != '1') return false;
     }
     return true;
 }
 
-void BitString::CallCheck(const std::string &str) const // проверка содержимого битовой строки, чтобы оно было двоичным
+void BitString::CallCheck(const string &str) const // проверка содержимого битовой строки, чтобы оно было двоичным и не больше 128 бит
 {
     if (str.length() > 128) throw overflow_exception();
     if (!CheckForBinary(str)) throw not_binary_exception();
 }
 
-uint64_t BitString::BinaryString_toInt(const std::string &str) // перевожу битовую строку в 64-битное десятичное число
+uint64_t BitString::BinaryString_toInt(const string &str) const noexcept // перевожу битовую строку в 64-битное десятичное число
 {
-    uint64_t res = 0;
-    uint64_t m = 1;
-    uint8_t len = uint8_t(str.length());
-    for(auto i = 0; i < len; ++i)
+    string temp = str;
+    reverse(temp.begin(),temp.end()); // переворачиваю строку, чтобы идти с конца
+
+    uint64_t res = 0, m = 1;
+    uint8_t len = static_cast<uint8_t>(str.length());
+    for (uint8_t i = 0; i < len; ++i)
     {
-        if (str[i] == '1')
+        if (temp[i] == '1')
         {
-            res += m << (len - i - 1);
+            res += m << i; // прибавляю к res число 2^i
         }
     }
     return res;
 }
-std::string BitString::toString() const noexcept // перевожу десятичные числа из полей в строку с двоичным кодом
+
+string BitString::toString() const noexcept // перевожу десятичные числа из полей в строку с двоичным кодом
 {
-    std::stringstream ss;
+    stringstream ss;
     uint64_t m = 1;
     for (int i = 0; i < 64; ++i)
     {
-        ss << ((F1 & (m << (i-1))) ? 1 : 0);
+        ss << ((F2 & (m << i)) ? 1 : 0); // иду с конца числа F2 и пишу 1 или 0 в зависимости от бита числа на позиции i
     }
     for (int i = 0; i < 64; ++i)
     {
-        ss << ((F2 & (m << (i-1))) ? 1 : 0);
+        ss << ((F1 & (m << i)) ? 1 : 0);
     }
-    std::reverse(s.begin(),s.end());
-    //std::string str = GetOptimizedBinary(ss.str());
+    string s = ss.str();
+    reverse(s.begin(),s.end()); // Так как шел с конца, а записывал в stringstream с начала, то переворачиваю строку
     return s;
 }
 
-BitString& BitString::operator&=(const BitString &b)
+string BitString::GetOptimizedBinaryString() const noexcept // отбрасываю незначащие нули слева при выводе строки и для функции проверки включения
 {
-    F1 &= b.F1;
-    F2 &= b.F2;
-    return *this;
-}
+    string s = toString();
+    // ищем первый элемент равный 1
+    auto pos = find_if(s.begin(), s.end(),
+                        [](char elem){
+                           return (elem == '1');
+                        });
 
-BitString operator&(const BitString &a, const BitString &b) // побитовое and
-{
-    BitString t = a;
-    t &= b;
-    return t;
-}
-
-BitString& BitString::operator|=(const BitString &b)
-{
-    F1 |= b.F1;
-    F2 |= b.F2;
-    return *this;
-}
-
-BitString operator|(const BitString &a, const BitString &b) // побитовое or
-{
-    BitString t = a;
-    t |= b;
-    return t;
-}
-
-BitString& BitString::operator^=(const BitString &b)
-{
-    F1 ^= b.F1;
-    F2 ^= b.F2;
-    return *this;
-}
-
-BitString operator^(const BitString &a, const BitString &b) // побитовое xor
-{
-    BitString t = a;
-    t ^= b;
-    return t;
-}
-
-BitString BitString::operator~() // побитовое not
-{
-    F1 = ~F1;
-    F2 = ~F2;
-    return *this;
-}
-
-BitString& BitString::operator<<=(const uint8_t &i)
-{
-    std::string str = toString();
-    uint8_t len = static_cast<uint8_t>(str.length());
-    std::string strnew;
-    if (len+i > 128)
+    if (pos != s.begin()) // если первый элемент не равен 1
     {
-        strnew.assign(len,'0');
-        strnew.replace(0,len-i,str.substr(i,len));
-    } else {
-        strnew.assign(len+i,'0');
-        strnew.replace(0,len,str);
-    }
-    *this = strnew;
-    return *this;
-}
-
-BitString BitString::operator<<(const uint8_t &i) // побитовый сдвиг влево
-{
-    BitString t = *this;
-    t <<= i;
-    return t;
-}
-
-BitString& BitString::operator>>=(const uint8_t &i)
-{
-    std::string str = toString();
-    uint8_t len = static_cast<uint8_t>(str.length());
-    std::string strnew;
-    if (len+i > 128)
-    {
-        strnew.assign(len,'0');
-        strnew.replace(i,len-i,str.substr(0,len-i));
-    } else {
-        strnew.assign(len+i,'0');
-        strnew.replace(i,len,str);
+        if (pos == s.end()) s = "0"; // если единица не найдена
+        else s.erase(s.begin(), pos); // удаляем лишние нули
     }
 
-    *this = strnew;
-    return *this;
+    return s;
+
 }
 
-BitString BitString::operator>>(const uint8_t &i) // побитовый сдвиг вправо
+int BitString::count_of_SingleBit() const noexcept // количество битовый единиц в строке, возвращаю int вместо uint8_t, так как хочу число, а не символ
 {
-    BitString t = *this;
-    t >>= i;
-    return t;
+    string str = toString();
+    uint8_t res = static_cast<uint8_t>(count(str.begin(), str.end(), '1'));
+    return res;
 }
 
 void BitString::SetOutputFlag() noexcept
@@ -157,14 +88,108 @@ void BitString::ClearOutputFlag() noexcept
     OutputFlag = false;
 }
 
-int BitString::count_of_SingleBit() const noexcept // перевожу десятичные числа из полей в строку с двоичным кодом
+// *** операции-методы ***
+
+BitString& BitString::operator&=(const BitString &b)
 {
-    std::string str = toString();
-    uint8_t res = 0;
-    res = std::count(str.begin(), str.end(), '1');
-    return res;
+    F1 &= b.F1;
+    F2 &= b.F2;
+    return *this;
 }
 
+BitString& BitString::operator|=(const BitString &b)
+{
+    F1 |= b.F1;
+    F2 |= b.F2;
+    return *this;
+}
+
+BitString& BitString::operator^=(const BitString &b)
+{
+    F1 ^= b.F1;
+    F2 ^= b.F2;
+    return *this;
+}
+
+BitString& BitString::operator<<=(const uint8_t &i)
+{
+    string str = toString();
+    uint8_t len = static_cast<uint8_t>(str.length());
+    string strnew;
+    if (len+i > 128)
+    {
+        strnew.assign(len,'0');
+        strnew.replace(0,len-i,str.substr(i,len));
+    } else {
+        strnew.assign(len+i,'0');
+        strnew.replace(0,len,str);
+    }
+    *this = BitString(strnew); // создаю локальный BitString от строки strnew
+    return *this;
+}
+
+BitString& BitString::operator>>=(const uint8_t &i)
+{
+    string str = toString();
+    uint8_t len = static_cast<uint8_t>(str.length());
+    string strnew;
+    if (len+i > 128)
+    {
+        strnew.assign(len,'0');
+        strnew.replace(i,len-i,str.substr(0,len-i));
+    } else {
+        strnew.assign(len+i,'0');
+        strnew.replace(i,len,str);
+    }
+    *this = BitString(strnew);
+    return *this;
+}
+
+BitString BitString::operator~() // побитовое not
+{
+    BitString t = *this;
+    t.F1 = ~F1;
+    t.F2 = ~F2;
+    return t;
+}
+
+BitString BitString::operator<<(const uint8_t &i) // побитовый сдвиг влево
+{
+    BitString t = *this;
+    t <<= i;
+    return t;
+}
+
+BitString BitString::operator>>(const uint8_t &i) // побитовый сдвиг вправо
+{
+    BitString t = *this;
+    t >>= i;
+    return t;
+}
+
+// *** операторы - дружественные функции ***
+BitString operator&(const BitString &a, const BitString &b) // побитовое and
+{
+    BitString t = a;
+    t &= b;
+    return t;
+}
+
+BitString operator|(const BitString &a, const BitString &b) // побитовое or
+{
+    BitString t = a;
+    t |= b;
+    return t;
+}
+
+BitString operator^(const BitString &a, const BitString &b) // побитовое xor
+{
+    BitString t = a;
+    t ^= b;
+    return t;
+}
+
+// *** операторы сравнения - дружественные функции ***
 bool operator==(const BitString &a, const BitString &b)
 {
     return (a.count_of_SingleBit() == b.count_of_SingleBit());
@@ -184,48 +209,32 @@ bool operator>=(const BitString &a, const BitString &b)
 
 bool operator>(const BitString &a, const BitString &b)
 {
-    return (a.count_of_SingleBit() > b.count_of_SingleBit());
+    return (b < a); // так как a > b, это b < a
 }
 
 bool operator<=(const BitString &a, const BitString &b)
 {
-    return !(a>b);
-}
-
-std::string BitString::GetOptimizedBinaryString() const noexcept
-{
-    std::string str = toString();
-    bool mask = false;
-    uint64_t i = 0;
-    uint64_t len = str.length();
-    std::string temp = str;
-    while (!mask && i < len)
-    {
-        if (str[i] == '1') {mask = true; temp.erase(0,i);}
-        i++;
-    }
-    if (i == len) temp = "0";
-    return temp;
+    return !(b<a); // тоже реализую через одну операцию <
 }
 
 bool is_included(const BitString &a, const BitString &b) // включен ли a в b
 {
-    std::string s1, s2;
+    string s1, s2;
     s1 = a.GetOptimizedBinaryString();
     s2 = b.GetOptimizedBinaryString();
-    return (s2.find(s1) != std::string::npos);
+    return (s2.find(s1) != string::npos);
 }
 
-std::ostream& operator<<(std::ostream& t, const BitString &r)
+ostream& operator<<(ostream& t, const BitString &r)
 {
-    std::string s;
+    string s;
     if (r.OutputFlag) s = r.GetOptimizedBinaryString();
     else s = r.toString();
     return (t << s);
 }
-std::istream& operator>>(std::istream& t, BitString &r)
+istream& operator>>(istream& t, BitString &r)
 {
-    std::string str;
+    string str;
     t >> str;
     r = str;
     return t;

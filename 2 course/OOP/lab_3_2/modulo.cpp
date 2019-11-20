@@ -12,6 +12,11 @@ void Modulo::CheckForDifferentModules(const Modulo &b) const // операции
     if (N!=b.N) throw different_modules_exception();
 }
 
+void Modulo::CheckForExistInverseElem(const uint16_t &i) const // если i >= N, значит обратного элемента не существует (он не был найден)
+{
+    if (i>=N) throw zero_module_exception();
+}
+
 std::string Modulo::toString() const noexcept
 {
     std::stringstream ss;
@@ -22,9 +27,9 @@ std::string Modulo::toString() const noexcept
 uint16_t Modulo::GetInverseElement(const uint64_t &b) const
 {
     uint16_t i = 1;
-    while (((b * i) % N != 1) && (i < N)) i++;
-    if (i < N) return i;
-    else throw inverse_elem_not_exist_exception();
+    while (((b * i) % N != 1) && (i < N)) ++i;
+    CheckForExistInverseElem(i); // нашелся ли обратный элемент, если нет, то выбрасывается исключение
+    return i;
 }
 
 Modulo &Modulo::operator+=(const uint64_t &b) noexcept
@@ -43,11 +48,9 @@ Modulo& Modulo::operator+=(const Modulo &b)
 
 Modulo& Modulo::operator-=(const uint64_t &b) noexcept
 {
-    while (chislo < b) // чтобы не получить отрицательного переполнения в uint64_t, в случае когда левое число меньше правого
-    {
-        chislo += N;          // прибавляю модуль к левому
-    }
-    chislo -= b;       // потом вычитаю и получаю положительное число, которое является разностью этих чисел по модулю N
+    uint64_t dop_code = ~b + 1;
+    chislo += dop_code;
+    chislo = (N - (~chislo + 1)) % N;
     return *this;
 }
 
