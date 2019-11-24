@@ -5,34 +5,38 @@
 
 class Modulo
 {
+    static const uint16_t NO_MODULO = UINT16_MAX; // для чисел без модуля, UINT16_MAX так как поле N - 16 битное, и это макс. модуль
     uint64_t chislo;
     uint16_t N;
     void CheckForZeroModule(const uint16_t &N) const;
+    bool CheckForNoModulo() const;
     void CheckForDifferentModules(const Modulo &b) const;
     void CheckForExistInverseElem(const uint16_t &i) const;
     uint16_t GetInverseElement(const uint64_t &b) const; // получаю обратный элемент, который необходим для операции деления
 
+
 public:
     Modulo() noexcept : chislo(0), N(10) {}
-    Modulo(const uint64_t &in_chislo, const uint16_t &in_N = 10)
+    Modulo(const uint64_t &in_chislo, const uint16_t &in_N)
     {
         CheckForZeroModule(in_N);
         chislo = in_chislo;
         N = in_N;
         if (chislo > N) chislo %= N;
     }
+
+    Modulo(const double &in_chislo) // конструктор преобразования
+    {
+        chislo = static_cast<uint64_t>(in_chislo);
+        N = NO_MODULO;
+        if (chislo > N) chislo %= N;
+    }
+
     std::string toString() const noexcept;
     // операции присваивания
-    Modulo& operator+=(const uint64_t &b) noexcept;
     Modulo& operator+=(const Modulo &b);
-
-    Modulo& operator-=(const uint64_t &b) noexcept;
     Modulo& operator-=(const Modulo &b);
-
-    Modulo& operator*=(const uint64_t &b) noexcept;
     Modulo& operator*=(const Modulo &b);
-
-    Modulo& operator/=(const uint64_t &b);
     Modulo& operator/=(const Modulo &b);
 
     Modulo& operator++() noexcept;
@@ -43,20 +47,9 @@ public:
 
     // арифметические операции
     friend Modulo operator+(const Modulo &a, const Modulo &b);
-    friend Modulo operator+(const Modulo &a, const uint64_t &b) noexcept;
-    friend Modulo operator+(const uint64_t &a, const Modulo &b) noexcept;
-
     friend Modulo operator-(const Modulo &a, const Modulo &b);
-    friend Modulo operator-(const Modulo &a, const uint64_t &b) noexcept;
-    friend Modulo operator-(const uint64_t &a, const Modulo &b) noexcept;
-
     friend Modulo operator*(const Modulo &a, const Modulo &b);
-    friend Modulo operator*(const Modulo &a, const uint64_t &b) noexcept;
-    friend Modulo operator*(const uint64_t &a, const Modulo &b) noexcept;
-
     friend Modulo operator/(const Modulo &a, const Modulo &b);
-    friend Modulo operator/(const Modulo &a, const uint64_t &b);
-    friend Modulo operator/(const uint64_t &a, const Modulo &b);
 
     //операции сравнения
     friend bool operator==(const Modulo &a, const Modulo &b);

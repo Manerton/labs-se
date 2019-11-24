@@ -33,6 +33,7 @@ TEST_CASE("Тесты ModuloTest в doctest")
         CHECK ((aa++).toString() == "3 mod 7");
         CHECK (aa.toString() == "4 mod 7");
         CHECK ((++aa).toString() == "5 mod 7");
+        CHECK ((4+bb).toString() == "2 mod 7");
         CHECK ((1+bb).toString() == "5 mod 7"); // -- ошибка - должно быть 6 mod 7 --
     }
     SUBCASE("Тест вычитания")          // -- тестирования вычитания --

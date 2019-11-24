@@ -4,9 +4,10 @@
 #include <QPoint>
 
 enum class direction {
-    left,
-    right,
-    forward
+    left = -1,
+    forward = 0,
+    right = 1,
+    down = 2
 };
 
 class animal
@@ -14,7 +15,8 @@ class animal
     double v; // скорость крокодила в км/ч
     double l; // расстояние в км, пройденное им до поворота
     direction getDirection(); // получить поворот в зависимости от вероятности
-    direction prev_direction; // в каком направлении мы шли до этого шага
+    direction getStartDirection();
+    direction global_direction;
 public:
     animal(const double &_v, const double &_l) : v(_v), l(_l){}
     QVector<QPoint> coord; // координаты местоположений крокодила

@@ -52,6 +52,7 @@ public:
         check ((aa++).toString() == "3 mod 7");
         check (aa.toString() == "4 mod 7");
         check ((++aa).toString() == "5 mod 7");
+        check ((4+bb).toString() == "2 mod 7");
         check ((1+bb).toString() == "5 mod 7"); // -- ошибка - должно быть 6 mod 7 --
     }
     void testMinus()       		// -- тестирование вычитания --

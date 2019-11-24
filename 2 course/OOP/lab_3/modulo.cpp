@@ -2,9 +2,15 @@
 #include <sstream>
 #include <stdint.h>
 
+
 void Modulo::CheckForZeroModule(const uint16_t &N) const // если модуль нулевой, то происходит деление на ноль, избегаем этого
 {
     if (N==0) throw zero_module_exception();
+}
+
+bool Modulo::CheckForNoModulo() const
+{
+    return (N == NO_MODULO);
 }
 
 void Modulo::CheckForDifferentModules(const Modulo &b) const // операции +, - и так далее разрешаем только между числами с одинаковыми модулями
@@ -14,7 +20,7 @@ void Modulo::CheckForDifferentModules(const Modulo &b) const // операции
 
 void Modulo::CheckForExistInverseElem(const uint16_t &i) const // если i >= N, значит обратного элемента не существует (он не был найден)
 {
-    if (i>=N) throw zero_module_exception();
+    if (i>=N) throw inverse_elem_not_exist_exception();
 }
 
 std::string Modulo::toString() const noexcept
@@ -32,60 +38,44 @@ uint16_t Modulo::GetInverseElement(const uint64_t &b) const
     return i;
 }
 
-Modulo &Modulo::operator+=(const uint64_t &b) noexcept
-{
-    chislo += b;   // прибавляю
-    if (chislo >= N) chislo %= N; // сокращаю по модулю N
-    return *this;
-}
-
 Modulo& Modulo::operator+=(const Modulo &b)
 {
-    CheckForDifferentModules(b); // проверяю, чтобы был одинаковый модуль
-    *this += b.chislo; // делегирование через уже определенную операцию сложения с присваиванием с uint64_t
-    return *this;
-}
+    if (!b.CheckForNoModulo())       // Проверяем, b - безмодульное или нет, если с модулем, то проверяем
+        CheckForDifferentModules(b); // чтобы модули двух чисел совпадали
 
-Modulo& Modulo::operator-=(const uint64_t &b) noexcept
-{
-    uint64_t dop_code = ~b + 1;
-    chislo += dop_code;
-    chislo = (N - (~chislo + 1)) % N;
+    chislo += b.chislo;
+    if (chislo >= N) chislo %= N; // сокращаю по модулю N
     return *this;
 }
 
 Modulo& Modulo::operator-=(const Modulo &b)
 {
-    CheckForDifferentModules(b);
-    *this -= b.chislo;
-    return *this;
-}
+    if (!b.CheckForNoModulo())
+        CheckForDifferentModules(b);
 
-Modulo& Modulo::operator*=(const uint64_t &b) noexcept
-{
-    chislo *= b;
-    if (chislo >= N) chislo %= N;
+    uint64_t dop_code = ~b.chislo + 1; // перевожу правое число в доп код
+    chislo += dop_code;
+    chislo = (N - (~chislo + 1)) % N;
     return *this;
 }
 
 Modulo& Modulo::operator*=(const Modulo &b)
 {
-    CheckForDifferentModules(b);
-    *this *= b.chislo;
-    return *this;
-}
+    if (!b.CheckForNoModulo())
+        CheckForDifferentModules(b);
 
-Modulo& Modulo::operator/=(const uint64_t &b)
-{
-    uint16_t inverse = GetInverseElement(b);
-    *this *= inverse;
+    chislo *= b.chislo;
+    if (chislo >= N) chislo %= N;
     return *this;
 }
 
 Modulo& Modulo::operator/=(const Modulo &b)
 {
-    CheckForDifferentModules(b);
-    *this /= b.chislo;
+    if (!b.CheckForNoModulo())
+        CheckForDifferentModules(b);
+
+    uint16_t inverse = GetInverseElement(b.chislo);
+    *this *= inverse;
     return *this;
 }
 Modulo& Modulo::operator++() noexcept
@@ -112,82 +102,44 @@ Modulo Modulo::operator--(int) noexcept
 
 Modulo operator+(const Modulo &a, const Modulo &b)
 {
-    Modulo t = a;
-    t += b;
+    Modulo t;
+    if (a.CheckForNoModulo()) // если левое число безмодульное, то привожу его к модулю правого числа
+    {
+        t = {a.chislo, b.N};
+    } else { t = a; } // просто t = левое
+    t += b; // левое + правое
     return t;
-}
-
-Modulo operator+(const Modulo &a, const uint64_t &b) noexcept
-{
-    Modulo t = a;
-    t += b;
-    return t;
-}
-
-Modulo operator+(const uint64_t &a, const Modulo &b) noexcept
-{
-    return b+a;
 }
 
 Modulo operator-(const Modulo &a, const Modulo &b)
 {
-    Modulo t = a;
-    t -= b;
-    return t;
-}
-
-Modulo operator-(const Modulo &a, const uint64_t &b) noexcept
-{
-    Modulo t = a;
-    t -= b;
-    return t;
-}
-
-Modulo operator-(const uint64_t &a, const Modulo &b) noexcept
-{
-    Modulo t = b;
-    t.chislo = a;
+    Modulo t;
+    if (a.CheckForNoModulo())
+    {
+        t = {a.chislo, b.N};
+    } else { t = a; }
     t -= b;
     return t;
 }
 
 Modulo operator*(const Modulo &a, const Modulo &b)
 {
-    Modulo t = a;
+    Modulo t;
+    if (a.CheckForNoModulo())
+    {
+        t = {a.chislo, b.N};
+    } else { t = a; }
     t *= b;
     return t;
-}
-
-Modulo operator*(const Modulo &a, const uint64_t &b) noexcept
-{
-    Modulo t = a;
-    t *= b;
-    return t;
-}
-
-Modulo operator*(const uint64_t &a, const Modulo &b) noexcept
-{
-    return b*a;
 }
 
 Modulo operator/(const Modulo &a, const Modulo &b)
 {
-    Modulo t = a;
-    t /= b;
-    return t;
-}
-
-Modulo operator/(const Modulo &a, const uint64_t &b)
-{
-    Modulo t = a;
-    t /= b;
-    return t;
-}
-
-Modulo operator/(const uint64_t &a, const Modulo &b)
-{
-    Modulo t = b;
-    t.chislo = a;
+    Modulo t;
+    if (a.CheckForNoModulo())
+    {
+        t = {a.chislo, b.N};
+    } else { t = a; }
     t /= b;
     return t;
 }
@@ -214,14 +166,13 @@ bool operator>=(const Modulo &a, const Modulo &b)
 
 bool operator>(const Modulo &a, const Modulo &b)
 {
-    a.CheckForDifferentModules(b);
-    return (a.chislo > b.chislo);
+    return (b < a);
 }
 
 bool operator<=(const Modulo &a, const Modulo &b)
 {
     a.CheckForDifferentModules(b);
-    return !(a>b);
+    return !(b < a);
 }
 
 std::ostream& operator<<(std::ostream& t, const Modulo &r)
