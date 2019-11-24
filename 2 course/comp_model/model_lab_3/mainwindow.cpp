@@ -30,7 +30,7 @@ void MainWindow::paintEvent(QPaintEvent *)
     {
         painter.drawLine(i,0,i,height());
     }
-    painter.translate(width()/2, height()/2+100); // смещаю центр координат в центр
+    painter.translate(width()/2, height()/2-50); // смещаю центр координат в центр
 
 
     for (int i = 0; i < 1000; ++i)

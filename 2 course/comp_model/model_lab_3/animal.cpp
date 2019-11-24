@@ -35,7 +35,18 @@ direction animal::getStartDirection()
     { return direction::down; }
 }
 
-direction animal::getDirection()
+direction& operator+=(direction &a, const direction &b)
+{
+    int _a = static_cast<int>(a);
+    int _b = static_cast<int>(b);
+    _a += _b;
+    _a %= 4;
+    a = static_cast<direction>(_a);
+    return a;
+
+}
+
+direction animal::getRotation()
 {
     double chance = rand_range(mt);
 
@@ -47,6 +58,8 @@ direction animal::getDirection()
     { return direction::forward; }
 }
 
+
+
 void animal::work(int time, int k)
 {
     coord.clear();
@@ -55,30 +68,22 @@ void animal::work(int time, int k)
     global_direction = getStartDirection(); // начальный поворот
     for (int i = 0; i < steps; ++i)
     {
-        global_direction += getDirection();
 
+        global_direction += getRotation();
         QPoint new_point = coord.back();
 
         if (global_direction == direction::forward) // если крокодил идет на север
         {
-            if (current_direction == direction::forward) { new_point = {x, int( y - (l*k) )}; } // Умножаю l на 10, чтобы увеличить масштаб в пикселях
-            else if (current_direction == direction::left) { new_point = {int( x - (l*k) ), y}; }
-            else if (current_direction == direction::right) { new_point = {int( x + (l*k) ), y}; }
+            new_point.ry() -= int(l * k);
         } else if (global_direction == direction::left) // запад
         {
-            if (current_direction == direction::forward) { new_point = {int( x - (l*k) ), y}; }
-            else if (current_direction == direction::left) { new_point = {x, int( y + (l*k) )}; }
-            else if (current_direction == direction::right) { new_point = {x, int( y - (l*k) )}; }
+            new_point.rx() -= int(l * k);
         } else if (global_direction == direction::right) // восток
         {
-            if (current_direction == direction::forward) { new_point = {int( x + (l*k) ), y}; }
-            else if (current_direction == direction::left) { new_point = {x, int( y - (l*k) )}; }
-            else if (current_direction == direction::right) { new_point = {x, int( y + (l*k) )}; }
+            new_point.rx() += int(l * k);
         } else if (global_direction == direction::down) // юг
         {
-            if (current_direction == direction::forward) { new_point = {x, int( y + (l*k) )}; }
-            else if (current_direction == direction::left) { new_point = {int( x +(l*k) ), y}; }
-            else if (current_direction == direction::right) { new_point = {int( x - (l*k) ), y}; }
+            new_point.ry() += int(l * k);
         }
 
         coord.push_back(new_point);
