@@ -10,5 +10,8 @@ SOURCES += main.cpp \
 
 HEADERS += \
     cpu.h \
-    memory.h
+    memory.h \
+    types.h
+
+DISTFILES +=
 
