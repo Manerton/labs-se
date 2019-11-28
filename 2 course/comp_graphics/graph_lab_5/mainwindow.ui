@@ -491,7 +491,7 @@
 background-color: rgb(104, 104, 104);</string>
     </property>
     <property name="text">
-     <string>Отразить относительно d</string>
+     <string>c</string>
     </property>
     <property name="checkable">
      <bool>false</bool>
@@ -759,7 +759,7 @@ background-color: rgb(104, 104, 104);</string>
 background-color: rgb(104, 104, 104);</string>
     </property>
     <property name="text">
-     <string>Сжать треугольник (0.5)</string>
+     <string>b</string>
     </property>
     <property name="checkable">
      <bool>false</bool>
@@ -817,10 +817,10 @@ background-color: rgb(104, 104, 104);</string>
 background-color: rgb(104, 104, 104);</string>
     </property>
     <property name="text">
-     <string>Повернуть на -90</string>
+     <string>a</string>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="doubleSpinBox_A_X">
+   <widget class="QSpinBox" name="spinBox_A_X">
     <property name="geometry">
      <rect>
       <x>808</x>
@@ -832,24 +832,6 @@ background-color: rgb(104, 104, 104);</string>
     <property name="styleSheet">
      <string notr="true">background-color: rgb(62, 62, 62);
 color: rgb(255, 255, 255);</string>
-    </property>
-    <property name="decimals">
-     <number>0</number>
-    </property>
-    <property name="minimum">
-     <double>-300.000000000000000</double>
-    </property>
-    <property name="maximum">
-     <double>300.000000000000000</double>
-    </property>
-    <property name="singleStep">
-     <double>1.000000000000000</double>
-    </property>
-    <property name="stepType">
-     <enum>QAbstractSpinBox::DefaultStepType</enum>
-    </property>
-    <property name="value">
-     <double>120.000000000000000</double>
     </property>
    </widget>
    <widget class="Line" name="line">
@@ -1271,7 +1253,7 @@ background-color: rgb(104, 104, 104);</string>
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="doubleSpinBox_A_Y">
+   <widget class="QSpinBox" name="spinBox_A_Y">
     <property name="geometry">
      <rect>
       <x>856</x>
@@ -1283,24 +1265,6 @@ background-color: rgb(104, 104, 104);</string>
     <property name="styleSheet">
      <string notr="true">background-color: rgb(62, 62, 62);
 color: rgb(255, 255, 255);</string>
-    </property>
-    <property name="decimals">
-     <number>0</number>
-    </property>
-    <property name="minimum">
-     <double>-300.000000000000000</double>
-    </property>
-    <property name="maximum">
-     <double>300.000000000000000</double>
-    </property>
-    <property name="singleStep">
-     <double>1.000000000000000</double>
-    </property>
-    <property name="stepType">
-     <enum>QAbstractSpinBox::DefaultStepType</enum>
-    </property>
-    <property name="value">
-     <double>60.000000000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_Y">
