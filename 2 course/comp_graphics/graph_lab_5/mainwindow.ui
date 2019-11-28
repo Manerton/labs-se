@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>905</width>
-    <height>600</height>
+    <width>638</width>
+    <height>519</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,8 +19,20 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>638</width>
+    <height>519</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>638</width>
+    <height>519</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>Лабораторная №4</string>
+   <string>Лабораторная №5</string>
   </property>
   <property name="animated">
    <bool>false</bool>
@@ -168,7 +180,7 @@
        </brush>
       </colorrole>
       <colorrole role="PlaceholderText">
-       <brush brushstyle="SolidPattern">
+       <brush brushstyle="NoBrush">
         <color alpha="128">
          <red>255</red>
          <green>255</green>
@@ -314,7 +326,7 @@
        </brush>
       </colorrole>
       <colorrole role="PlaceholderText">
-       <brush brushstyle="SolidPattern">
+       <brush brushstyle="NoBrush">
         <color alpha="128">
          <red>255</red>
          <green>255</green>
@@ -460,7 +472,7 @@
        </brush>
       </colorrole>
       <colorrole role="PlaceholderText">
-       <brush brushstyle="SolidPattern">
+       <brush brushstyle="NoBrush">
         <color alpha="128">
          <red>255</red>
          <green>255</green>
@@ -474,39 +486,10 @@
    <property name="autoFillBackground">
     <bool>true</bool>
    </property>
-   <widget class="QPushButton" name="pushButton_mirror">
-    <property name="geometry">
-     <rect>
-      <x>570</x>
-      <y>570</y>
-      <width>221</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">color: rgb(255, 230, 224);
-background-color: rgb(104, 104, 104);</string>
-    </property>
-    <property name="text">
-     <string>c</string>
-    </property>
-    <property name="checkable">
-     <bool>false</bool>
-    </property>
-    <property name="default">
-     <bool>false</bool>
-    </property>
-    <property name="flat">
-     <bool>false</bool>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_X">
     <property name="geometry">
      <rect>
-      <x>825</x>
+      <x>544</x>
       <y>52</y>
       <width>21</width>
       <height>16</height>
@@ -515,269 +498,14 @@ background-color: rgb(104, 104, 104);</string>
     <property name="text">
      <string>X</string>
     </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_compress">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>570</y>
-      <width>251</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="palette">
-     <palette>
-      <active>
-       <colorrole role="WindowText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>230</green>
-          <blue>224</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Button">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>104</red>
-          <green>104</green>
-          <blue>104</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Text">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>230</green>
-          <blue>224</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="BrightText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="ButtonText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>230</green>
-          <blue>224</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Base">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>104</red>
-          <green>104</green>
-          <blue>104</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Window">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>104</red>
-          <green>104</green>
-          <blue>104</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="PlaceholderText">
-        <brush brushstyle="NoBrush">
-         <color alpha="128">
-          <red>255</red>
-          <green>230</green>
-          <blue>224</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </active>
-      <inactive>
-       <colorrole role="WindowText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>230</green>
-          <blue>224</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Button">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>104</red>
-          <green>104</green>
-          <blue>104</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Text">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>230</green>
-          <blue>224</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="BrightText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="ButtonText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>230</green>
-          <blue>224</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Base">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>104</red>
-          <green>104</green>
-          <blue>104</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Window">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>104</red>
-          <green>104</green>
-          <blue>104</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="PlaceholderText">
-        <brush brushstyle="NoBrush">
-         <color alpha="128">
-          <red>255</red>
-          <green>230</green>
-          <blue>224</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </inactive>
-      <disabled>
-       <colorrole role="WindowText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>230</green>
-          <blue>224</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Button">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>104</red>
-          <green>104</green>
-          <blue>104</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Text">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>230</green>
-          <blue>224</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="BrightText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="ButtonText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>230</green>
-          <blue>224</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Base">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>104</red>
-          <green>104</green>
-          <blue>104</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Window">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>104</red>
-          <green>104</green>
-          <blue>104</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="PlaceholderText">
-        <brush brushstyle="NoBrush">
-         <color alpha="128">
-          <red>255</red>
-          <green>230</green>
-          <blue>224</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </disabled>
-     </palette>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">color: rgb(255, 230, 224);
-background-color: rgb(104, 104, 104);</string>
-    </property>
-    <property name="text">
-     <string>b</string>
-    </property>
-    <property name="checkable">
-     <bool>false</bool>
-    </property>
-    <property name="autoDefault">
-     <bool>false</bool>
-    </property>
-    <property name="default">
-     <bool>false</bool>
-    </property>
-    <property name="flat">
-     <bool>false</bool>
+    <property name="buddy">
+     <cstring>spinBox_X</cstring>
     </property>
    </widget>
    <widget class="Line" name="line_5">
     <property name="geometry">
      <rect>
-      <x>790</x>
+      <x>514</x>
       <y>40</y>
       <width>121</width>
       <height>20</height>
@@ -790,7 +518,7 @@ background-color: rgb(104, 104, 104);</string>
    <widget class="Line" name="line_2">
     <property name="geometry">
      <rect>
-      <x>790</x>
+      <x>514</x>
       <y>88</y>
       <width>151</width>
       <height>20</height>
@@ -800,44 +528,45 @@ background-color: rgb(104, 104, 104);</string>
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_rotate">
+   <widget class="QSpinBox" name="spinBox_X">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>570</y>
-      <width>201</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">color: rgb(255, 230, 224);
-background-color: rgb(104, 104, 104);</string>
-    </property>
-    <property name="text">
-     <string>a</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="spinBox_A_X">
-    <property name="geometry">
-     <rect>
-      <x>808</x>
+      <x>524</x>
       <y>70</y>
       <width>49</width>
       <height>22</height>
      </rect>
     </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <property name="styleSheet">
      <string notr="true">background-color: rgb(62, 62, 62);
 color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="frame">
+     <bool>true</bool>
+    </property>
+    <property name="accelerated">
+     <bool>false</bool>
+    </property>
+    <property name="showGroupSeparator" stdset="0">
+     <bool>false</bool>
+    </property>
+    <property name="maximum">
+     <number>25</number>
     </property>
    </widget>
    <widget class="Line" name="line">
     <property name="geometry">
      <rect>
-      <x>790</x>
+      <x>514</x>
       <y>10</y>
       <width>261</width>
       <height>16</height>
@@ -855,8 +584,8 @@ color: rgb(255, 255, 255);</string>
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>782</width>
-      <height>552</height>
+      <width>500</width>
+      <height>500</height>
      </rect>
     </property>
     <property name="palette">
@@ -953,7 +682,7 @@ color: rgb(255, 255, 255);</string>
         </brush>
        </colorrole>
        <colorrole role="PlaceholderText">
-        <brush brushstyle="SolidPattern">
+        <brush brushstyle="NoBrush">
          <color alpha="128">
           <red>255</red>
           <green>255</green>
@@ -1054,7 +783,7 @@ color: rgb(255, 255, 255);</string>
         </brush>
        </colorrole>
        <colorrole role="PlaceholderText">
-        <brush brushstyle="SolidPattern">
+        <brush brushstyle="NoBrush">
          <color alpha="128">
           <red>255</red>
           <green>255</green>
@@ -1155,7 +884,7 @@ color: rgb(255, 255, 255);</string>
         </brush>
        </colorrole>
        <colorrole role="PlaceholderText">
-        <brush brushstyle="SolidPattern">
+        <brush brushstyle="NoBrush">
          <color alpha="128">
           <red>255</red>
           <green>255</green>
@@ -1191,7 +920,7 @@ color: rgb(255, 255, 255);</string>
    <widget class="QLabel" name="label_coord">
     <property name="geometry">
      <rect>
-      <x>800</x>
+      <x>524</x>
       <y>25</y>
       <width>101</width>
       <height>16</height>
@@ -1201,14 +930,14 @@ color: rgb(255, 255, 255);</string>
      <string notr="true">color: rgb(75, 152, 16);</string>
     </property>
     <property name="text">
-     <string>Координаты:</string>
+     <string>Значения:</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_draw">
     <property name="geometry">
      <rect>
-      <x>800</x>
-      <y>210</y>
+      <x>524</x>
+      <y>240</y>
       <width>101</width>
       <height>21</height>
      </rect>
@@ -1230,7 +959,7 @@ background-color: rgb(104, 104, 104);</string>
    <widget class="Line" name="line_3">
     <property name="geometry">
      <rect>
-      <x>791</x>
+      <x>515</x>
       <y>140</y>
       <width>191</width>
       <height>20</height>
@@ -1243,7 +972,7 @@ background-color: rgb(104, 104, 104);</string>
    <widget class="Line" name="line_4">
     <property name="geometry">
      <rect>
-      <x>791</x>
+      <x>515</x>
       <y>190</y>
       <width>151</width>
       <height>16</height>
@@ -1253,10 +982,13 @@ background-color: rgb(104, 104, 104);</string>
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QSpinBox" name="spinBox_A_Y">
+   <widget class="QSpinBox" name="spinBox_Y">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>856</x>
+      <x>580</x>
       <y>70</y>
       <width>49</width>
       <height>22</height>
@@ -1266,11 +998,14 @@ background-color: rgb(104, 104, 104);</string>
      <string notr="true">background-color: rgb(62, 62, 62);
 color: rgb(255, 255, 255);</string>
     </property>
+    <property name="maximum">
+     <number>25</number>
+    </property>
    </widget>
    <widget class="QLabel" name="label_Y">
     <property name="geometry">
      <rect>
-      <x>870</x>
+      <x>594</x>
       <y>52</y>
       <width>21</width>
       <height>16</height>
@@ -1279,45 +1014,30 @@ color: rgb(255, 255, 255);</string>
     <property name="text">
      <string>Y</string>
     </property>
-   </widget>
-   <widget class="QLabel" name="label_A">
-    <property name="geometry">
-     <rect>
-      <x>797</x>
-      <y>73</y>
-      <width>10</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 229, 33);
-color: rgb(0, 0, 0);
-font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
-    </property>
-    <property name="text">
-     <string>A</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
+    <property name="buddy">
+     <cstring>spinBox_Y</cstring>
     </property>
    </widget>
    <widget class="QLabel" name="label_X_2">
     <property name="geometry">
      <rect>
-      <x>825</x>
+      <x>544</x>
       <y>100</y>
       <width>21</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>X</string>
+     <string>a</string>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="doubleSpinBox_B_X">
+   <widget class="QSpinBox" name="spinBox_a">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>808</x>
+      <x>524</x>
       <y>118</y>
       <width>49</width>
       <height>22</height>
@@ -1327,50 +1047,17 @@ font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
      <string notr="true">background-color: rgb(62, 62, 62);
 color: rgb(255, 255, 255);</string>
     </property>
-    <property name="decimals">
-     <number>0</number>
-    </property>
-    <property name="minimum">
-     <double>-300.000000000000000</double>
-    </property>
     <property name="maximum">
-     <double>300.000000000000000</double>
-    </property>
-    <property name="singleStep">
-     <double>1.000000000000000</double>
-    </property>
-    <property name="stepType">
-     <enum>QAbstractSpinBox::DefaultStepType</enum>
-    </property>
-    <property name="value">
-     <double>80.000000000000000</double>
+     <number>24</number>
     </property>
    </widget>
-   <widget class="QLabel" name="label_B">
+   <widget class="QSpinBox" name="spinBox_b">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>797</x>
-      <y>121</y>
-      <width>10</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 229, 33);
-color: rgb(0, 0, 0);
-font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
-    </property>
-    <property name="text">
-     <string>B</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QDoubleSpinBox" name="doubleSpinBox_B_Y">
-    <property name="geometry">
-     <rect>
-      <x>856</x>
+      <x>580</x>
       <y>118</y>
       <width>49</width>
       <height>22</height>
@@ -1380,44 +1067,32 @@ font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
      <string notr="true">background-color: rgb(62, 62, 62);
 color: rgb(255, 255, 255);</string>
     </property>
-    <property name="decimals">
-     <number>0</number>
-    </property>
-    <property name="minimum">
-     <double>-300.000000000000000</double>
-    </property>
     <property name="maximum">
-     <double>300.000000000000000</double>
-    </property>
-    <property name="singleStep">
-     <double>1.000000000000000</double>
-    </property>
-    <property name="stepType">
-     <enum>QAbstractSpinBox::DefaultStepType</enum>
-    </property>
-    <property name="value">
-     <double>190.000000000000000</double>
+     <number>24</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_Y_2">
     <property name="geometry">
      <rect>
-      <x>870</x>
+      <x>594</x>
       <y>100</y>
       <width>21</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Y</string>
+     <string>b</string>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="doubleSpinBox_C_X">
+   <widget class="QSpinBox" name="spinBox_R">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>808</x>
+      <x>532</x>
       <y>168</y>
-      <width>49</width>
+      <width>81</width>
       <height>22</height>
      </rect>
     </property>
@@ -1425,144 +1100,82 @@ color: rgb(255, 255, 255);</string>
      <string notr="true">background-color: rgb(62, 62, 62);
 color: rgb(255, 255, 255);</string>
     </property>
-    <property name="decimals">
-     <number>0</number>
-    </property>
-    <property name="minimum">
-     <double>-300.000000000000000</double>
-    </property>
     <property name="maximum">
-     <double>300.000000000000000</double>
-    </property>
-    <property name="singleStep">
-     <double>1.000000000000000</double>
-    </property>
-    <property name="stepType">
-     <enum>QAbstractSpinBox::DefaultStepType</enum>
-    </property>
-    <property name="value">
-     <double>10.000000000000000</double>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_Y_3">
-    <property name="geometry">
-     <rect>
-      <x>870</x>
-      <y>150</y>
-      <width>21</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Y</string>
+     <number>24</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_X_3">
     <property name="geometry">
      <rect>
-      <x>825</x>
+      <x>568</x>
       <y>150</y>
       <width>21</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>X</string>
+     <string>R</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_C">
+   <widget class="QComboBox" name="comboBox">
     <property name="geometry">
      <rect>
-      <x>797</x>
-      <y>171</y>
-      <width>10</width>
-      <height>18</height>
+      <x>524</x>
+      <y>210</y>
+      <width>101</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 229, 33);
-color: rgb(0, 0, 0);
-font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
-    </property>
-    <property name="text">
-     <string>С</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QDoubleSpinBox" name="doubleSpinBox_C_Y">
-    <property name="geometry">
-     <rect>
-      <x>856</x>
-      <y>168</y>
-      <width>49</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(62, 62, 62);
+     <string notr="true">background-color: rgb(59, 59, 59);
 color: rgb(255, 255, 255);</string>
     </property>
-    <property name="decimals">
-     <number>0</number>
-    </property>
-    <property name="minimum">
-     <double>-300.000000000000000</double>
-    </property>
-    <property name="maximum">
-     <double>300.000000000000000</double>
-    </property>
-    <property name="singleStep">
-     <double>1.000000000000000</double>
-    </property>
-    <property name="stepType">
-     <enum>QAbstractSpinBox::DefaultStepType</enum>
-    </property>
-    <property name="value">
-     <double>70.000000000000000</double>
-    </property>
+    <item>
+     <property name="text">
+      <string>Прямая</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Эллипс</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Окружность</string>
+     </property>
+    </item>
    </widget>
-   <widget class="QSpinBox" name="spinBox_d">
-    <property name="geometry">
-     <rect>
-      <x>831</x>
-      <y>567</y>
-      <width>49</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(62, 62, 62);
-color: rgb(255, 255, 255);</string>
-    </property>
-    <property name="maximum">
-     <number>552</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_D">
-    <property name="geometry">
-     <rect>
-      <x>820</x>
-      <y>570</y>
-      <width>10</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 229, 33);
-color: rgb(0, 0, 0);
-font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
-    </property>
-    <property name="text">
-     <string>D</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
+   <zorder>frame</zorder>
+   <zorder>line_2</zorder>
+   <zorder>label_coord</zorder>
+   <zorder>pushButton_draw</zorder>
+   <zorder>spinBox_X</zorder>
+   <zorder>spinBox_Y</zorder>
+   <zorder>line_3</zorder>
+   <zorder>spinBox_a</zorder>
+   <zorder>label_Y</zorder>
+   <zorder>line_4</zorder>
+   <zorder>spinBox_R</zorder>
+   <zorder>label_X_3</zorder>
+   <zorder>label_X</zorder>
+   <zorder>label_X_2</zorder>
+   <zorder>label_Y_2</zorder>
+   <zorder>line</zorder>
+   <zorder>line_5</zorder>
+   <zorder>spinBox_b</zorder>
+   <zorder>comboBox</zorder>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>spinBox_X</tabstop>
+  <tabstop>frame</tabstop>
+  <tabstop>pushButton_draw</tabstop>
+  <tabstop>spinBox_Y</tabstop>
+  <tabstop>spinBox_b</tabstop>
+  <tabstop>spinBox_a</tabstop>
+  <tabstop>spinBox_R</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
