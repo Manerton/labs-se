@@ -16,10 +16,8 @@ public:
     Memory& operator=(const Memory &&) = delete;
 
     void push (const data_t &data, const uint16_t &address) noexcept;
-    void push (const cmd16_t &cmd1, const cmd16_t &cmd2, const uint16_t &address) noexcept;
 
     data_t get_data (const uint16_t &address) const noexcept;
-    cmd16_t get_cmd16 (const uint16_t &address) const noexcept;
 };
 
 #endif // MEMORY_H
