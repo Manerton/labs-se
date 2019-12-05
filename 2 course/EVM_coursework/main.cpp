@@ -12,7 +12,7 @@ bool Uploader(CPU &cpu, const string &filename)
 
     if (!file.is_open()) return false;
 
-    uint16_t address = 0;   // -- адрес памяти, по которому загружаются данные / команды -- //
+    uint16_t address = 0;   // -- адрес памяти, по которому загружаются данные или команды -- //
     char symbol = ' ';  // -- текущий читаемый символ -- //
     while (symbol != 'e')   // -- пока не встретили символ 'e' -- //
     {
