@@ -27,27 +27,11 @@ bool Uploader(CPU &cpu, const string &filename)
                 ss >> address;
                 break;
             }
-            case 'i':   // -- загрузка целого числа -- //
+            case 'i': case 'u': case 'f':  // -- загрузка данных: целое, беззнаковое, дробное числа -- //
             {
-                data_t integer;
-                ss >> integer.i;
-                cpu.ram.push(integer, address);
-                ++address;
-                break;
-            }
-            case 'u':   // -- загрузка беззнакового числа -- //
-            {
-                data_t uinteger;
-                ss >> uinteger.u;
-                cpu.ram.push(uinteger, address);
-                ++address;
-                break;
-            }
-            case 'f':   // -- загрузка дробного числа -- //
-            {
-                data_t real;
-                ss >> real.f;
-                cpu.ram.push(real, address);
+                data_t chislo;
+                ss >> chislo.u;
+                cpu.ram.push(chislo, address);
                 ++address;
                 break;
             }
@@ -66,7 +50,8 @@ bool Uploader(CPU &cpu, const string &filename)
                     ss >> temp; // -- читаем r2 -- //
                     command.c.c16[0].r2 = uint8_t(temp);
                     getline(file,s);    // -- если была указана короткая команда, //
-                    ss.str(s);          // значит следующая строчка в файле тоже должна быть короткой командой -- //
+                    ss.clear();         // значит следующая строчка в файле тоже должна быть короткой командой -- //
+                    ss.str(s);          // -- поэтому читаем следующую строку -- //
                     ss >> symbol;   // -- читаем символ -- //
                     ss >> temp;     // -- читаем тип команды -- //
                     command.c.c16[1].t = 0;
@@ -87,7 +72,7 @@ bool Uploader(CPU &cpu, const string &filename)
                     ss >> temp; // -- читаем r2 -- //
                     command.c.c32.r2 = uint8_t(temp);
                     ss >> temp; // -- читаем address -- //
-                    command.c.c32.address = uint8_t(temp);
+                    command.c.c32.address = temp;
                 }
                 cpu.ram.push(command, address);
                 ++address;
@@ -119,7 +104,7 @@ int main (int argc, char* argv[])
         if (Uploader(cpu, argv[1]))
         {
             cout << " uploaded!" << endl;
-            //cpu.run();
+            cpu.run();
         }
         else cout << " not uploaded" << endl;
     } else cout << "Programm has been started without arguments." << endl;
