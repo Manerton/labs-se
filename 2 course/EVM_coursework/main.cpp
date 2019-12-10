@@ -27,10 +27,18 @@ bool Uploader(CPU &cpu, const string &filename)
                 ss >> address;
                 break;
             }
-            case 'i': case 'u': case 'f':  // -- загрузка данных: целое, беззнаковое, дробное числа -- //
+            case 'i': case 'u': // -- загрузка данных: целое, беззнаковое -- //
             {
                 data_t chislo;
                 ss >> chislo.u;
+                cpu.ram.push(chislo, address);
+                ++address;
+                break;
+            }
+            case 'f': // -- загрузка данных: число с плавающей точкой -- //
+            {
+                data_t chislo;
+                ss >> chislo.f; // -- читаем как число с плавающей точкой -- //
                 cpu.ram.push(chislo, address);
                 ++address;
                 break;
@@ -78,7 +86,7 @@ bool Uploader(CPU &cpu, const string &filename)
                 ++address;
                 break;
             }
-            case 'e':
+            case 'e':   // -- начинаем работу процессора -- //
             {
                 data_t command;
                 command.c.c32.t = 1;
@@ -109,7 +117,6 @@ int main (int argc, char* argv[])
         else cout << " not uploaded" << endl;
     } else cout << "Programm has been started without arguments." << endl;
     system("pause");
-
 
     return 0;
 }

@@ -4,33 +4,41 @@
 CPU::CPU()
 {
     // -- создать все команды -- //
+// -- особые команды -- //
     command[stop] = nullptr;
     command[empty] = new class empty();
 
 // -- команды пересылки данных -- //
-    //command[exchange] = new
-    //command[move] =  new
+    command[exchange] = new class exchange();
+    command[move] =  new class move();
     command[load] = new class load();
+    command[direct_int_load] = new class direct_int_load();
     command[save] = new class save();
-    //command[load_address] = new
+    command[load_address] = new class load_address();
+    command[indirect_save] = new class indirect_save();
+    command[dereference_ptr] = new class dereference_ptr();
     // -- продумать еще команды для разных видов адресаций -- //
+
 // -- команды целой арифметики -- //
     command[iAdd] = new class iAdd();
-    //command[sub] = new
-    //command[mul] = new
-    //command[div] = new
+    command[iSub] = new class iSub();
+    command[iMul] = new class iMul();
+    command[iDiv] = new class iDiv();
+
 // -- команды дробной арифметики -- //
-    //command[fadd] = new
-    //command[fsub] = new
-    //command[fmul] = new
-    //command[fdiv] = new
+    command[fAdd] = new class fAdd();
+    command[fSub] = new class fSub();
+    command[fMul] = new class fMul();
+    command[fDiv] = new class fDiv();
+
 // -- команды ввода и вывода -- //
     //command[in_int] = new
     command[out_int] = new class out_int();
     //command[in_uint] = new
-    //command[out_uint] = new
+    command[out_uint] = new class out_uint();
     //command[in_float] = new
-    //command[out_float] = new
+    command[out_float] = new class out_float();
+
 // -- команды перехода -- //
     //command[jmp] = new
     //command[jmp_offset] = new
@@ -46,12 +54,11 @@ CPU::CPU()
 
 CPU::~CPU()
 {
-    delete command[load];
-    delete command[save];
-    delete command[iAdd];
-    delete command[out_int];
+    for (Command* ptr : command)
+    {
+        delete ptr;
+    }
 }
-
 void CPU::run() noexcept
 {
     loadCommand(); // -- загружаем из памяти команду -- //
