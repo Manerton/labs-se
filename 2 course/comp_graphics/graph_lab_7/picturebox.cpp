@@ -1,5 +1,6 @@
 #include <cmath>
 #include <QDebug>
+#include <QTimer>
 #include "picturebox.h"
 using namespace std;
 
@@ -15,50 +16,6 @@ PictureBox::PictureBox(QWidget *parent) : QFrame(parent)
     painter.drawPixmap(0,0,m_Grid); // рисую сетку в самом начале, при запуске программы
 }
 
-QPoint PictureBox::ToCenterCoordinateSystem(const int x, const int y) const
-{
-    int width = m_Grid.width();
-    int height = m_Grid.height();
-    QPoint A = {width/2 - x*10 - 10, height/2 + y*10}; // смещаю к центру фрейма и масштабирую пиксели на размер одной клетки сетки
-    return A;
-}
-
-void PictureBox::DrawCircle(const int r, QPainter &painter)
-{
-    int x, y, l, r2, dst, t, s, e, ca, cd;
-    r2 = r*r; // квадрат радиуса, используется в промежуточных результатах
-    dst = 4 * r2;
-    l = int(double(r) / sqrt(2)); // расстояние от оси до октанта (диагонали квадранта, где находится окружность)
-    t = 0;
-    s = -4 * r2 * r;
-    e = (-s/2) - 3 * r2;
-    ca = -6 * r2;
-    cd = -10 * r2;
-    x = 0;
-    y = r+1; // функция ToCenter... сдвигает начало координат в 3 квадрант, поэтому добавляю +1 к "y", чтобы перейти за ось Ox ко 2 квадранту
-
-    QPoint point = ToCenterCoordinateSystem(x,-y); // так как функция сдвигает в 3 квадрант, а мне нужен 2 квадрант (3 октант), то передаю "y" с минусом
-    painter.fillRect(point.x()+1,point.y()+1,9,9,Qt::blue);
-
-    for (int i = 0; i < l; ++i)
-    {
-        ++x;
-        if (e >= 0)
-        {
-            e += t + ca;
-        }
-        else
-        {
-            --y;
-            e += t - s + cd;
-            s += dst;
-        }
-        t -= dst;
-        point = ToCenterCoordinateSystem(x,-y);
-        painter.fillRect(point.x()+1,point.y()+1,9,9,Qt::blue);
-    }
-}
-
 void PictureBox::DrawGrid()
 {
     QPainter painter(&m_Grid);
@@ -72,7 +29,7 @@ void PictureBox::DrawGrid()
     }
 }
 
-void PictureBox::DrawDirectLine(QPoint q1, QPoint q2, QPainter &painter)
+void PictureBox::DrawDirectLine(QPoint q1, QPoint q2, QColor color, QPainter &painter)    // -- рисование отрезков через алгоритм Брезенхема -- //
 {
     int x1, y1,x2,y2, Px, Py, E;
     x1 = q1.x() / 10;
@@ -87,7 +44,7 @@ void PictureBox::DrawDirectLine(QPoint q1, QPoint q2, QPainter &painter)
     bool signy = y2 > y1;
 
     E = 0;
-    painter.fillRect(x1*10+1,y1*10+1,9,9,Qt::blue);
+    painter.fillRect(x1*10+1,y1*10+1,9,9,color);
     if (Px >= Py)
     {
         E = 2 * Py - Px;
@@ -102,7 +59,7 @@ void PictureBox::DrawDirectLine(QPoint q1, QPoint q2, QPainter &painter)
                 E += 2 * (Py - Px);
             }
             else E += 2 * Py;
-            painter.fillRect(x1*10+1,y1*10+1,9,9,Qt::blue);
+            painter.fillRect(x1*10+1,y1*10+1,9,9,color);
         }
     }
     else
@@ -119,38 +76,78 @@ void PictureBox::DrawDirectLine(QPoint q1, QPoint q2, QPainter &painter)
                 E += 2 * (Px - Py);
             }
             else E += 2 * Px;
-            painter.fillRect(x1*10+1,y1*10+1,9,9,Qt::blue);
+            painter.fillRect(x1*10+1,y1*10+1,9,9,color);
         }
     }
-
 
 }
 
 void PictureBox::mousePressEvent(QMouseEvent *event)
 {
-    QPoint p = event->pos();
-    p.rx() /= 10;
-    p.ry() /= 10;
-    p *= 10;
-    vertex.push_back(p);
-    QPainter painter(&m_Pixmap);
-    if (vertex.size() > 1)
+    if (event->button() == Qt::LeftButton)
     {
-        DrawDirectLine(vertex[vertex.size()-2], vertex[vertex.size()-1],painter);
-    } else
-    {
-        painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::blue);
+        QPoint p = event->pos(); // -- получаю координаты -- //
+        p.rx() /= 10;   // -- округляю их вниз (например 347;284 -> 340;280)
+        p.ry() /= 10;
+        p *= 10;
+        vertex.push_back(p);
+        QPainter painter(&m_Pixmap);
+        if (vertex.size() > 1)
+        {
+            DrawDirectLine(vertex[vertex.size()-2], vertex[vertex.size()-1],Qt::blue,painter);
+        } else
+        {
+            painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::blue);
+        }
+        repaint();
     }
-    repaint();
-
 }
+
+void PictureBox::find_intersections()
+{
+    int h = height();
+    int w = width();
+    arr_scanlines.reserve(50); // -- 50 сканирующих линий через каждые 10 пикселей -- //
+    QImage image = m_Pixmap.toImage(); // -- чтобы получить доступ к пикселям -- //
+    for (int y = 5; y < h; y += 10)
+    {
+        scanline line;
+        for (int x = 0; x < w; x += 10)
+        {
+            if( image.pixelColor(x+1,y+1) == Qt::blue ) { line.push_back(QPoint(x,y));}
+        }
+        if (!line.empty()) arr_scanlines.push_back(line);
+    }
+}
+
+void PictureBox::fill()
+{
+    QPainter painter(&m_Pixmap);
+    QTimer paintTimer;
+    int first_y = height();
+    if (!arr_scanlines.empty()) first_y = arr_scanlines[0][0].y();
+    for (int y = 0; y < first_y-10; y += 10)
+    {
+        paintTimer.start(100);
+        while (paintTimer.remainingTime() != 0)
+        {
+
+        }
+        DrawDirectLine(QPoint(0,y),QPoint(width(),y),Qt::gray,painter);
+        repaint();
+    }
+}
+
+
 
 void PictureBox::risovanie()
 {
-      m_Pixmap.fill(Qt::white); // очищаю фрейм (заливаю белым цветом)
-      QPainter painter(&m_Pixmap);
-      painter.setRenderHint(QPainter::Antialiasing, true);
-      painter.drawPixmap(0,0,m_Grid); // рисую сетку
+      //m_Pixmap.fill(Qt::white); // очищаю фрейм (заливаю белым цветом)
+      //QPainter painter(&m_Pixmap);
+      //painter.setRenderHint(QPainter::Antialiasing, true);
+      find_intersections();
+      fill();
+      //painter.drawPixmap(0,0,m_Grid); // рисую сетку
 }
 
 void PictureBox::paintEvent(QPaintEvent *)
