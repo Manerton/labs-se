@@ -18,14 +18,6 @@ public:
     ~MainWindow();
 private slots:
     void on_pushButton_draw_clicked(); // нарисовать
-    void on_spinBox_X_valueChanged(int arg1);
-    void on_spinBox_Y_valueChanged(int arg1);
-    void on_spinBox_a_valueChanged(int arg1);
-    void on_spinBox_b_valueChanged(int arg1);
-    void on_spinBox_R_valueChanged(int arg1);
-
-private:
-    double getAngle (const double &gradus) const; // получить радианы из градусов
 };
 
 

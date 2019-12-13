@@ -5,9 +5,6 @@
 #include <QPainter> // для пейнт евента
 #include <QMouseEvent>
 
-using scanline = QVector<QPoint>;
-using scanlines = QVector<scanline>;
-
 class PictureBox : public QFrame
 {
     Q_OBJECT
@@ -16,16 +13,22 @@ class PictureBox : public QFrame
     QPoint ToCenterCoordinateSystem(const int x, const int y) const;
     void DrawCircle(const int r, QPainter &painter); // нарисовать круг
     QVector<QPoint> vertex;
-    scanlines arr_scanlines;
-    void find_intersections();
+    QVector<QPoint> intersections;
+    void sort_intersections();
+    void find_local_min_max();
     void fill();
+    void fill_figure(QPainter &painter);
+    void DrawGrid(); // нарисовать сетку
+    void mousePressEvent ( QMouseEvent * event );
 
+    int min_y = 0;
+    int max_y = 0;
+
+private slots:
+    void DrawDirectLine(const QPoint q1, const QPoint q2, QColor color, QPainter &painter, bool write_points = false);
 public:
     explicit PictureBox(QWidget *parent = nullptr);
     void risovanie(); // функция рисования
-    void DrawGrid(); // нарисовать сетку
-    void mousePressEvent ( QMouseEvent * event );
-    void DrawDirectLine(const QPoint q1, const QPoint q2, QColor color, QPainter &painter);
 protected:
     virtual void paintEvent(QPaintEvent*); // функция перерисовки, отрисовывает готовый пиксмап из ф-ции risovanie
 };

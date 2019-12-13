@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>638</width>
-    <height>519</height>
+    <width>521</width>
+    <height>551</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,14 +21,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>638</width>
-    <height>519</height>
+    <width>521</width>
+    <height>551</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>638</width>
-    <height>519</height>
+    <width>521</width>
+    <height>551</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -486,96 +486,6 @@
    <property name="autoFillBackground">
     <bool>true</bool>
    </property>
-   <widget class="QLabel" name="label_P1">
-    <property name="geometry">
-     <rect>
-      <x>544</x>
-      <y>52</y>
-      <width>21</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>P1</string>
-    </property>
-    <property name="buddy">
-     <cstring>spinBox_X</cstring>
-    </property>
-   </widget>
-   <widget class="Line" name="line_5">
-    <property name="geometry">
-     <rect>
-      <x>514</x>
-      <y>40</y>
-      <width>121</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="Line" name="line_2">
-    <property name="geometry">
-     <rect>
-      <x>514</x>
-      <y>88</y>
-      <width>151</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="spinBox_X">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>524</x>
-      <y>70</y>
-      <width>49</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(62, 62, 62);
-color: rgb(255, 255, 255);</string>
-    </property>
-    <property name="frame">
-     <bool>true</bool>
-    </property>
-    <property name="accelerated">
-     <bool>false</bool>
-    </property>
-    <property name="showGroupSeparator" stdset="0">
-     <bool>false</bool>
-    </property>
-    <property name="maximum">
-     <number>25</number>
-    </property>
-   </widget>
-   <widget class="Line" name="line">
-    <property name="geometry">
-     <rect>
-      <x>514</x>
-      <y>10</y>
-      <width>261</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
    <widget class="QFrame" name="frame">
     <property name="enabled">
      <bool>true</bool>
@@ -917,27 +827,11 @@ color: rgb(255, 255, 255);</string>
      <number>1</number>
     </property>
    </widget>
-   <widget class="QLabel" name="label_coord">
-    <property name="geometry">
-     <rect>
-      <x>524</x>
-      <y>25</y>
-      <width>101</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">color: rgb(75, 152, 16);</string>
-    </property>
-    <property name="text">
-     <string>Вершины:</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pushButton_draw">
     <property name="geometry">
      <rect>
-      <x>524</x>
-      <y>210</y>
+      <x>210</x>
+      <y>520</y>
       <width>101</width>
       <height>21</height>
      </rect>
@@ -950,201 +844,17 @@ color: rgb(255, 255, 255);</string>
 background-color: rgb(104, 104, 104);</string>
     </property>
     <property name="text">
-     <string>Нарисовать</string>
+     <string>Залить цветом</string>
     </property>
     <property name="checkable">
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="Line" name="line_3">
-    <property name="geometry">
-     <rect>
-      <x>515</x>
-      <y>140</y>
-      <width>191</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="Line" name="line_4">
-    <property name="geometry">
-     <rect>
-      <x>515</x>
-      <y>190</y>
-      <width>151</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="spinBox_Y">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>580</x>
-      <y>70</y>
-      <width>49</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(62, 62, 62);
-color: rgb(255, 255, 255);</string>
-    </property>
-    <property name="maximum">
-     <number>25</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_P4">
-    <property name="geometry">
-     <rect>
-      <x>594</x>
-      <y>52</y>
-      <width>21</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>P2</string>
-    </property>
-    <property name="buddy">
-     <cstring>spinBox_Y</cstring>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_P2">
-    <property name="geometry">
-     <rect>
-      <x>544</x>
-      <y>100</y>
-      <width>21</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>P3</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="spinBox_a">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>524</x>
-      <y>118</y>
-      <width>49</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(62, 62, 62);
-color: rgb(255, 255, 255);</string>
-    </property>
-    <property name="maximum">
-     <number>24</number>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="spinBox_b">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>580</x>
-      <y>118</y>
-      <width>49</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(62, 62, 62);
-color: rgb(255, 255, 255);</string>
-    </property>
-    <property name="maximum">
-     <number>24</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_P5">
-    <property name="geometry">
-     <rect>
-      <x>594</x>
-      <y>100</y>
-      <width>21</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>P4</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="spinBox_R">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>532</x>
-      <y>168</y>
-      <width>81</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(62, 62, 62);
-color: rgb(255, 255, 255);</string>
-    </property>
-    <property name="maximum">
-     <number>24</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_P3">
-    <property name="geometry">
-     <rect>
-      <x>568</x>
-      <y>150</y>
-      <width>21</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>P5</string>
-    </property>
-   </widget>
-   <zorder>frame</zorder>
-   <zorder>line_2</zorder>
-   <zorder>label_coord</zorder>
-   <zorder>pushButton_draw</zorder>
-   <zorder>spinBox_X</zorder>
-   <zorder>spinBox_Y</zorder>
-   <zorder>line_3</zorder>
-   <zorder>spinBox_a</zorder>
-   <zorder>label_P4</zorder>
-   <zorder>line_4</zorder>
-   <zorder>spinBox_R</zorder>
-   <zorder>label_P3</zorder>
-   <zorder>label_P1</zorder>
-   <zorder>label_P2</zorder>
-   <zorder>label_P5</zorder>
-   <zorder>line</zorder>
-   <zorder>line_5</zorder>
-   <zorder>spinBox_b</zorder>
   </widget>
  </widget>
  <tabstops>
-  <tabstop>spinBox_X</tabstop>
   <tabstop>frame</tabstop>
   <tabstop>pushButton_draw</tabstop>
-  <tabstop>spinBox_Y</tabstop>
-  <tabstop>spinBox_b</tabstop>
-  <tabstop>spinBox_a</tabstop>
-  <tabstop>spinBox_R</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -1,6 +1,7 @@
 #include <cmath>
 #include <QDebug>
-#include <QTimer>
+#include <QtTest/QTest>
+#include <algorithm>
 #include "picturebox.h"
 using namespace std;
 
@@ -29,8 +30,9 @@ void PictureBox::DrawGrid()
     }
 }
 
-void PictureBox::DrawDirectLine(QPoint q1, QPoint q2, QColor color, QPainter &painter)    // -- рисование отрезков через алгоритм Брезенхема -- //
+void PictureBox::DrawDirectLine(QPoint q1, QPoint q2, QColor color, QPainter &painter, bool write_points)    // -- рисование отрезков через алгоритм Брезенхема -- //
 {
+    QVector<QPoint> intersections_points;
     int x1, y1,x2,y2, Px, Py, E;
     x1 = q1.x() / 10;
     y1 = q1.y() / 10;
@@ -45,6 +47,7 @@ void PictureBox::DrawDirectLine(QPoint q1, QPoint q2, QColor color, QPainter &pa
 
     E = 0;
     painter.fillRect(x1*10+1,y1*10+1,9,9,color);
+    intersections_points.push_back(QPoint(x1*10,y1*10));
     if (Px >= Py)
     {
         E = 2 * Py - Px;
@@ -60,6 +63,7 @@ void PictureBox::DrawDirectLine(QPoint q1, QPoint q2, QColor color, QPainter &pa
             }
             else E += 2 * Py;
             painter.fillRect(x1*10+1,y1*10+1,9,9,color);
+            intersections_points.push_back(QPoint(x1*10,y1*10));
         }
     }
     else
@@ -77,77 +81,132 @@ void PictureBox::DrawDirectLine(QPoint q1, QPoint q2, QColor color, QPainter &pa
             }
             else E += 2 * Px;
             painter.fillRect(x1*10+1,y1*10+1,9,9,color);
+            intersections_points.push_back(QPoint(x1*10,y1*10));
         }
     }
 
+    if (write_points) intersections.append(intersections_points);
 }
-
 void PictureBox::mousePressEvent(QMouseEvent *event)
 {
+    QPoint p = event->pos(); // -- получаю координаты -- //
+    p.rx() /= 10;   // -- округляю их вниз (например 347;284 -> 340;280)
+    p.ry() /= 10;
+    p *= 10;
+    vertex.push_back(p);
+    QPainter painter(&m_Pixmap);
     if (event->button() == Qt::LeftButton)
     {
-        QPoint p = event->pos(); // -- получаю координаты -- //
-        p.rx() /= 10;   // -- округляю их вниз (например 347;284 -> 340;280)
-        p.ry() /= 10;
-        p *= 10;
-        vertex.push_back(p);
-        QPainter painter(&m_Pixmap);
         if (vertex.size() > 1)
         {
-            DrawDirectLine(vertex[vertex.size()-2], vertex[vertex.size()-1],Qt::blue,painter);
+            DrawDirectLine(vertex[vertex.size()-2], vertex[vertex.size()-1],Qt::blue,painter,true);
         } else
         {
             painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::blue);
         }
-        repaint();
     }
-}
-
-void PictureBox::find_intersections()
-{
-    int h = height();
-    int w = width();
-    arr_scanlines.reserve(50); // -- 50 сканирующих линий через каждые 10 пикселей -- //
-    QImage image = m_Pixmap.toImage(); // -- чтобы получить доступ к пикселям -- //
-    for (int y = 5; y < h; y += 10)
+    if (event->button() == Qt::RightButton)
     {
-        scanline line;
-        for (int x = 0; x < w; x += 10)
+       painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::blue);
+    }
+    repaint();
+}
+
+void PictureBox::sort_intersections()
+{
+    // -- сортируем сверху вниз -- //
+    std::sort(intersections.begin(),intersections.end(),
+         [](const QPoint& l, const QPoint& r) {  // -- лямбда-функция - критерий -- //
+            if (l.y() == r.y())
+                return (l.x() <= r.x());
+            return (l.y() < r.y());
+         });
+}
+
+void PictureBox::find_local_min_max() // -- ищем точку с минимальным и максимальным y -- //
+{                                                           // -- иначе говоря, ищем локальные минимум и максимум фигуры -- //
+    auto minmax = minmax_element(vertex.begin(),vertex.end(),
+                            [](const QPoint& l, const QPoint& r) {  // -- лямбда-функция - критерий -- //
+                                return l.y() < r.y();
+                            });
+    min_y = minmax.first->y();
+    max_y = minmax.second->y();
+}
+
+void PictureBox::fill_figure(QPainter &painter)
+{
+    int w = width();
+
+    auto N = intersections.size() - 1;
+    for (auto i = 0; i < N; ++i) // -- пройдемся по вектору с точками пересечений ребер и сканирующих строк -- //
+    {
+        QColor color = Qt::gray; // -- изначально цвет фона -- //
+        const int x = intersections[i].x();
+        const int y = intersections[i].y();
+        DrawDirectLine(QPoint(0,y), QPoint(x-10,y),color,painter);  // -- заливаем слева от фигуры -- //
+        while (intersections[i].y() == intersections[i+1].y() && i < N)
         {
-            if( image.pixelColor(x+1,y+1) == Qt::blue ) { line.push_back(QPoint(x,y));}
+            if (abs(intersections[i].x() - intersections[i+1].x()) > 10)    // -- если между двумя пересечениями есть пространство -- //
+            {
+                if (intersections[i-1].y() == intersections[i].y())
+                {
+                     if ((std::find(vertex.begin(),vertex.end(),intersections[i]) != vertex.end()))
+                     {
+                         if (color == Qt::gray) color = Qt::green;
+                         else color = Qt::gray;
+                     }
+                }
+                if (color == Qt::gray) color = Qt::green;
+                else color = Qt::gray;
+                int x = intersections[i].x() + 10;
+                int y = intersections[i].y();
+                int x2 = intersections[i+1].x() - 10;
+                int y2 = intersections[i+1].y();
+                DrawDirectLine(QPoint(x,y), QPoint(x2,y2),color,painter);
+            }
+            ++i;
         }
-        if (!line.empty()) arr_scanlines.push_back(line);
+        DrawDirectLine(QPoint(intersections[i].x()+10,y), QPoint(w,y),Qt::gray,painter);
+        QTest::qWait(100);
+        update();
     }
 }
 
-void PictureBox::fill()
+void PictureBox::fill() // -- заливаем фигуру -- //
 {
     QPainter painter(&m_Pixmap);
-    QTimer paintTimer;
-    int first_y = height();
-    if (!arr_scanlines.empty()) first_y = arr_scanlines[0][0].y();
-    for (int y = 0; y < first_y-10; y += 10)
+    int h = height();
+    int w = width();
+    QImage image = m_Pixmap.toImage(); // -- чтобы получить доступ к пикселям -- //
+    min_y = h; // -- по умолчанию, если фигура не задана - зальем фоном фрейм (т.е заливаем до конца окна по 'y') -- //
+    if (!vertex.empty()) // -- если фигура нарисована, то заливаем до первой точки многоугольника -- //
     {
-        paintTimer.start(100);
-        while (paintTimer.remainingTime() != 0)
-        {
+        find_local_min_max();
+    }
+    // -- заливаю фон до фигуры -- //
+    for (int y = 0; y < min_y; y += 10)
+    {
+        DrawDirectLine(QPoint(0,y),QPoint(w,y),Qt::gray,painter);
+        update();
+        QTest::qWait(100);  // -- для задержки, вообще, лучше было бы через таймер, но тогда необходимо менять логику программы -- //
+    }
+    fill_figure(painter); // -- заливка фигуры -- //
 
-        }
-        DrawDirectLine(QPoint(0,y),QPoint(width(),y),Qt::gray,painter);
-        repaint();
+    // -- заливаю фон после фигуры -- //
+    for (int y = max_y+10; y < h; y += 10)
+    {
+        DrawDirectLine(QPoint(0,y),QPoint(w,y),Qt::gray,painter);
+        update();
+        QTest::qWait(100);  // -- для задержки, вообще, лучше было бы через таймер, но тогда необходимо менять логику программы -- //
     }
 }
-
-
 
 void PictureBox::risovanie()
 {
-      //m_Pixmap.fill(Qt::white); // очищаю фрейм (заливаю белым цветом)
-      //QPainter painter(&m_Pixmap);
-      //painter.setRenderHint(QPainter::Antialiasing, true);
-      find_intersections();
-      fill();
-      //painter.drawPixmap(0,0,m_Grid); // рисую сетку
+    sort_intersections();   // -- сортирую вектор пересечений ребер и сканирующих строк -- //
+    auto last = unique(intersections.begin()+1,intersections.end()-1); // -- удаляю дубликаты -- //
+    intersections.erase(last,intersections.end()-1);
+    fill();
 }
 
 void PictureBox::paintEvent(QPaintEvent *)
