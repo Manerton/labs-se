@@ -4,12 +4,10 @@ using namespace std;
 
 bool BitString::CheckForBinary(const string &str) const noexcept // проверка содержимого битовой строки, чтобы оно было двоичным
 {
-    uint8_t len = static_cast<uint8_t>(str.length()); // uint8_t, так как у нас длина строки не больше 128-бит
-    for (uint8_t i = 0; i < len; ++i)
-    {
-        if (str[i] != '0' && str[i] != '1') return false;
-    }
-    return true;
+    return all_of(str.begin(),str.end(),
+                   [] (char c) {
+                    return (c == '0' || c == '1');
+                   });
 }
 
 void BitString::CallCheck(const string &str) const // проверка содержимого битовой строки, чтобы оно было двоичным и не больше 128 бит
@@ -23,9 +21,9 @@ uint64_t BitString::BinaryString_toInt(const string &str) const noexcept // пе
     string temp = str;
     reverse(temp.begin(),temp.end()); // переворачиваю строку, чтобы идти с конца
 
-    uint64_t res = 0, m = 1;
-    uint8_t len = static_cast<uint8_t>(str.length());
-    for (uint8_t i = 0; i < len; ++i)
+    uint64_t res = 0, m = 1; // -- m должен быть с большим диапазоном, поэтому вместо int -> uint64_t -- //
+    size_t len = str.length();
+    for (size_t i = 0; i < len; ++i)
     {
         if (temp[i] == '1')
         {
@@ -71,10 +69,10 @@ string BitString::GetOptimizedBinaryString() const noexcept // отбрасыв�
 
 }
 
-int BitString::count_of_SingleBit() const noexcept // количество битовый единиц в строке, возвращаю int вместо uint8_t, так как хочу число, а не символ
+int64_t BitString::count_of_SingleBit() const noexcept // количество битовый единиц в строке, возвращаю int вместо uint8_t, так как хочу число, а не символ
 {
     string str = toString();
-    uint8_t res = static_cast<uint8_t>(count(str.begin(), str.end(), '1'));
+    auto res = count(str.begin(), str.end(), '1');
     return res;
 }
 
@@ -114,7 +112,7 @@ BitString& BitString::operator^=(const BitString &b)
 BitString& BitString::operator<<=(const uint8_t &i)
 {
     string str = toString();
-    uint8_t len = static_cast<uint8_t>(str.length());
+    size_t len = str.length();
     string strnew;
     if (len+i > 128)
     {
@@ -131,7 +129,7 @@ BitString& BitString::operator<<=(const uint8_t &i)
 BitString& BitString::operator>>=(const uint8_t &i)
 {
     string str = toString();
-    uint8_t len = static_cast<uint8_t>(str.length());
+    size_t len = str.length();
     string strnew;
     if (len+i > 128)
     {
