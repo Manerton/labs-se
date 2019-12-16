@@ -15,9 +15,9 @@ public:
     Memory& operator=(const Memory &)  = delete;
     Memory& operator=(const Memory &&) = delete;
 
-    void push (const data_t &data, const uint16_t &address) noexcept;
+    void push (word word, uint16_t address) noexcept;
 
-    data_t get_data (const uint16_t &address) const noexcept;
+    word get_word (uint16_t address) const noexcept;
 };
 
 #endif // MEMORY_H

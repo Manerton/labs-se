@@ -1,13 +1,13 @@
 #include "memory.h"
 
-void Memory::push(const data_t &data, const uint16_t &address) noexcept
+void Memory::push(word word, uint16_t address) noexcept
 {
-    memory[address] = data.u;
+    memory[address] = word.data.u;
 }
 
-data_t Memory::get_data(const uint16_t &address) const noexcept
+word Memory::get_word(uint16_t address) const noexcept
 {
-    data_t tmp;
-    tmp.u = memory[address];
+    word tmp;
+    tmp.data.u = memory[address];
     return tmp;
 }

@@ -12,7 +12,7 @@ public:
 };
 
 // -- ОСОБЫЕ КОМАНДЫ -- //
-class empty : public Command
+class nop : public Command
 {
 public:
     virtual void operator() (CPU&) noexcept override {}
@@ -34,22 +34,7 @@ class load : public Command
 public:
     virtual void operator() (CPU& cpu) noexcept override;
 };
-class direct_int_load : public Command
-{
-public:
-    virtual void operator() (CPU& cpu) noexcept override;
-};
 class save : public Command
-{
-public:
-    virtual void operator() (CPU& cpu) noexcept override;
-};
-class load_address : public Command
-{
-public:
-    virtual void operator() (CPU& cpu) noexcept override;
-};
-class indirect_save : public Command
 {
 public:
     virtual void operator() (CPU& cpu) noexcept override;
@@ -138,21 +123,53 @@ class fDiv : public fMath
 // -- КОНЕЦ КОМАНДЫ ЦЕЛОЙ АРИФМЕТИКИ -- //
 
 // -- КОМАНДЫ ВВОДА И ВЫВОДА -- //
-class out_int : public Command
-{
-public:
-    virtual void operator() (CPU& cpu) noexcept override;
-};
-class out_uint : public Command
-{
-public:
-    virtual void operator() (CPU& cpu) noexcept override;
-};
-
-class out_float : public Command
+class io : public Command
 {
 public:
     virtual void operator() (CPU& cpu) noexcept override;
 };
 // -- КОНЕЦ КОМАНДЫ ВВОДА И ВЫВОДА -- //
+
+// -- КОМАНДЫ ПЕРЕХОДОВ -- //
+class Jump : public Command
+{
+    virtual void call_go_to (CPU& cpu) noexcept = 0; // -- вызов операции go_to -- //
+protected:
+    void go_to (CPU& cpu) noexcept;
+public:
+    virtual void operator() (CPU& cpu) noexcept override;   // -- переопределяем функтор в cpp файле -- //
+};
+
+class jmp : public Jump
+{
+    virtual void call_go_to (CPU& cpu) noexcept override;
+};
+class jzf : public Jump
+{
+    virtual void call_go_to (CPU& cpu) noexcept override;
+};
+class jnzf : public Jump
+{
+    virtual void call_go_to (CPU& cpu) noexcept override;
+};
+class jsf : public Jump
+{
+    virtual void call_go_to (CPU& cpu) noexcept override;
+};
+class jnsf : public Jump
+{
+    virtual void call_go_to (CPU& cpu) noexcept override;
+};
+class call : public Jump
+{
+    virtual void call_go_to (CPU& cpu) noexcept override;
+};
+class ret : public Jump
+{
+    virtual void call_go_to (CPU& cpu) noexcept override;
+};
+
+
+// -- КОНЕЦ КОМАНДЫ ПЕРЕХОДОВ -- //
+
 #endif // COMMAND_H

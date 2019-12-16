@@ -1,23 +1,20 @@
+#include <iostream>
 #include "cpu.h"
 #include "command.h"
 
+
 CPU::CPU()
 {
-    // -- создать все команды -- //
 // -- особые команды -- //
     command[stop] = nullptr;
-    command[empty] = new class empty();
+    command[nop] = new class nop();
 
 // -- команды пересылки данных -- //
     command[exchange] = new class exchange();
     command[move] =  new class move();
     command[load] = new class load();
-    command[direct_int_load] = new class direct_int_load();
     command[save] = new class save();
-    command[load_address] = new class load_address();
-    command[indirect_save] = new class indirect_save();
     command[dereference_ptr] = new class dereference_ptr();
-    // -- продумать еще команды для разных видов адресаций -- //
 
 // -- команды целой арифметики -- //
     command[iAdd] = new class iAdd();
@@ -32,31 +29,25 @@ CPU::CPU()
     command[fDiv] = new class fDiv();
 
 // -- команды ввода и вывода -- //
-    //command[in_int] = new
-    command[out_int] = new class out_int();
-    //command[in_uint] = new
-    command[out_uint] = new class out_uint();
-    //command[in_float] = new
-    command[out_float] = new class out_float();
+    command[io] = new class io();
 
 // -- команды перехода -- //
-    //command[jmp] = new
-    //command[jmp_offset] = new
-    //command[jmp_ptr] = new
-    //command[jzf] = new
-    //command[jnzf = new
-    //command[jsf] = new
-    //command[jnsf] = new
-    //command[call] = new
-    //command[ret] = new
+    command[jmp] = new class jmp();
+    command[jzf] = new class jzf();
+    command[jnzf] = new class jnzf();
+    command[jsf] = new class jsf();
+    command[jnsf] = new class jnsf();
+    command[call] = new class call();
+    command[ret] = new class ret();
 
 }
 
 CPU::~CPU()
 {
-    for (Command* ptr : command)
+    for (Command* &ptr : command)
     {
         delete ptr;
+        ptr = nullptr;
     }
 }
 void CPU::run() noexcept
@@ -70,7 +61,8 @@ void CPU::run() noexcept
             cmd.c16[0] = cmd.c16[1];
             command[cmd.c32.cop] -> operator()(*this); // -- выполняем вторую 16-битную команду -- //
         }
-        ++PSW.IP;
+        if (!was_transition) ++PSW.IP;
+        else was_transition = false;
         loadCommand(); // -- загрузка следующей команды из памяти -- //
     }
 }

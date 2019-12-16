@@ -29,23 +29,23 @@ bool Uploader(CPU &cpu, const string &filename)
             }
             case 'i': case 'u': // -- загрузка данных: целое, беззнаковое -- //
             {
-                data_t chislo;
-                ss >> chislo.u;
+                word chislo;
+                ss >> chislo.data.u;
                 cpu.ram.push(chislo, address);
                 ++address;
                 break;
             }
             case 'f': // -- загрузка данных: число с плавающей точкой -- //
             {
-                data_t chislo;
-                ss >> chislo.f; // -- читаем как число с плавающей точкой -- //
+                word chislo;
+                ss >> chislo.data.f; // -- читаем как число с плавающей точкой -- //
                 cpu.ram.push(chislo, address);
                 ++address;
                 break;
             }
             case 'c':   // -- загрузка команды -- //
             {
-                data_t command; // -- пример: c t cop r1 r2 (для 16-битной команды) -- //
+                word command; // -- пример: c t cop r1 r2 (для 16-битной команды) -- //
                 uint16_t temp;
                 ss >> temp;     // -- читаем флаг длины команды t -- //
                 if (temp == 0)  // -- если флаг t (type) равен 0, значит команда короткая (16 бит) -- //
@@ -88,7 +88,7 @@ bool Uploader(CPU &cpu, const string &filename)
             }
             case 'e':   // -- начинаем работу процессора -- //
             {
-                data_t command;
+                word command;
                 command.c.c32.t = 1;
                 command.c.c32.cop = 0;
                 cpu.ram.push(command,address);
