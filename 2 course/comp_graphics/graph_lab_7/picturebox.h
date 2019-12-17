@@ -2,6 +2,7 @@
 #define PICTUREBOX_H
 
 #include <QFrame>
+#include <vector>
 #include <QPainter> // для пейнт евента
 #include <QMouseEvent>
 
@@ -13,7 +14,7 @@ class PictureBox : public QFrame
     QPoint ToCenterCoordinateSystem(const int x, const int y) const;
     void DrawCircle(const int r, QPainter &painter); // нарисовать круг
     QVector<QPoint> vertex;
-    QVector<QPoint> intersections;
+    std::vector<QPoint> intersections;
     void sort_intersections();
     void find_local_min_max();
     void fill();

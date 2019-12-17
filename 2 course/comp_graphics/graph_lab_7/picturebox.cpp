@@ -1,8 +1,10 @@
 #include <cmath>
 #include <QDebug>
+#include <QVector>
 #include <QtTest/QTest>
 #include <algorithm>
 #include "picturebox.h"
+#include "mainwindow.h"
 using namespace std;
 
 PictureBox::PictureBox(QWidget *parent) : QFrame(parent)
@@ -85,7 +87,7 @@ void PictureBox::DrawDirectLine(QPoint q1, QPoint q2, QColor color, QPainter &pa
         }
     }
 
-    if (write_points) intersections.append(intersections_points);
+    if (write_points) intersections.insert(intersections.end(),intersections_points.begin(),intersections_points.end());
 }
 void PictureBox::mousePressEvent(QMouseEvent *event)
 {
@@ -137,8 +139,8 @@ void PictureBox::fill_figure(QPainter &painter)
 {
     int w = width();
 
-    auto N = intersections.size() - 1;
-    for (auto i = 0; i < N; ++i) // -- пройдемся по вектору с точками пересечений ребер и сканирующих строк -- //
+    size_t N = intersections.size() - 1;
+    for (size_t i = 0; i < N; ++i) // -- пройдемся по вектору с точками пересечений ребер и сканирующих строк -- //
     {
         QColor color = Qt::gray; // -- изначально цвет фона -- //
         const int x = intersections[i].x();
@@ -167,7 +169,8 @@ void PictureBox::fill_figure(QPainter &painter)
             ++i;
         }
         DrawDirectLine(QPoint(intersections[i].x()+10,y), QPoint(w,y),Qt::gray,painter);
-        QTest::qWait(100);
+        int ms = 100;
+        MainWindow::wait(100);
         update();
     }
 }
@@ -177,7 +180,6 @@ void PictureBox::fill() // -- заливаем фигуру -- //
     QPainter painter(&m_Pixmap);
     int h = height();
     int w = width();
-    QImage image = m_Pixmap.toImage(); // -- чтобы получить доступ к пикселям -- //
     min_y = h; // -- по умолчанию, если фигура не задана - зальем фоном фрейм (т.е заливаем до конца окна по 'y') -- //
     if (!vertex.empty()) // -- если фигура нарисована, то заливаем до первой точки многоугольника -- //
     {
@@ -188,7 +190,8 @@ void PictureBox::fill() // -- заливаем фигуру -- //
     {
         DrawDirectLine(QPoint(0,y),QPoint(w,y),Qt::gray,painter);
         update();
-        QTest::qWait(100);  // -- для задержки, вообще, лучше было бы через таймер, но тогда необходимо менять логику программы -- //
+        MainWindow::wait(100);
+
     }
     fill_figure(painter); // -- заливка фигуры -- //
 
@@ -197,7 +200,14 @@ void PictureBox::fill() // -- заливаем фигуру -- //
     {
         DrawDirectLine(QPoint(0,y),QPoint(w,y),Qt::gray,painter);
         update();
-        QTest::qWait(100);  // -- для задержки, вообще, лучше было бы через таймер, но тогда необходимо менять логику программы -- //
+        MainWindow::wait(100);
+//        int ms = 100;
+//        QElapsedTimer timer;
+//        timer.start();
+//        do {
+//            QCoreApplication::processEvents(QEventLoop::AllEvents, ms);
+//            QCoreApplication::sendPostedEvents(0, QEvent::DeferredDelete);
+//        } while (timer.elapsed() < ms);  // -- для задержки -- //
     }
 }
 
