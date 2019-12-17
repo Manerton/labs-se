@@ -4,17 +4,19 @@
 #include <QFrame>
 #include <vector>
 #include <QPainter> // для пейнт евента
+#include <stack>
 #include <QMouseEvent>
 
 class PictureBox : public QFrame
 {
     Q_OBJECT
-    QPixmap m_Pixmap; // для рисования
+    QImage m_Pixmap; // для рисования
     QPixmap m_Grid; // сетка
     QPoint ToCenterCoordinateSystem(const int x, const int y) const;
     void DrawCircle(const int r, QPainter &painter); // нарисовать круг
     QVector<QPoint> vertex;
     std::vector<QPoint> intersections;
+    std::stack<QPoint> zatravka;
     void sort_intersections();
     void find_local_min_max();
     void fill();
@@ -30,6 +32,7 @@ private slots:
 public:
     explicit PictureBox(QWidget *parent = nullptr);
     void risovanie(); // функция рисования
+    void risovanie_zatravka(); // функция рисования
 protected:
     virtual void paintEvent(QPaintEvent*); // функция перерисовки, отрисовывает готовый пиксмап из ф-ции risovanie
 };

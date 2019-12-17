@@ -21,3 +21,9 @@ void MainWindow::on_pushButton_draw_clicked()
     pb_frame->repaint();
 }
 
+
+void MainWindow::on_pushButton_draw_zatravka_clicked()
+{
+    pb_frame->risovanie_zatravka();
+    pb_frame->repaint();
+}

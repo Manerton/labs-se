@@ -10,7 +10,7 @@ using namespace std;
 PictureBox::PictureBox(QWidget *parent) : QFrame(parent)
 {
     resize(parent->width()-2, parent->height()-2); // размер как у родительского виджета, с небольшим отступом в 2 пикселя, чтобы не удалять оранжевую рамку фрейма
-    m_Pixmap = QPixmap(size()); // инициализирую полотно, на котором буду рисовать
+    m_Pixmap = QImage(size(),QImage::Format_RGB32); // инициализирую полотно, на котором буду рисовать
     m_Pixmap.fill(Qt::white); // заливаю белым цветом
     m_Grid = QPixmap(500,500); // создаю полотно для сетки, пусть будет 500x500
     m_Grid.fill(Qt::white); // ее тоже белым заливаю
@@ -110,7 +110,14 @@ void PictureBox::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::RightButton)
     {
        painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::blue);
+
     }
+    if (event->button() == Qt::RightButton && event->modifiers() == Qt::ControlModifier)
+    {
+        painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::green);
+        zatravka.push(p);
+    }
+
     repaint();
 }
 
@@ -169,7 +176,6 @@ void PictureBox::fill_figure(QPainter &painter)
             ++i;
         }
         DrawDirectLine(QPoint(intersections[i].x()+10,y), QPoint(w,y),Qt::gray,painter);
-        int ms = 100;
         MainWindow::wait(100);
         update();
     }
@@ -219,8 +225,37 @@ void PictureBox::risovanie()
     fill();
 }
 
+void PictureBox::risovanie_zatravka()
+{
+    QPainter painter(&m_Pixmap);
+    while (!zatravka.empty())
+    {
+        painter.beginNativePainting();
+        QPoint p = zatravka.top();
+        zatravka.pop();
+
+        if (m_Pixmap.pixelColor(p.x()+1,p.y()+1) != Qt::green)
+        {
+            painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::green);
+            MainWindow::wait(20);
+            repaint();
+        }
+
+        QPoint p_left(p.x()-10,p.y()), p_right(p.x()+10,p.y()), p_up(p.x(),p.y()+10), p_down(p.x(),p.y()-10);
+        QColor p_left_color = m_Pixmap.pixelColor(p_left.x()+1,p_left.y()+1);
+        QColor p_right_color = m_Pixmap.pixelColor(p_right.x()+1,p_right.y()+1);
+        QColor p_up_color = m_Pixmap.pixelColor(p_up.x()+1,p_up.y()+1);
+        QColor p_down_color = m_Pixmap.pixelColor(p_down.x()+1,p_down.y()+1);
+        if ((p_right_color != (Qt::green)) && (p_right_color != (Qt::blue))) zatravka.push(p_right);
+        if (p_up_color != (Qt::green) && p_up_color != (Qt::blue)) zatravka.push(p_up);
+        if ((p_left_color != (Qt::green)) && (p_left_color != (Qt::blue))) zatravka.push(p_left);
+        if (p_down_color != (Qt::green) && p_down_color != (Qt::blue)) zatravka.push(p_down);
+    }
+    //m_Pixmap.convertFromImage(image);
+}
+
 void PictureBox::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    painter.drawPixmap(1,1,m_Pixmap);
+    painter.drawImage(1,1,m_Pixmap);
 }
