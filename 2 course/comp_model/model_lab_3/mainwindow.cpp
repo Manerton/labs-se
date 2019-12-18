@@ -22,7 +22,7 @@ void MainWindow::paintEvent(QPaintEvent *)
     painter.setBrush(Qt::yellow);
     painter.setPen(Qt::black);
 
-    for (int i = 150; i < height(); i += 150)
+    for (int i = 150; i < height(); i += 150)   // -- 10-километровая сетка -- //
     {
         painter.drawLine(0,i,width(),i);
     }
@@ -35,7 +35,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 
     for (int i = 0; i < 1000; ++i)
     {
-        crocodile.work(8,15);
+        crocodile.work(8,15,veroyantost);
         auto N = crocodile.coord.size();
 
         painter.drawEllipse(crocodile.coord[N-1],3,3);
@@ -48,6 +48,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 
 void MainWindow::on_pushButton_clicked()
 {
+    veroyantost = 0.25;
     crocodile = animal(v,l);
     repaint();
 }
@@ -62,4 +63,11 @@ void MainWindow::on_SpinBox_l_valueChanged(double arg1)
 {
     l = arg1;
     on_pushButton_clicked();
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    veroyantost = 0.33;
+    crocodile = animal(v,l);
+    repaint();
 }
