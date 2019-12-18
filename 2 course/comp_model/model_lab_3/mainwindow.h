@@ -22,12 +22,14 @@ private slots:
     void on_pushButton_clicked();
     void on_SpinBox_v_valueChanged(double arg1);
     void on_SpinBox_l_valueChanged(double arg1);
+    void on_pushButton_2_clicked();
 
 private:
     Ui::MainWindow *ui;
     double v;
     double l;
     animal crocodile;
+    double veroyantost = 0.33;
 };
 
 #endif // MAINWINDOW_H
