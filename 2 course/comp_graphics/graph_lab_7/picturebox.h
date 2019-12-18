@@ -31,8 +31,9 @@ private slots:
     void DrawDirectLine(const QPoint q1, const QPoint q2, QColor color, QPainter &painter, bool write_points = false);
 public:
     explicit PictureBox(QWidget *parent = nullptr);
-    void risovanie(); // функция рисования
-    void risovanie_zatravka(); // функция рисования
+    void risovanie(); // функция рисования (построчная заливка)
+    void risovanie_zatravka(); // функция рисования (простая затравочная)
+    void risovanie_zatravka_line(); // функция рисования (затравочная построчная)
 protected:
     virtual void paintEvent(QPaintEvent*); // функция перерисовки, отрисовывает готовый пиксмап из ф-ции risovanie
 };

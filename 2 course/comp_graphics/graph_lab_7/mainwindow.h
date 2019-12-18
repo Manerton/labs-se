@@ -31,6 +31,7 @@ public:
 private slots:
     void on_pushButton_draw_clicked(); // нарисовать
     void on_pushButton_draw_zatravka_clicked();
+    void on_pushButton_draw_zatravka_line_clicked();
 };
 
 

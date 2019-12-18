@@ -230,14 +230,13 @@ void PictureBox::risovanie_zatravka()
     QPainter painter(&m_Pixmap);
     while (!zatravka.empty())
     {
-        painter.beginNativePainting();
         QPoint p = zatravka.top();
         zatravka.pop();
 
         if (m_Pixmap.pixelColor(p.x()+1,p.y()+1) != Qt::green)
         {
             painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::green);
-            MainWindow::wait(20);
+            MainWindow::wait(3);
             repaint();
         }
 
@@ -250,6 +249,68 @@ void PictureBox::risovanie_zatravka()
         if (p_up_color != (Qt::green) && p_up_color != (Qt::blue)) zatravka.push(p_up);
         if ((p_left_color != (Qt::green)) && (p_left_color != (Qt::blue))) zatravka.push(p_left);
         if (p_down_color != (Qt::green) && p_down_color != (Qt::blue)) zatravka.push(p_down);
+    }
+}
+void PictureBox::risovanie_zatravka_line()
+{
+    QPainter painter(&m_Pixmap);
+    while (!zatravka.empty())
+    {
+        QPoint p = zatravka.top();
+        zatravka.pop();
+
+        if (m_Pixmap.pixelColor(p.x()+1,p.y()+1) != Qt::green)
+        {
+            painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::green);
+            MainWindow::wait(3);
+            repaint();
+        }
+
+        QPoint p2(p.x()+10,p.y());
+        QColor p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
+        while ((p2_color != (Qt::green)) && (p2_color != (Qt::blue))) // -- идем вправо по строке -- //
+        {
+            p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
+            painter.fillRect(p2.x()+1,p2.y()+1,9,9,Qt::green);
+            p2 = {p2.x() + 10, p2.y()};
+        }
+        QPoint p_right = {p2.x()-10, p2.y()};
+        p2 = {p.x()-10, p.y()};
+        p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
+        while ((p2_color != (Qt::green)) && (p2_color != (Qt::blue))) // -- идем влево по строке -- //
+        {
+            p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
+            painter.fillRect(p2.x()+1,p2.y()+1,9,9,Qt::green);
+            p2 = {p2.x() - 10, p2.y()};
+        }
+        QPoint p_left = {p2.x()+10,p2.y()};
+        p2 = {p_left.x(), p2.y()+10};
+        p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
+        while (p2.x() <= p_right.x())
+        {
+            bool flag = 0;
+            p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
+            while ((p2_color != (Qt::green)) && (p2_color != (Qt::blue)) && p2.x() < p_right.x())
+            {
+                if (!flag) flag = true;
+                p2 = {p2.x() + 10, p2.y()};
+            }
+            if (flag)
+            {
+                p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
+                if ((p2_color != (Qt::green)) && (p2_color != (Qt::blue)))
+                {
+                    zatravka.push(p2);
+                }
+                else
+                {
+                    zatravka.push(QPoint(p2.x()-10,p2.y()));
+                }
+                flag = 0;
+            }
+        }
+
+
     }
     //m_Pixmap.convertFromImage(image);
 }

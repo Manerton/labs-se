@@ -566,6 +566,29 @@ background-color: rgb(104, 104, 104);</string>
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_draw_zatravka_line">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>520</y>
+      <width>101</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 230, 224);
+background-color: rgb(104, 104, 104);</string>
+    </property>
+    <property name="text">
+     <string>Залить цветом</string>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
+   </widget>
   </widget>
  </widget>
  <tabstops>
