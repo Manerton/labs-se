@@ -2,7 +2,6 @@
 #include <cmath>
 #include <limits> // для numeric_limits<float>::epsilon(), чтобы сравнивать результат дробных вычислений с 0
 #include "command.h"
-#include "command.h"
 
 // -- КОМАНДЫ ПЕРЕСЫЛКИ ДАННЫХ -- //
 void exchange::operator()(CPU &cpu) noexcept
