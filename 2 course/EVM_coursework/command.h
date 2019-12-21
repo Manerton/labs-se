@@ -10,7 +10,7 @@ public:
     virtual void operator() (CPU& cpu) noexcept = 0;    // -- чистая виртуальная функция - функтор -- //
     virtual ~Command() {}
 protected:
-    inline bool get_was_transition(CPU& cpu) { return cpu.was_transition; }
+    inline void set_was_transition(CPU& cpu) { cpu.was_transition = true; }
 
 };
 
