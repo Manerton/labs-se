@@ -132,16 +132,6 @@ void PictureBox::sort_intersections()
          });
 }
 
-void PictureBox::find_local_min_max() // -- ищем точку с минимальным и максимальным y -- //
-{                                                           // -- иначе говоря, ищем локальные минимум и максимум фигуры -- //
-    auto minmax = minmax_element(vertex.begin(),vertex.end(),
-                            [](const QPoint& l, const QPoint& r) {  // -- лямбда-функция - критерий -- //
-                                return l.y() < r.y();
-                            });
-    min_y = minmax.first->y();
-    max_y = minmax.second->y();
-}
-
 void PictureBox::fill_figure(QPainter &painter)
 {
     int w = width();
@@ -186,10 +176,12 @@ void PictureBox::fill() // -- заливаем фигуру -- //
     QPainter painter(&m_Pixmap);
     int h = height();
     int w = width();
-    min_y = h; // -- по умолчанию, если фигура не задана - зальем фоном фрейм (т.е заливаем до конца окна по 'y') -- //
+    int min_y = h; // -- по умолчанию, если фигура не задана - зальем фоном фрейм (т.е заливаем до конца окна по 'y') -- //
+    int max_y = h;
     if (!vertex.empty()) // -- если фигура нарисована, то заливаем до первой точки многоугольника -- //
     {
-        find_local_min_max();
+        min_y = intersections[0].y();
+        max_y = intersections.back().y();
     }
     // -- заливаю фон до фигуры -- //
     for (int y = 0; y < min_y; y += 10)
@@ -207,13 +199,6 @@ void PictureBox::fill() // -- заливаем фигуру -- //
         DrawDirectLine(QPoint(0,y),QPoint(w,y),Qt::gray,painter);
         update();
         MainWindow::wait(100);
-//        int ms = 100;
-//        QElapsedTimer timer;
-//        timer.start();
-//        do {
-//            QCoreApplication::processEvents(QEventLoop::AllEvents, ms);
-//            QCoreApplication::sendPostedEvents(0, QEvent::DeferredDelete);
-//        } while (timer.elapsed() < ms);  // -- для задержки -- //
     }
 }
 

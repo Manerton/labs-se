@@ -24,9 +24,6 @@ class PictureBox : public QFrame
     void DrawGrid(); // нарисовать сетку
     void mousePressEvent ( QMouseEvent * event );
 
-    int min_y = 0;
-    int max_y = 0;
-
 private slots:
     void DrawDirectLine(const QPoint q1, const QPoint q2, QColor color, QPainter &painter, bool write_points = false);
 public:
