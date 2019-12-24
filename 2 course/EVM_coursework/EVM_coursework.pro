@@ -15,5 +15,6 @@ HEADERS += \
     memory.h \
     types.h
 
-DISTFILES +=
+DISTFILES += \
+    uml.qmodel
 

@@ -111,11 +111,11 @@ int main (int argc, char* argv[])
         cout << "File " << argv[1] << " is ";
         if (Uploader(cpu, argv[1]))
         {
-            cout << " uploaded!" << endl;
+            cout << "uploaded!" << endl;
             cpu.run();
         }
-        else cout << " not uploaded" << endl;
-    } else cout << "Programm has been started without arguments." << endl;
+        else cout << "not uploaded" << endl;
+    } else cout << "Program has been started without arguments." << endl;
     system("pause");
 
     return 0;
