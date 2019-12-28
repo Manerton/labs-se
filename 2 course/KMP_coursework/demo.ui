@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Demo</class>
+ <widget class="QMainWindow" name="Demo">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QStackedWidget" name="stackedWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>800</width>
+      <height>600</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>1</number>
+    </property>
+    <widget class="QWidget" name="demonstration">
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <widget class="QTextBrowser" name="textBrowser">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>400</y>
+        <width>651</width>
+        <height>192</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Courier New</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_result">
+      <property name="geometry">
+       <rect>
+        <x>670</x>
+        <y>460</y>
+        <width>121</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>Результат 1-го этапа</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_step2">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>500</y>
+        <width>80</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>Этап 2</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_finish">
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>550</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 133, 26);
+color: rgb(255, 255, 255);
+border-color: rgb(0, 0, 0);</string>
+      </property>
+      <property name="text">
+       <string>Завершить
+демонстрацию</string>
+      </property>
+      <property name="shortcut">
+       <string>Esc</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="default">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QFrame" name="frame">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>781</width>
+        <height>381</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::StrongFocus</enum>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="menu">
+     <widget class="QLabel" name="label_intro">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>751</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Демонстрация работы алгоритма&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>130</y>
+        <width>801</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(83, 83, 83);
+color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;Введите начальные данные&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_str">
+      <property name="geometry">
+       <rect>
+        <x>202</x>
+        <y>240</y>
+        <width>401</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="maxLength">
+       <number>15</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_str">
+      <property name="geometry">
+       <rect>
+        <x>204</x>
+        <y>220</y>
+        <width>47</width>
+        <height>14</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Строка</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_substr">
+      <property name="geometry">
+       <rect>
+        <x>202</x>
+        <y>290</y>
+        <width>401</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="maxLength">
+       <number>15</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_substr">
+      <property name="geometry">
+       <rect>
+        <x>204</x>
+        <y>270</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Подстрока</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_start">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>390</y>
+        <width>181</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Начать</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
