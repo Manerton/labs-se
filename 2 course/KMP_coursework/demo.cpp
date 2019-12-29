@@ -27,13 +27,19 @@ void Demo::on_pushButton_start_clicked()
 {
     if (pb_frame != nullptr) delete pb_frame;
     pb_frame = new PictureBox(ui->frame);                            // -- инициализирую демонстрацию -- //
-    QString str = "abcabeabcabcabd";
-    QString substr = "abcabd";
-    if (ui->lineEdit_str->text().length() != 0)
+    if (ui->lineEdit_str->text().length() == 0)
+    {
+        pb_frame->str = "abcabeabcabcabd";
+    }
+    else
     {
         pb_frame->str = ui->lineEdit_str->text();
     }
-    if (ui->lineEdit_substr->text().length() != 0)
+    if (ui->lineEdit_substr->text().length() == 0)
+    {
+        pb_frame->substr = "abcabd";
+    }
+    else
     {
         pb_frame->substr = ui->lineEdit_substr->text();
     }
