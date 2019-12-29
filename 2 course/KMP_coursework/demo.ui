@@ -234,7 +234,7 @@ color: rgb(255, 255, 255);</string>
       <property name="geometry">
        <rect>
         <x>310</x>
-        <y>390</y>
+        <y>360</y>
         <width>181</width>
         <height>71</height>
        </rect>
@@ -246,6 +246,23 @@ color: rgb(255, 255, 255);</string>
       </property>
       <property name="text">
        <string>Начать</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>480</y>
+        <width>801</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(83, 83, 83);
+color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Нажмите &amp;quot;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&amp;quot;, для того, чтобы перейти к следующему шагу демонстрации&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Нажмите &amp;quot;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&amp;quot;, для возврата к предыдущему шагу демонстрации&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Нажмите &amp;quot;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;escape&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&amp;quot;, если вы хотите закончить демонстрацию алгоритма&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </widget>

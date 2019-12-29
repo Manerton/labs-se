@@ -1,3 +1,4 @@
+#include <QFile>
 #include "teoria.h"
 #include "loader.h"
 #include <QMessageBox>
@@ -8,10 +9,18 @@ Teoria::Teoria(QWidget *parent) :
     ui(new Ui::Teoria)
 {
     ui->setupUi(this);
-    ui->textBrowser->setSource(QUrl("files\\text.txt"));
+    if (!QFile::exists("files\\text.txt"))
+    {
+        QMessageBox::warning(this,"Ошибка","Не удалось открыть файл files\\text.txt");
+    } else ui->textBrowser->setSource(QUrl("files\\text.txt"));
+
+    if (!QFile::exists("files\\dictionary.txt"))
+    {
+        QMessageBox::warning(this,"Ошибка","Не удалось открыть файл files\\dictionary.txt");
+    } else ui->dictionary->setSource(QUrl("files\\dictionary.txt"));
     ui->textBrowser->setAlignment(Qt::AlignJustify);
     ui->textBrowser->setOpenLinks(false);                // -- запретить изменения окна с теории при нажатии на ссылки -- //
-    ui->dictionary->setSource(QUrl("files\\dictionary.txt"));         // -- прочитать словарь из файла -- //
+            // -- прочитать словарь из файла -- //
 
 }
 

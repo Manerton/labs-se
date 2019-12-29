@@ -14,6 +14,11 @@ Test::Test(QWidget *parent) :
 {
     ui->setupUi(this);
     all_text = loader::getText_from_file("files\\quest.txt");
+    if (all_text.length() == 0)
+    {
+        QMessageBox::warning(this,"Ошибка","Не удалось открыть файл files\\quest.txt");
+        ui->pushButton_start->setDisabled(true);
+    }
     N = 5;
 }
 
