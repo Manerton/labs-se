@@ -1,4 +1,5 @@
 #include <sstream>
+#include <ctime>
 #include <QMessageBox>
 #include <random>
 #include "test.h"
