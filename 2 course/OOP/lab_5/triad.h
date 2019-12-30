@@ -13,36 +13,37 @@ class Triad
     int64_t num2;
     int64_t num3;
 public:
-    Triad(const int64_t& _num1, const int64_t& _num2, const int64_t& _num3)
-        : num1(_num1), num2(_num2), num3(_num3){}
+    Triad(int64_t _num1 = 0, int64_t _num2 = 0, int64_t _num3 = 0) noexcept
+        : num1(_num1), num2(_num2), num3(_num3) {}
 
-    std::string toString() const noexcept; // -- перевод денег Triad в число -- //
+    std::string toString() const noexcept; // -- перевод Triad в строку -- //
+
     // -- методы получения значений полей -- //
-    int64_t getNum1() const noexcept;
-    int64_t getNum2() const noexcept;
-    int64_t getNum3() const noexcept;
+    inline int64_t getNum1() const noexcept { return num1; }
+    inline int64_t getNum2() const noexcept { return num2; }
+    inline int64_t getNum3() const noexcept { return num3; }
 
     // -- методы установки значений для полей -- //
-    void setNum1(const int64_t &b) noexcept;
-    void setNum2(const int64_t &b) noexcept;
-    void setNum3(const int64_t &b) noexcept;
+    inline void setNum1(int64_t b) noexcept { num1 = b; }
+    inline void setNum2(int64_t b) noexcept { num2 = b; }
+    inline void setNum3(int64_t b) noexcept { num3 = b; }
 
     // -- методы сложения отдельно для каждого числа из тройки -- //
-    void add_to_num1(const int64_t &b) noexcept;
-    void add_to_num2(const int64_t &b) noexcept;
-    void add_to_num3(const int64_t &b) noexcept;
+    inline void add_to_num1(int64_t b) noexcept { num1 += b; }
+    inline void add_to_num2(int64_t b) noexcept { num2 += b; }
+    inline void add_to_num3(int64_t b) noexcept { num3 += b; }
 
     // -- методы умножения отдельно для каждого числа из тройки -- //
-    void mul_num1(const int64_t &b) noexcept;
-    void mul_num2(const int64_t &b) noexcept;
-    void mul_num3(const int64_t &b) noexcept;
+    inline void mul_num1(int64_t b) noexcept { num1 *= b; }
+    inline void mul_num2(int64_t b) noexcept { num2 *= b; }
+    inline void mul_num3(int64_t b) noexcept { num3 *= b; }
 
     // -- операции-методы присваивания -- //
-    Triad& operator+=(const int64_t &b);  // -- прибавления числа к каждому числу тройки -- //
-    Triad& operator*=(const int64_t &b); // -- умножение каждого числа тройки на число b -- //
+    Triad& operator+=(int64_t b);  // -- прибавления числа к каждому числу тройки -- //
+    Triad& operator*=(int64_t b); // -- умножение каждого числа тройки на число b -- //
     // -- дружеские операции -- //
-    friend Triad operator+(const Triad &a, const int64_t &b);
-    friend Triad operator*(const Triad &a, const int64_t &b);
+    friend Triad operator+(const Triad &a, int64_t b);
+    friend Triad operator*(const Triad &a, int64_t b);
     // -- операции сравнения и вывода -- //
     friend bool operator==(const Triad &a, const Triad &b);
     friend bool operator!=(const Triad &a, const Triad &b);

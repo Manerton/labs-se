@@ -1,11 +1,15 @@
 TEMPLATE = app
-CONFIG += console
+CONFIG += console c++17
 CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    triad.cpp
+    testcase.cpp \
+    triad.cpp \
+    vector3d.cpp
 
 HEADERS += \
-    triad.h
+    doctest.h \
+    triad.h \
+    vector3d.h
 

@@ -1,10 +1,18 @@
+#define DOCTEST_CONFIG_IMPLEMENT
 #include <iostream>
+#include "doctest.h"
 
 using namespace std;
 
-int main()
+int main(int argc, char* argv[] )
 {
-    cout << "Hello World!" << endl;
-    return 0;
+    system("chcp 1251 > nul");
+    cout << "Лабораторная работа №5. Вариант 11.\nАвтор: Катунин Сергей. ДИПРБ-21.\n" << endl;
+    doctest::Context context;
+    context.applyCommandLine(argc, argv);
+    int result = context.run();	// -- пуск системы doctest --
+    system("pause");			// -- для просмотра результатов --
+    return result;
 }
+
 
