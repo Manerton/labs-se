@@ -23,7 +23,7 @@ public:
     friend Money operator+(const Money &a, const Money &b);
     friend Money operator-(const Money &a, const Money &b);
     friend Money operator/(const Money &a, const Money &b);
-    friend Money operator+(const Money &a, const double &b);
+    friend Money operator*(const Money &a, const double &b);
     // -- операции сравнения и вывода -- //
     friend bool operator==(const Money &a, const Money &b);
     friend bool operator!=(const Money &a, const Money &b);
@@ -32,9 +32,9 @@ public:
     friend bool operator>(const Money &a, const Money &b);
     friend bool operator<=(const Money &a, const Money &b);
     friend std::ostream& operator<<(std::ostream& t, const Money &r);
-    friend std::istream& operator<<(std::istream& t, Money &r);
+    friend std::istream& operator>>(std::istream& t, Money &r);
     // -- исключения -- //
-    class divide_by_zero_exception {};    // -- деление на ноль -- //
+    class divide_by_zero_exception {};                // -- деление на ноль -- //
     class negative_conversion_factor_exception {} ;   // -- коэффициент пересчета отрицательный (дробное число, используемое при делении) -- //
 };
 

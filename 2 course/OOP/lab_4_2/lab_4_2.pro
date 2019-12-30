@@ -6,9 +6,8 @@ CONFIG -= qt
 SOURCES += \
         account.cpp \
         main.cpp \
-        money.cpp \
         testcase.cpp
 
 HEADERS += \
     account.h \
-    money.h
+    doctest.h
