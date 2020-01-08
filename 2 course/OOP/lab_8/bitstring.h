@@ -4,7 +4,6 @@
 
 class BitString : public Array
 {
-    BitString& toAdditionalCode(size_type new_N);
 public:
     static constexpr uint8_t num_sys = 2; // -- система счисления -- //
     int64_t count_of_SingleBit() const noexcept; // -- количество битовых единиц -- //
