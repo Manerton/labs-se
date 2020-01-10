@@ -12,8 +12,6 @@ class PictureBox : public QFrame
     Q_OBJECT
     QImage m_Pixmap; // для рисования
     QPixmap m_Grid; // сетка
-    QPoint ToCenterCoordinateSystem(const int x, const int y) const;
-    void DrawCircle(const int r, QPainter &painter); // нарисовать круг
     QVector<QPoint> vertex;
     std::vector<QPoint> intersections;
     std::stack<QPoint> zatravka;
@@ -24,6 +22,8 @@ class PictureBox : public QFrame
     void DrawGrid(); // нарисовать сетку
     void mousePressEvent ( QMouseEvent * event );
 
+    void zatravka_line_poisk_new_zatravka(QPoint p, int x_right); // -- часть алгоритма построчной затравки -- //
+    
 private slots:
     void DrawDirectLine(const QPoint q1, const QPoint q2, QColor color, QPainter &painter, bool write_points = false);
 public:

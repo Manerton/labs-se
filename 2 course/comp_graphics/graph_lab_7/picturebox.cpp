@@ -226,78 +226,101 @@ void PictureBox::risovanie_zatravka()
         }
 
         QPoint p_left(p.x()-10,p.y()), p_right(p.x()+10,p.y()), p_up(p.x(),p.y()+10), p_down(p.x(),p.y()-10);
+
         QColor p_left_color = m_Pixmap.pixelColor(p_left.x()+1,p_left.y()+1);
         QColor p_right_color = m_Pixmap.pixelColor(p_right.x()+1,p_right.y()+1);
         QColor p_up_color = m_Pixmap.pixelColor(p_up.x()+1,p_up.y()+1);
         QColor p_down_color = m_Pixmap.pixelColor(p_down.x()+1,p_down.y()+1);
+
         if ((p_right_color != (Qt::green)) && (p_right_color != (Qt::blue))) zatravka.push(p_right);
         if (p_up_color != (Qt::green) && p_up_color != (Qt::blue)) zatravka.push(p_up);
         if ((p_left_color != (Qt::green)) && (p_left_color != (Qt::blue))) zatravka.push(p_left);
         if (p_down_color != (Qt::green) && p_down_color != (Qt::blue)) zatravka.push(p_down);
     }
 }
+void PictureBox::zatravka_line_poisk_new_zatravka(QPoint p, int x_right)
+{
+    // проверим, что строка выше/ниже не является ни границей многоугольника, ни уже полностью
+    // заполненной; если не так, то найдем затравку, начиная с левого края подинтервала
+    // сканирующей строки
+    while (p.x() <= x_right)
+    {
+        // -- ищем затравку на строке выше -- //
+        bool flag = false;
+        while (m_Pixmap.pixelColor(p.x()+1,p.y()+1) != Qt::blue &&
+               m_Pixmap.pixelColor(p.x()+1,p.y()+1) != Qt::green &&
+               p.x() < x_right)
+        {
+            if (!flag) flag = true;
+            p.rx() += 10;
+        }
+        if (flag)
+        {
+            if (p.x() == x_right &&
+                m_Pixmap.pixelColor(p.x()+1,p.y()+1) != Qt::blue &&
+                m_Pixmap.pixelColor(p.x()+1,p.y()+1) != Qt::green)
+            {
+                zatravka.push(p);
+            }
+            else
+            {
+                zatravka.push(QPoint(p.x()-10,p.y()));
+            }
+            flag = 0;
+        }
+        // -- продолжаем проверку, если интервал прерван -- //
+        int x_vhod = p.x();
+        while (( m_Pixmap.pixelColor(p.x()+1,p.y()+1) == Qt::blue ||
+               m_Pixmap.pixelColor(p.x()+1,p.y()+1) == Qt::green ) &&
+               p.x() < x_right)
+        {
+            p.rx() += 10;
+        }
+        // -- удостоверимся, что координата пикселя увеличена -- //
+        if (p.x() == x_vhod) p.rx() += 10;
+    }
+}
+
 void PictureBox::risovanie_zatravka_line()
 {
     QPainter painter(&m_Pixmap);
-    while (!zatravka.empty())
+    while (!zatravka.empty())   // -- стек не пуст -- //
     {
-        QPoint p = zatravka.top();
+        QPoint p = zatravka.top();  // -- извлекаем -- //
         zatravka.pop();
-
-        if (m_Pixmap.pixelColor(p.x()+1,p.y()+1) != Qt::green)
+        painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::green); // -- заливаем пиксель -- //
+        int temp_x = p.x(); // -- сохраняем x-координату затравочного пикселя -- //
+        //----------------------------------------------//
+        p.rx() += 10;   // -- начинаем заполнять интервал справа от затравки -- //
+        // -- пока не дошли до границы -- //
+        while (m_Pixmap.pixelColor(p.x()+1,p.y()+1) != Qt::blue)
         {
-            painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::green);
-            MainWindow::wait(3);
-            repaint();
+            painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::green); // -- заливаем пиксель -- //
+            p.rx() += 10;
         }
-
-        QPoint p2(p.x()+10,p.y());
-        QColor p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
-        while ((p2_color != (Qt::green)) && (p2_color != (Qt::blue))) // -- идем вправо по строке -- //
+        int x_right = p.x() - 10;   // -- сохраняем крайний пиксель справа -- //
+        p.rx() = temp_x;    // -- восстанавливаем x-координату затравки -- //
+        //----------------------------------------------//
+        p.rx() -= 10; // -- начинаем заполнять интервал слева от затравки -- //
+        // -- пока не дошли до границы -- //
+        while (m_Pixmap.pixelColor(p.x()+1,p.y()+1) != Qt::blue)
         {
-            p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
-            painter.fillRect(p2.x()+1,p2.y()+1,9,9,Qt::green);
-            p2 = {p2.x() + 10, p2.y()};
+            painter.fillRect(p.x()+1,p.y()+1,9,9,Qt::green); // -- заливаем пиксель -- //
+            p.rx() -= 10;
         }
-        QPoint p_right = {p2.x()-10, p2.y()};
-        p2 = {p.x()-10, p.y()};
-        p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
-        while ((p2_color != (Qt::green)) && (p2_color != (Qt::blue))) // -- идем влево по строке -- //
-        {
-            p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
-            painter.fillRect(p2.x()+1,p2.y()+1,9,9,Qt::green);
-            p2 = {p2.x() - 10, p2.y()};
-        }
-        QPoint p_left = {p2.x()+10,p2.y()};
-        p2 = {p_left.x(), p2.y()+10};
-        p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
-        while (p2.x() <= p_right.x())
-        {
-            bool flag = 0;
-            p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
-            while ((p2_color != (Qt::green)) && (p2_color != (Qt::blue)) && p2.x() < p_right.x())
-            {
-                if (!flag) flag = true;
-                p2 = {p2.x() + 10, p2.y()};
-            }
-            if (flag)
-            {
-                p2_color = m_Pixmap.pixelColor(p2.x()+1,p2.y()+1);
-                if ((p2_color != (Qt::green)) && (p2_color != (Qt::blue)))
-                {
-                    zatravka.push(p2);
-                }
-                else
-                {
-                    zatravka.push(QPoint(p2.x()-10,p2.y()));
-                }
-                flag = 0;
-            }
-        }
+        int x_left = p.x() + 10;   // -- сохраняем крайний пиксель слева -- //
+        //----------------------------------------------//
 
-
+        p.rx() = x_left;
+        p.ry() -= 10;
+        // -- смотрим строку выше и ищем новую затравку -- //
+        zatravka_line_poisk_new_zatravka(p,x_right);
+        p.ry() += 20;
+        // -- смотрим строку ниже и ищем новую затравку -- //
+        zatravka_line_poisk_new_zatravka(p,x_right);
+        MainWindow::wait(30);
+        repaint();
     }
-    //m_Pixmap.convertFromImage(image);
 }
 
 void PictureBox::paintEvent(QPaintEvent *)
