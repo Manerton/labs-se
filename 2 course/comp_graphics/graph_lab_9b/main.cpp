@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 
 #include <QApplication>
-#include <QtCharts/QAbstractAxis>
 
 int main(int argc, char *argv[])
 {
