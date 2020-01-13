@@ -21,6 +21,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_teoria_clicked()
 {
+    setMaximumWidth(16777215);
+    setMaximumHeight(16777215);
     ui->stackedWidget->setCurrentWidget(ui->teoria);            // -- переключится на теорию -- //
 }
 
@@ -33,6 +35,8 @@ void MainWindow::on_pushButton_test_clicked()
 void MainWindow::return_to_menu()
 {
     ui->stackedWidget->setCurrentWidget(ui->mainmenu);
+    setMaximumWidth(800);
+    setMaximumHeight(600);
 }
 
 
