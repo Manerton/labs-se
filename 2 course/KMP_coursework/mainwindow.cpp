@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    // -- для возврата в главное меню из подсистем теории, демонстрации и теста -- //
     connect(ui->teoria, &Teoria::return_to_menu, this, &MainWindow::return_to_menu);
     connect(ui->test, &Test::return_to_menu, this, &MainWindow::return_to_menu);
     connect(ui->demo, &Demo::return_to_menu, this, &MainWindow::return_to_menu);
