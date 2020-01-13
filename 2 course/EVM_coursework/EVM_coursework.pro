@@ -16,5 +16,8 @@ HEADERS += \
     types.h
 
 DISTFILES += \
-    uml.qmodel
+    uml.qmodel \
+    uml_for_model.qmodel
+
+STATECHARTS +=
 

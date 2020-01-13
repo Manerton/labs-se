@@ -57,6 +57,7 @@ void Demo::on_pushButton_start_clicked()
     update_code();
     pb_frame->repaint();
     ui->stackedWidget->setCurrentWidget(ui->demonstration);
+    ui->label_3->setText("Этап 1. Формирование массива префикс-функции");
 
 }
 
@@ -66,6 +67,7 @@ void Demo::on_pushButton_result_clicked()
     pb_frame->i_step = 1;
     pb_frame->N_step = pb_frame->Pi.size();
     pb_frame->do_step(true);
+    ui->label_3->setText("Результаты первого этапа");
     pb_frame->repaint();
 }
 
@@ -76,6 +78,7 @@ void Demo::on_pushButton_step2_clicked()
     pb_frame->settings = pb_frame->prepare_drawSettings(pb_frame->str.length());
     pb_frame->N_step = pb_frame->kmp_steps.size();
     pb_frame->do_step(true);
+    ui->label_3->setText("Этап 2. Непосредственный поиск подстроки в строке");
     pb_frame->repaint();
 }
 
@@ -89,7 +92,7 @@ void Demo::update_code()
     if (mode == PictureBox::DemoMode::drawPrefFunc)
     {
         start = 0; end = 3;
-        highlighted_line_i = pb_frame->pref_steps[size_t(i_step)].code_i;
+        highlighted_line_i = pb_frame->pref_steps[size_t(i_step)].code_i; 
     }
     else if (mode == PictureBox::DemoMode::drawKMP)
     {
@@ -111,6 +114,8 @@ void Demo::update_code()
         }
         ui->textBrowser->append("");
     }
+
+
 }
 
 void Demo::keyPressEvent(QKeyEvent *event) {

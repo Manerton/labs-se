@@ -49,7 +49,7 @@
                          </base-DElement>
                          <object>{d7ba011e-8dce-459a-85da-b62be1d6ce73}</object>
                          <name>CPU</name>
-                         <pos>x:260;y:840</pos>
+                         <pos>x:500;y:745</pos>
                          <rect>x:-100;y:-140;w:200;h:280</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -72,7 +72,7 @@
                          </base-DElement>
                          <object>{77be6b8a-6067-437e-8597-427ed6f0b81b}</object>
                          <name>PSW</name>
-                         <pos>x:70;y:875</pos>
+                         <pos>x:310;y:780</pos>
                          <rect>x:-50;y:-50;w:100;h:100</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -119,7 +119,7 @@
                          </base-DElement>
                          <object>{d48cb67e-b4ea-4855-ac37-1f27237a7b9a}</object>
                          <name>FLAGS</name>
-                         <pos>x:70;y:730</pos>
+                         <pos>x:310;y:635</pos>
                          <rect>x:-55;y:-55;w:110;h:110</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -166,7 +166,7 @@
                          </base-DElement>
                          <object>{3d708220-8487-41b9-886c-ba692be03116}</object>
                          <name>Memory</name>
-                         <pos>x:130;y:590</pos>
+                         <pos>x:350;y:490</pos>
                          <rect>x:-115;y:-70;w:230;h:140</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -212,7 +212,7 @@
                          </base-DElement>
                          <object>{4cded267-57a8-4c74-8cfe-0f0f9cd93ccb}</object>
                          <name>Types</name>
-                         <pos>x:205;y:325</pos>
+                         <pos>x:445;y:230</pos>
                          <rect>x:-185;y:-175;w:370;h:350</rect>
                          <auto-sized>false</auto-sized>
                          <visual-role>0</visual-role>
@@ -235,7 +235,7 @@
                          </base-DElement>
                          <object>{45cefe96-44df-4b39-ac23-cc9ccaece509}</object>
                          <name>cmd</name>
-                         <pos>x:105;y:430</pos>
+                         <pos>x:345;y:335</pos>
                          <rect>x:-60;y:-45;w:120;h:90</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -257,7 +257,7 @@
                          </base-DElement>
                          <object>{d9cb1243-7e35-4f2e-9a1d-4b35df34486a}</object>
                          <name>word</name>
-                         <pos>x:230;y:430</pos>
+                         <pos>x:470;y:335</pos>
                          <rect>x:-40;y:-45;w:80;h:90</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -279,7 +279,7 @@
                          </base-DElement>
                          <object>{afd69cee-4c71-4f6e-9c28-5933892f8537}</object>
                          <name>data_t</name>
-                         <pos>x:340;y:430</pos>
+                         <pos>x:580;y:335</pos>
                          <rect>x:-40;y:-50;w:80;h:100</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -349,7 +349,7 @@
                          </base-DElement>
                          <object>{7e6b4a1c-3179-456b-923e-f6b13ec10007}</object>
                          <name>cmd16_struct</name>
-                         <pos>x:105;y:275</pos>
+                         <pos>x:345;y:180</pos>
                          <rect>x:-45;y:-65;w:90;h:130</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -396,7 +396,7 @@
                          </base-DElement>
                          <object>{4f023039-62cd-4054-9edf-c20a5dc2edec}</object>
                          <name>cmd32_struct</name>
-                         <pos>x:240;y:275</pos>
+                         <pos>x:480;y:180</pos>
                          <rect>x:-50;y:-70;w:100;h:140</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -491,7 +491,7 @@
                          </base-DElement>
                          <object>{96bd1c93-537b-43ad-8d63-afb354d20ef2}</object>
                          <name>Command</name>
-                         <pos>x:585;y:560</pos>
+                         <pos>x:840;y:485</pos>
                          <rect>x:-140;y:-55;w:280;h:110</rect>
                          <auto-sized>false</auto-sized>
                          <visual-role>0</visual-role>
@@ -549,729 +549,9 @@
                       </DAssociation>
                      </instance>
                     </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{7e545eed-39d9-4a08-93b1-b1827a99c254}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{a69189f3-8b7a-4425-ac13-e3665e5d8a6d}</object>
-                         <name>fMath</name>
-                         <pos>x:715;y:715</pos>
-                         <rect>x:-130;y:-50;w:260;h:100</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{be24e89e-0eef-4177-9898-ff296bda4b57}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{d5db20c0-d62b-4709-a46e-f8b841856235}</object>
-                         <name>iMath</name>
-                         <pos>x:1090;y:715</pos>
-                         <rect>x:-145;y:-50;w:290;h:100</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{7ef188a7-d78b-4f3b-9d9f-ad20bc5a6139}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{fc13b267-2670-4285-bb7a-727e3efd14be}</object>
-                         <name>Jump</name>
-                         <pos>x:770;y:340</pos>
-                         <rect>x:-110;y:-50;w:220;h:100</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{94c7cde0-e17c-43ce-b637-a8df01e945bd}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{edf2e432-f355-4d2a-b4ef-999f2b5a4699}</object>
-                         <a>{7e545eed-39d9-4a08-93b1-b1827a99c254}</a>
-                         <b>{aa2796a0-568d-4501-b7b8-ac4ea10f2b8d}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{d0fbb047-2089-4dc2-82d6-81cbaf2ad945}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{bf7eacd0-634d-437c-ad7b-376655e4aefa}</object>
-                         <a>{be24e89e-0eef-4177-9898-ff296bda4b57}</a>
-                         <b>{aa2796a0-568d-4501-b7b8-ac4ea10f2b8d}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{2c286fba-1f83-4279-850f-b1a6ed24fbf3}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{aaae362c-f636-44ae-b3e1-70bece989939}</object>
-                         <a>{7ef188a7-d78b-4f3b-9d9f-ad20bc5a6139}</a>
-                         <b>{aa2796a0-568d-4501-b7b8-ac4ea10f2b8d}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{e3a5387b-dc42-440b-8b0c-b38d0b4c9a6d}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{26ae0edf-79b6-48a9-ae66-0a7d88fc1a7e}</object>
-                         <name>iDiv</name>
-                         <pos>x:1030;y:835</pos>
-                         <rect>x:-135;y:-35;w:270;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{fdadb86d-ef2f-4ae2-8250-41e74747b703}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{1148bc82-2951-45a1-9712-107e936caff8}</object>
-                         <a>{e3a5387b-dc42-440b-8b0c-b38d0b4c9a6d}</a>
-                         <b>{be24e89e-0eef-4177-9898-ff296bda4b57}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{29f36d24-81ad-457a-9a32-78f55cc32897}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{29280a89-e77a-4256-88b4-94806ec01a07}</object>
-                         <name>iMul</name>
-                         <pos>x:1305;y:835</pos>
-                         <rect>x:-135;y:-35;w:270;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{c4ad52bf-346f-4cd9-8726-e009f0edd911}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{b6173a5d-7bd4-4d21-8087-49d3a033531a}</object>
-                         <a>{29f36d24-81ad-457a-9a32-78f55cc32897}</a>
-                         <b>{be24e89e-0eef-4177-9898-ff296bda4b57}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{4d513b35-68cf-4761-b9b8-188822a5a719}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{d59b5244-85e4-43da-b8b6-41d578eb25cf}</object>
-                         <name>iSub</name>
-                         <pos>x:1030;y:920</pos>
-                         <rect>x:-135;y:-35;w:270;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{2e0fd129-0494-44ee-8ae8-2e6c90f29124}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{c33e6749-93e8-45f9-979d-9b135cb1deeb}</object>
-                         <a>{4d513b35-68cf-4761-b9b8-188822a5a719}</a>
-                         <b>{be24e89e-0eef-4177-9898-ff296bda4b57}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{625dc009-e1b6-414f-8701-ccfad2da9de8}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{93bd08b7-616b-44c9-a246-dcf459a8ce12}</object>
-                         <name>iAdd</name>
-                         <pos>x:1310;y:920</pos>
-                         <rect>x:-135;y:-35;w:270;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{8ab1f627-d14b-4eac-ad5e-e349175ba052}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{429f5d33-3aca-4679-9fc8-c6e6896bb45a}</object>
-                         <a>{625dc009-e1b6-414f-8701-ccfad2da9de8}</a>
-                         <b>{be24e89e-0eef-4177-9898-ff296bda4b57}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{483a0be9-74c6-428f-b600-43a79eba382b}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{a85706a7-02f8-43b1-ae79-8fabbcfaec6a}</object>
-                         <name>fDiv</name>
-                         <pos>x:770;y:835</pos>
-                         <rect>x:-115;y:-35;w:230;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{09970162-f4b4-4da2-b8e9-21eda7217c74}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{d94898e9-a48a-4509-a6fd-b0d39fb6232e}</object>
-                         <name>fMul</name>
-                         <pos>x:770;y:920</pos>
-                         <rect>x:-115;y:-35;w:230;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{9066c4d8-3275-4af8-a328-13bda390f4b4}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{a7e7c608-d444-424e-9998-e1697694f3fe}</object>
-                         <name>fSub</name>
-                         <pos>x:535;y:835</pos>
-                         <rect>x:-115;y:-35;w:230;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{e6cc52f4-92d9-4e5b-8554-667b780a2e1f}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{071cf664-1725-4dac-8176-fe11beea383e}</object>
-                         <name>fAdd</name>
-                         <pos>x:535;y:920</pos>
-                         <rect>x:-115;y:-35;w:230;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{c0525b0b-257a-485b-8824-ea4b191923ae}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{13d4f75d-d38b-4f02-a52c-0ef53a48f160}</object>
-                         <a>{483a0be9-74c6-428f-b600-43a79eba382b}</a>
-                         <b>{7e545eed-39d9-4a08-93b1-b1827a99c254}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{c74bc1f8-4323-4c7a-861b-8546455c4dde}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{69ec1a9a-3bb5-49fb-8a0b-e9aaf189c9af}</object>
-                         <a>{09970162-f4b4-4da2-b8e9-21eda7217c74}</a>
-                         <b>{7e545eed-39d9-4a08-93b1-b1827a99c254}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{66e2a025-32f4-4993-a05e-c69aaae50ed4}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{d85cf1e5-74e8-460a-bb1e-21cd8f5a51e3}</object>
-                         <a>{e6cc52f4-92d9-4e5b-8554-667b780a2e1f}</a>
-                         <b>{7e545eed-39d9-4a08-93b1-b1827a99c254}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{6e23745e-0e9d-446a-8c0a-847ac65040e3}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{d0f91a79-371c-4afc-94bf-ed193f52046e}</object>
-                         <a>{9066c4d8-3275-4af8-a328-13bda390f4b4}</a>
-                         <b>{7e545eed-39d9-4a08-93b1-b1827a99c254}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{52b18194-f56d-4e96-a9ae-8ec7d8c3f620}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{9f1b7b3c-801c-4e89-9491-7079e3d1ee88}</object>
-                         <name>call</name>
-                         <pos>x:510;y:395</pos>
-                         <rect>x:-95;y:-35;w:190;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{d1b0180e-c239-4834-a00c-44403e7819a2}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{6cc5b376-16c7-48f4-af4d-9c35463a48f6}</object>
-                         <a>{52b18194-f56d-4e96-a9ae-8ec7d8c3f620}</a>
-                         <b>{7ef188a7-d78b-4f3b-9d9f-ad20bc5a6139}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{ba3c2c24-823d-4b58-824e-e09810b5be5c}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{304f143a-b59b-491d-9270-70a504d22816}</object>
-                         <name>jmp</name>
-                         <pos>x:950;y:215</pos>
-                         <rect>x:-95;y:-35;w:190;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{20bd367a-09b6-4734-bc9a-bb84193a16f4}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{7e19bf14-6c7d-4216-b578-63291616467c}</object>
-                         <a>{ba3c2c24-823d-4b58-824e-e09810b5be5c}</a>
-                         <b>{7ef188a7-d78b-4f3b-9d9f-ad20bc5a6139}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{36a56507-72c1-4b7c-9ddc-a191e5e8739a}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{dcc40a71-3cdf-4051-a160-0cafd28e59ff}</object>
-                         <name>jnsf</name>
-                         <pos>x:1045;y:300</pos>
-                         <rect>x:-95;y:-35;w:190;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{8b274aef-0ef2-4f76-b0a0-bbd5fc2f6934}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{8c4a33d3-7765-42d5-a233-2d47330dfe85}</object>
-                         <a>{36a56507-72c1-4b7c-9ddc-a191e5e8739a}</a>
-                         <b>{7ef188a7-d78b-4f3b-9d9f-ad20bc5a6139}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{942a6ece-47a8-4825-85b6-26139f10a20a}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{abc8b638-c840-4d9f-ab20-51c6459a414f}</object>
-                         <name>jnzf</name>
-                         <pos>x:895;y:490</pos>
-                         <rect>x:-95;y:-35;w:190;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{fc6ba8c7-7ff5-47e7-9c6b-0958bd691a92}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{14e24ce6-510b-42eb-957d-62683e5760c1}</object>
-                         <a>{942a6ece-47a8-4825-85b6-26139f10a20a}</a>
-                         <b>{7ef188a7-d78b-4f3b-9d9f-ad20bc5a6139}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{97e0439e-9bd1-4313-9a52-c8007fedb4fd}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{6411a4fe-7026-4ef1-9512-c70eb6abd6d6}</object>
-                         <name>jsf</name>
-                         <pos>x:1005;y:410</pos>
-                         <rect>x:-95;y:-35;w:190;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{e910d37f-3fff-4f04-9fbb-d48bda2770be}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{33f79ed8-e5f2-4a21-8ed5-c1f47d534e5d}</object>
-                         <a>{97e0439e-9bd1-4313-9a52-c8007fedb4fd}</a>
-                         <b>{7ef188a7-d78b-4f3b-9d9f-ad20bc5a6139}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{6e2aa096-ecf3-44aa-83dc-580128257c5e}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{964e9a9a-5b74-4764-a9ca-90599cfa29b7}</object>
-                         <name>jzf</name>
-                         <pos>x:510;y:260</pos>
-                         <rect>x:-95;y:-35;w:190;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{ab9fa93d-330c-411f-9ed0-1d4d5321ccc8}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{ec362fdc-af9a-43b6-9f56-7c1f23eee590}</object>
-                         <a>{6e2aa096-ecf3-44aa-83dc-580128257c5e}</a>
-                         <b>{7ef188a7-d78b-4f3b-9d9f-ad20bc5a6139}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DClass">
-                      <DClass>
-                       <base-DObject>
-                        <DObject>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{1c35de42-7b54-46ff-9d04-724794529251}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{85b3120e-c2cb-4072-ae27-66ee66da81ec}</object>
-                         <name>ret</name>
-                         <pos>x:730;y:210</pos>
-                         <rect>x:-95;y:-35;w:190;h:70</rect>
-                         <visual-role>0</visual-role>
-                         <visual-role2>4</visual-role2>
-                        </DObject>
-                       </base-DObject>
-                       <show-all-members>true</show-all-members>
-                      </DClass>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DInheritance">
-                      <DInheritance>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{3e62df84-2959-46a2-a106-a3fb57cb9341}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{2f1b23bb-ad9e-4aaf-bc5b-6012c49f73e1}</object>
-                         <a>{1c35de42-7b54-46ff-9d04-724794529251}</a>
-                         <b>{7ef188a7-d78b-4f3b-9d9f-ad20bc5a6139}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DInheritance>
-                     </instance>
-                    </item>
                    </qlist>
                   </elements>
-                  <last-modified>1577219265074</last-modified>
+                  <last-modified>1578846595095</last-modified>
                   <toolbarid>General</toolbarid>
                  </MDiagram>
                 </base-MDiagram>
@@ -1454,7 +734,7 @@
                  <qlist>
                   <item>
                    <MClassMember>
-                    <uid>{acfd5cbb-201d-45ed-abb3-823e17b94108}</uid>
+                    <uid>{381e5ecf-f427-4710-9de7-10789dd2536a}</uid>
                     <type>2</type>
                     <properties>1</properties>
                     <declaration>void call_go_to (CPU&amp; cpu)</declaration>
@@ -1805,7 +1085,7 @@
                  <qlist>
                   <item>
                    <MClassMember>
-                    <uid>{794160db-d1d7-4d04-9d88-504fdd7f85a7}</uid>
+                    <uid>{bbb38329-fb55-4ce1-98c2-39439fad2d6a}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <properties>3</properties>
@@ -1814,7 +1094,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{832ad938-ef76-4592-9ea8-4a9c4b263ea5}</uid>
+                    <uid>{45bb5809-7a99-493f-9948-802f393fb423}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <properties>1</properties>
@@ -1823,7 +1103,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{bd933144-fbfe-42dc-a3cc-67db4d9b0b0e}</uid>
+                    <uid>{ced1b4e6-23ab-4d77-ad4d-ec5c39d4d535}</uid>
                     <visibility>2</visibility>
                     <type>2</type>
                     <declaration>void set_was_transition(CPU&amp; cpu)</declaration>
@@ -2428,7 +1708,7 @@
                  <qlist>
                   <item>
                    <MClassMember>
-                    <uid>{e532e17f-1169-42d6-9f36-b26c2ca5f2e9}</uid>
+                    <uid>{2bd966dd-34e4-4727-bb30-9f0878c98286}</uid>
                     <visibility>3</visibility>
                     <type>2</type>
                     <declaration>void set_flags (CPU&amp; cpu)</declaration>
@@ -2436,7 +1716,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{6baaf78f-944e-46f9-99fc-8c47c0b4d4fe}</uid>
+                    <uid>{eb04723a-1877-4801-83d1-7c59534fe3a8}</uid>
                     <visibility>3</visibility>
                     <type>2</type>
                     <properties>3</properties>
@@ -2445,7 +1725,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{12788c6e-5175-4065-8ba4-28ab8f8e710f}</uid>
+                    <uid>{2b40920f-61bf-461f-b7cf-61f8cacdceed}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <properties>1</properties>
@@ -3157,7 +2437,7 @@
                  <qlist>
                   <item>
                    <MClassMember>
-                    <uid>{9d7502d7-f5e5-4565-9068-9ed900fdd607}</uid>
+                    <uid>{4f5b552d-15f2-489e-8f0c-142288b54819}</uid>
                     <type>2</type>
                     <properties>1</properties>
                     <declaration>void call_go_to (CPU&amp; cpu)</declaration>
@@ -3301,7 +2581,7 @@
                  <qlist>
                   <item>
                    <MClassMember>
-                    <uid>{5e596efa-e32f-4057-b822-cea666045c1f}</uid>
+                    <uid>{3742d438-decd-420b-b9d6-f1d89d94b9f4}</uid>
                     <type>2</type>
                     <properties>1</properties>
                     <declaration>void call_go_to (CPU&amp; cpu)</declaration>
@@ -3334,7 +2614,7 @@
                  <qlist>
                   <item>
                    <MClassMember>
-                    <uid>{875aa3a3-7b10-4d6c-b4de-3290d59c4325}</uid>
+                    <uid>{9f56cbb9-8eb1-432e-9a9d-b1caa8d48039}</uid>
                     <visibility>3</visibility>
                     <type>1</type>
                     <declaration>uint32_t *memory</declaration>
@@ -3342,7 +2622,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{1d148447-b061-4df0-91ce-183789ed7cc5}</uid>
+                    <uid>{f412541d-2958-450a-86c3-9f72df0fed3f}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>Memory()</declaration>
@@ -3350,7 +2630,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{273c905f-de0e-4882-b46e-7295587edb69}</uid>
+                    <uid>{48f68b32-a81c-47b3-974e-0be24da9415a}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>~Memory()</declaration>
@@ -3358,7 +2638,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{1126bdeb-91e1-4f92-8925-e2f0bc71deb8}</uid>
+                    <uid>{2914250e-5567-4ce7-80aa-8d6743b0d41c}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>void push (word word, uint16_t address)</declaration>
@@ -3366,7 +2646,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{80f79c3f-7873-45a5-bc6a-372e5afe7988}</uid>
+                    <uid>{1e9018a6-a99b-4ddc-b120-9c965952daf6}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <properties>4</properties>
