@@ -69,16 +69,16 @@ private slots:
 
 private:
     Ui::Test *ui;
-    void start_quest();
-    void creation_quest();
-    void display_question();
-    void disable_checkBoxes();
-    void enable_checkBox();
-    void check_answers();
-    void keyPressEvent(QKeyEvent *event);           // -- обработка клавиш -- //
-    void test_results(int right);
-    void add_stat(double procent);
-    void read_stat();
+    void start_quest(); // -- начинаем тест -- //
+    void creation_quest(); // -- формируем и рандомим вопросы -- //
+    void display_question();    // -- вывод вопроса -- //
+    void disable_checkBoxes();  // -- выключить все чекбоксы -- //
+    void enable_checkBox(); // -- включить тот, на который ответил юзер (когда смотрим предыдущие вопросы) -- //
+    void check_answers();   // -- проверка ответов -- //
+    void keyPressEvent(QKeyEvent *event);   // -- обработка клавиш -- //
+    void test_results(int right);   // -- вывод результатов теста -- //
+    void add_stat(double procent);  // -- сохранить результаты в файл со статистикой -- //
+    void read_stat();   // -- прочитать и вывести статистику из файла -- //
 };
 
 #endif // TEST_H

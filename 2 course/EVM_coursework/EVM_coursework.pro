@@ -17,7 +17,8 @@ HEADERS += \
 
 DISTFILES += \
     uml.qmodel \
-    uml_for_model.qmodel
+    uml_for_model.qmodel \
+    uml_for_model2.qmodel
 
 STATECHARTS +=
 

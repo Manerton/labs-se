@@ -49,7 +49,7 @@
                          </base-DElement>
                          <object>{d7ba011e-8dce-459a-85da-b62be1d6ce73}</object>
                          <name>CPU</name>
-                         <pos>x:500;y:745</pos>
+                         <pos>x:580;y:685</pos>
                          <rect>x:-100;y:-140;w:200;h:280</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -72,7 +72,7 @@
                          </base-DElement>
                          <object>{77be6b8a-6067-437e-8597-427ed6f0b81b}</object>
                          <name>PSW</name>
-                         <pos>x:310;y:780</pos>
+                         <pos>x:390;y:720</pos>
                          <rect>x:-50;y:-50;w:100;h:100</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -119,7 +119,7 @@
                          </base-DElement>
                          <object>{d48cb67e-b4ea-4855-ac37-1f27237a7b9a}</object>
                          <name>FLAGS</name>
-                         <pos>x:310;y:635</pos>
+                         <pos>x:390;y:575</pos>
                          <rect>x:-55;y:-55;w:110;h:110</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -166,7 +166,7 @@
                          </base-DElement>
                          <object>{3d708220-8487-41b9-886c-ba692be03116}</object>
                          <name>Memory</name>
-                         <pos>x:350;y:490</pos>
+                         <pos>x:430;y:430</pos>
                          <rect>x:-115;y:-70;w:230;h:140</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -212,7 +212,7 @@
                          </base-DElement>
                          <object>{4cded267-57a8-4c74-8cfe-0f0f9cd93ccb}</object>
                          <name>Types</name>
-                         <pos>x:445;y:230</pos>
+                         <pos>x:480;y:175</pos>
                          <rect>x:-185;y:-175;w:370;h:350</rect>
                          <auto-sized>false</auto-sized>
                          <visual-role>0</visual-role>
@@ -235,7 +235,7 @@
                          </base-DElement>
                          <object>{45cefe96-44df-4b39-ac23-cc9ccaece509}</object>
                          <name>cmd</name>
-                         <pos>x:345;y:335</pos>
+                         <pos>x:380;y:280</pos>
                          <rect>x:-60;y:-45;w:120;h:90</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -257,7 +257,7 @@
                          </base-DElement>
                          <object>{d9cb1243-7e35-4f2e-9a1d-4b35df34486a}</object>
                          <name>word</name>
-                         <pos>x:470;y:335</pos>
+                         <pos>x:505;y:280</pos>
                          <rect>x:-40;y:-45;w:80;h:90</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -279,7 +279,7 @@
                          </base-DElement>
                          <object>{afd69cee-4c71-4f6e-9c28-5933892f8537}</object>
                          <name>data_t</name>
-                         <pos>x:580;y:335</pos>
+                         <pos>x:615;y:280</pos>
                          <rect>x:-40;y:-50;w:80;h:100</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -349,7 +349,7 @@
                          </base-DElement>
                          <object>{7e6b4a1c-3179-456b-923e-f6b13ec10007}</object>
                          <name>cmd16_struct</name>
-                         <pos>x:345;y:180</pos>
+                         <pos>x:380;y:125</pos>
                          <rect>x:-45;y:-65;w:90;h:130</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -396,7 +396,7 @@
                          </base-DElement>
                          <object>{4f023039-62cd-4054-9edf-c20a5dc2edec}</object>
                          <name>cmd32_struct</name>
-                         <pos>x:480;y:180</pos>
+                         <pos>x:515;y:125</pos>
                          <rect>x:-50;y:-70;w:100;h:140</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -491,7 +491,7 @@
                          </base-DElement>
                          <object>{96bd1c93-537b-43ad-8d63-afb354d20ef2}</object>
                          <name>Command</name>
-                         <pos>x:840;y:485</pos>
+                         <pos>x:710;y:435</pos>
                          <rect>x:-140;y:-55;w:280;h:110</rect>
                          <auto-sized>false</auto-sized>
                          <visual-role>0</visual-role>
@@ -551,7 +551,7 @@
                     </item>
                    </qlist>
                   </elements>
-                  <last-modified>1578846595095</last-modified>
+                  <last-modified>1580060966278</last-modified>
                   <toolbarid>General</toolbarid>
                  </MDiagram>
                 </base-MDiagram>
@@ -1085,7 +1085,7 @@
                  <qlist>
                   <item>
                    <MClassMember>
-                    <uid>{bbb38329-fb55-4ce1-98c2-39439fad2d6a}</uid>
+                    <uid>{f37cdf91-e8b7-49be-ae1b-2206294708fb}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <properties>3</properties>
@@ -1094,7 +1094,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{45bb5809-7a99-493f-9948-802f393fb423}</uid>
+                    <uid>{ec442ca7-2eb4-4a64-9846-59f0eb0d88cb}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <properties>1</properties>
@@ -1103,7 +1103,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{ced1b4e6-23ab-4d77-ad4d-ec5c39d4d535}</uid>
+                    <uid>{bb32aa7e-5dc4-4008-88e1-77f88f95965c}</uid>
                     <visibility>2</visibility>
                     <type>2</type>
                     <declaration>void set_was_transition(CPU&amp; cpu)</declaration>
@@ -1310,7 +1310,7 @@
                  <qlist>
                   <item>
                    <MClassMember>
-                    <uid>{51e3c45d-cdf1-4709-b6d9-5c988f183ba0}</uid>
+                    <uid>{a8b256c9-b04b-4f5e-a80a-e342bd5add07}</uid>
                     <visibility>3</visibility>
                     <type>1</type>
                     <declaration>Command* command[128]</declaration>
@@ -1318,7 +1318,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{534526f6-827c-43d4-9f53-326d3c1c7703}</uid>
+                    <uid>{eda1a652-161c-438f-b65d-b77748db845d}</uid>
                     <visibility>3</visibility>
                     <type>1</type>
                     <declaration>bool was_transition</declaration>
@@ -1326,7 +1326,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{7d1038a3-001b-4d2b-bc2c-cc652996f074}</uid>
+                    <uid>{ac882cc8-87cc-4935-804a-e9fe79c61660}</uid>
                     <visibility>3</visibility>
                     <type>1</type>
                     <declaration>cmd cmd</declaration>
@@ -1334,7 +1334,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{81c1bd6b-83e9-40d5-82dd-13381e549f26}</uid>
+                    <uid>{c056e4d3-14ed-44df-915d-434bf2414acd}</uid>
                     <visibility>1</visibility>
                     <type>1</type>
                     <declaration>PSW PSW</declaration>
@@ -1342,7 +1342,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{f6146071-bd00-4a20-8e7f-f02fc5fe2594}</uid>
+                    <uid>{0488d731-edeb-4a4c-a7dc-8cee835a5a49}</uid>
                     <visibility>1</visibility>
                     <type>1</type>
                     <declaration>Memory ram</declaration>
@@ -1350,7 +1350,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{c8d451ea-26df-4bbb-8702-b8e876f5c55f}</uid>
+                    <uid>{5b10f2de-ba4d-4ac8-b038-e839227ddfef}</uid>
                     <visibility>1</visibility>
                     <type>1</type>
                     <declaration>data_t r[16]</declaration>
@@ -1358,7 +1358,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{87a44b65-d2b7-483e-bf2b-d7aa6af8ffd2}</uid>
+                    <uid>{65e16495-9606-42b3-bb22-678e289f5118}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>CPU()</declaration>
@@ -1366,7 +1366,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{366cde65-ecec-4898-8c99-ef745a6beb48}</uid>
+                    <uid>{8cb84842-6af4-4026-8053-1c80bd4678e7}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>~CPU()</declaration>
@@ -1374,7 +1374,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{fe73e254-e7e6-406c-abbb-aa49d5e1653d}</uid>
+                    <uid>{2b6112af-b1ac-40d4-b130-c6ff7fa15c80}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <properties>4</properties>
@@ -1383,7 +1383,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{a2682a56-789b-4d2a-8e84-5073b1fe82aa}</uid>
+                    <uid>{09002cf1-2ef1-4565-92f7-90b9f626d34b}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <properties>4</properties>
@@ -1392,7 +1392,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{fcd34429-4245-4be2-a389-ae410e41fd1a}</uid>
+                    <uid>{ba41eb14-2aca-4c57-a659-ee94bf760338}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <properties>4</properties>
@@ -1401,7 +1401,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{2bf83f4a-517f-4cae-a7ca-ef55756d162a}</uid>
+                    <uid>{fb2d57f0-2ce9-415b-9c84-7b1ac2a3104b}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <properties>4</properties>
@@ -1410,7 +1410,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{f46c3ccb-1485-4bfa-85cc-aa2b2c019868}</uid>
+                    <uid>{f3139fc0-c8a8-44ef-a39f-65c082eca1e2}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>void loadCommand()</declaration>
@@ -1418,7 +1418,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{7d0df51b-e165-4075-b108-0671cb867bac}</uid>
+                    <uid>{c3fd565f-cf66-4460-ab19-8aefcc5ddfc1}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>void reset()</declaration>
@@ -1426,7 +1426,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{0832e94a-8859-4226-8bf0-88bf813f0dfe}</uid>
+                    <uid>{376a327b-26fb-4d72-b877-ee9d506ad6ad}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>void run ()</declaration>

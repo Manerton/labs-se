@@ -15,33 +15,34 @@ Test::Test(QWidget *parent) :
 {
     ui->setupUi(this);
     all_text = loader::getText_from_file("files\\quest.txt");
-    if (all_text.length() == 0)
+    if (all_text.length() == 0) // -- лоадер вернул пустую строку, значит не смог открыть файл -- //
     {
         QMessageBox::warning(this,"Ошибка","Не удалось открыть файл files\\quest.txt");
         ui->pushButton_start->setDisabled(true);
     }
-    N = 5;
+    N = 5;  // -- по умолчанию 5 вопросов -- //
 }
 
 void Test::start_quest()
 {
     time_t seed = time(nullptr);
     mt19937 mt(seed);
+    // -- очищаем все если тест проходим не в первый раз -- //
     if (Questions.size() > 0 ) Questions.clear();
     if (user_choices.num.size() > 0) user_choices.num.clear();
     if (user_choices.str.size() > 0) user_choices.str.clear();
     if (ui->listWidget_result->count() > 0) ui->listWidget_result->clear();
     if (i_step != 0) i_step = 0;
-    creation_quest();
-    shuffle(Questions.begin(),Questions.end(),mt);
+    creation_quest();  // -- формируем вопросы -- //
+    shuffle(Questions.begin(),Questions.end(),mt);  // -- мешаем вопросы -- //
     for (Question &quest : Questions)
     {
         if (quest.mode == quest_mode::closed_answer)
         {
-            shuffle(quest.arr.begin(),quest.arr.end(),mt);
+            shuffle(quest.arr.begin(),quest.arr.end(),mt);  // -- мешаем ответы, если тип вопроса - закрытый -- //
         }
     }
-    display_question();
+    display_question(); // -- выводим -- //
 }
 
 void Test::creation_quest()
@@ -51,24 +52,24 @@ void Test::creation_quest()
     stringstream ss(all_text); // создаю текстовый поток из all_text
     while (getline(ss, temp_string))
     {
-        temp_question.mode = temp_string[1] - '0';
-        temp_question.text = QString::fromStdString({temp_string.begin()+2, temp_string.end()});
+        temp_question.mode = temp_string[1] - '0';  // -- читаю тип вопроса -- //
+        temp_question.text = QString::fromStdString({temp_string.begin()+2, temp_string.end()});    // -- читаю текст вопроса -- //
         switch (temp_question.mode)
         {
             case quest_mode::closed_answer:
 
-                temp_question.arr[0].right = true;
+                temp_question.arr[0].right = true;  // -- первый вариант ответа изначально правильный -- //
                 for (size_t i=0; i < 4; ++i)
                 {
-                    getline(ss, temp_string);
+                    getline(ss, temp_string);   // -- читаю варианты ответов -- //
                     temp_question.arr[i].text = QString::fromStdString(temp_string);
                 }
-                user_choices.num.resize(N,-1);
+                user_choices.num.resize(N,-1);  // -- отмечаю пока ответы как -1, что означает, что ответа пользователь еще не дал -- //
                 break;
             case quest_mode::open_answer:
                 getline(ss, temp_string);
                 temp_question.arr[0].text = QString::fromStdString(temp_string).toLower();
-                user_choices.str.resize(N,"");
+                user_choices.str.resize(N,"");  // -- а тут пустые строки, что означает, что ответ юзер не дал -- //
                 break;
         }
         Questions.push_back(temp_question);
@@ -82,12 +83,12 @@ void Test::display_question()
     {
         case quest_mode::closed_answer:
             ui->stackedWidget_question_type->setCurrentWidget(ui->closed_question);
-            ui->Answer1->setText(Questions[i_step].arr[0].text);
+            ui->Answer1->setText(Questions[i_step].arr[0].text);    // -- устанавливаю текст для вариантов ответов -- //
             ui->Answer2->setText(Questions[i_step].arr[1].text);
             ui->Answer3->setText(Questions[i_step].arr[2].text);
             ui->Answer4->setText(Questions[i_step].arr[3].text);
-            disable_checkBoxes();
-            enable_checkBox();
+            disable_checkBoxes();   // -- выключаю старые чекбоксы -- //
+            enable_checkBox();  // -- включаю тот, который юзер отметил, если еще не отметил, то ничего не включаю -- //
             break;
         case quest_mode::open_answer:
             ui->stackedWidget_question_type->setCurrentWidget(ui->open_question);
@@ -114,11 +115,11 @@ void Test::check_answers()
                     if (Questions[i].arr[size_t(ch)].right)
                     {
                         ++right;
-                        ui->listWidget_result->item(int(i))->setBackground(Qt::green);
+                        ui->listWidget_result->item(int(i))->setBackground(Qt::green);  // -- помечаю зеленым - правильный ответ -- //
                     }
                     else
                     {
-                        ui->listWidget_result->item(int(i))->setBackground(Qt::red);
+                        ui->listWidget_result->item(int(i))->setBackground(Qt::red);    // -- помечаю красным - неправильный -- //
                         ui->listWidget_result->item(int(i))->setForeground(Qt::white);
                     }
                 }
