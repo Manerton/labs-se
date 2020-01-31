@@ -18,10 +18,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// ������� (������) resources
+// Русский (Россия) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(65001)
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -31,7 +32,9 @@ LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_TEST                ICON                    "test.ico"
+
 IDI_SMALL               ICON                    "small.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -40,13 +43,13 @@ IDI_SMALL               ICON                    "small.ico"
 
 IDC_TEST MENU
 BEGIN
-    POPUP "&����"
+    POPUP "&Файл"
     BEGIN
-        MENUITEM "�&����",                      IDM_EXIT
+        MENUITEM "В&ыход",                      IDM_EXIT
     END
-    POPUP "&�������"
+    POPUP "&Справка"
     BEGIN
-        MENUITEM "&� ��������� ...",          IDM_ABOUT
+        MENUITEM "&О программе ...",            IDM_ABOUT
     END
 END
 
@@ -65,36 +68,28 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// menuWindow
-//
-
-IDD_MENUWINDOW DIALOGEX 0, 0, 800, 800
-STYLE WS_CHILD
-FONT 8, "MS Shell Dlg", 0, 0, 0x1
-BEGIN
-    ICON            128,IDC_STATIC,14,14,21,20
-    LTEXT           "��� ���� ����",IDC_STATIC,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2020",IDC_STATIC,42,26,114,8
-    DEFPUSHBUTTON   "��",IDOK,113,41,50,14,WS_GROUP
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+IDD_MENUWINDOW DIALOGEX 0, 0, 400, 300
+STYLE DS_SETFONT | WS_CHILD
+FONT 10, "Microsoft Sans Serif", 400, 0, 0xCC
+BEGIN
+    CTEXT           "Программа-тренажер\n""Разложение натурального числа на простые множители""",IDC_STATIC,0,14,398,33,SS_NOPREFIX
+END
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 259, 156
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "� ������� test"
+CAPTION "О проекте "
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    ICON            128,IDC_STATIC,14,14,21,20
-    LTEXT           "test, ������ 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2020",IDC_STATIC,42,26,114,8
-    DEFPUSHBUTTON   "��",IDOK,113,41,50,14,WS_GROUP
+    CTEXT           "Астраханский государственный технический университет\nИнститут информационных технологий и коммуникаций",IDC_STATIC,42,14,210,19,SS_NOPREFIX
+    DEFPUSHBUTTON   "ОК",IDOK,202,135,50,14,WS_GROUP
+    ICON            IDI_TEST,IDC_STATIC,15,15,21,20
+    RTEXT           "кафедра\nАвтоматизированных систем\nобработки информации и управления",IDC_STATIC,107,39,139,26,SS_NOPREFIX
+    CTEXT           "Практическая работа по теме:\n""Разложение натурального числа на простые множители""",IDC_STATIC,29,75,210,19,SS_NOPREFIX
+    RTEXT           "Выполнил: студент\nгруппы ДИПРБ-21\nКатунин С.С.",IDC_STATIC,108,100,139,26,SS_NOPREFIX
+    LTEXT           "г. АСТРАХАНЬ 2020 г.",IDC_STATIC,11,139,75,9,SS_NOPREFIX
 END
 
 
@@ -106,12 +101,18 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
+    IDD_MENUWINDOW, DIALOG
+    BEGIN
+        RIGHTMARGIN, 398
+        VERTGUIDE, 393
+    END
+
     IDD_ABOUTBOX, DIALOG
     BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 163
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 252
         TOPMARGIN, 7
-        BOTTOMMARGIN, 55
+        BOTTOMMARGIN, 149
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -150,6 +151,22 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_MENUWINDOW AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
@@ -159,7 +176,7 @@ BEGIN
     IDC_TEST                "TEST"
 END
 
-#endif    // ������� (������) resources
+#endif    // Русский (Россия) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

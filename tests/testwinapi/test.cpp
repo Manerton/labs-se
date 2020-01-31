@@ -84,20 +84,19 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    HWND hWnd = CreateWindow(szWindowClass,  // -- имя зарегистрированного класса -- //
                             szTitle,    // -- имя окна -- //
-                            WS_OVERLAPPEDWINDOW,    // -- стиль окна -- //
+                            WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,    // -- стиль окна -- //
                             CW_USEDEFAULT,  // -- гориз. позиция -- //
                             0,              // -- вертикальная позиция -- //
-                            CW_USEDEFAULT,  // -- ширина окна -- //
-                            0,              // -- высота окна -- //
+                            800,  // -- ширина окна -- //
+                            600,              // -- высота окна -- //
                             nullptr,        // -- дескриптор родительского окна -- //
                             nullptr,        // -- дескриптор меню окна -- //
                             hInstance,      // -- дескриптор экземпляра приложения -- //
                             nullptr            // -- указатель на данные, передаваемые в сообщении -- //
                             ); // -- создаем окно -- //
-
-   menuWindow = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_MENUWINDOW),hWnd,WndProc);
-   testWindow = CreateWindow(szWindowClass, szTitle, WS_CHILD, 0, 0,
-                800, 800, hWnd, nullptr, hInstance, nullptr);
+   menuWindow = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_MENUWINDOW),hWnd,DLGPROC(WndProc));
+   testWindow = CreateWindow(szWindowClass, szTitle, WS_CHILD, 0, 300,
+                800, 300, hWnd, nullptr, hInstance, nullptr);
    CreateWindow(L"BUTTON", L"menu", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 200, 200,
                    50, 50, menuWindow, HMENU(555), hInstance, nullptr);
    CreateWindow(L"BUTTON", L"test", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 100, 100,
@@ -109,6 +108,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    ShowWindow(hWnd, nCmdShow);
    ShowWindow(menuWindow,nCmdShow);
+   //ShowWindow(testWindow,nCmdShow);
 
    UpdateWindow(hWnd);
 
