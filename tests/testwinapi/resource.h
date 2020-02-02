@@ -1,27 +1,23 @@
-//{{NO_DEPENDENCIES}}
-// Включаемый файл, созданный в Microsoft Visual C++.
-// Используется test.rc
-//
-#define IDC_MYICON                      2
-#define IDD_TEST_DIALOG                 102
-#define IDS_APP_TITLE                   103
-#define IDD_ABOUTBOX                    103
-#define IDM_ABOUT                       104
-#define IDM_EXIT                        105
-#define IDI_TEST                        107
-#define IDI_SMALL                       108
-#define IDC_TEST                        109
-#define IDR_MAINFRAME                   128
-#define IDD_MENUWINDOW                  129
-#define IDC_STATIC                      -1
+#ifndef IDC_STATIC
+#define IDC_STATIC (-1)
+#endif
 
-// Next default values for new objects
-// 
-#ifdef APSTUDIO_INVOKED
-#ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        108
-#define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1009
-#define _APS_NEXT_SYMED_VALUE           101
-#endif
-#endif
+#define IDD_ABOUTBOX                            103
+#define IDM_ABOUT                               104
+#define IDM_EXIT                                105
+#define IDI_TEST                                107
+#define IDI_SMALL                               108
+#define IDC_TEST                                109
+#define IDD_MENUWINDOW                          129
+#define IDD_TRENIROVKAWINDOW                    133
+#define IDB_TRENIROVKA                          200
+#define IDB_TOMENU                              201
+#define IDB_STATS                               202
+#define IDB_GETZADANIE                          203
+#define IDB_HINT                                204
+#define IDC_ZADANIE                             300
+#define IDC_ANSWER                              302
+#define IDC_GOODRESULT                          40000
+#define IDS_APP_TITLE                           40000
+#define IDC_TITLE                               40001
+#define IDC_BADRESULT                           40003

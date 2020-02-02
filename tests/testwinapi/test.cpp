@@ -3,19 +3,25 @@
 
 #include "stdafx.h"
 #include "test.h"
+#include "trenirovka.h"
+#include "stdlib.h"
 
 #define MAX_LOADSTRING 100
 // Глобальные переменные:
 static HINSTANCE hInst;								// -- текущий экземпляр -- //
 static WCHAR szTitle[MAX_LOADSTRING];				// -- текст строки заголовка -- //
 static WCHAR szWindowClass[MAX_LOADSTRING];			// -- имя класса главного окна -- //
+static HWND mainWindow;
 static HWND menuWindow;
-static HWND testWindow;
+static HWND trenirovkaWindow;
+static Trenirovka trenirovka; // -- класс для тренировки -- //
 
 // -- объявления функций, включенных в этот модуль кода -- //
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK	MenuWndProc(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK	TrenirovkaWndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
 // -- главная функция -- //
@@ -46,13 +52,15 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
     // Цикл основного сообщения:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        if (!TranslateAccelerator(mainWindow, hAccelTable, &msg))
         {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            if (!IsDialogMessage(menuWindow, &msg) && !IsDialogMessage(trenirovkaWindow, &msg))
+            {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
         }
     }
-
     return int(msg.wParam);
 }
 // -- регистрируем класс окна, перед его созданием -- //
@@ -82,7 +90,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // -- сохранить дескриптор экземпляра в глобальной переменной -- //
 
-   HWND hWnd = CreateWindow(szWindowClass,  // -- имя зарегистрированного класса -- //
+   HWND hWnd = CreateWindowEx(
+                            WS_EX_CONTROLPARENT,
+                            szWindowClass,  // -- имя зарегистрированного класса -- //
                             szTitle,    // -- имя окна -- //
                             WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,    // -- стиль окна -- //
                             CW_USEDEFAULT,  // -- гориз. позиция -- //
@@ -94,23 +104,17 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
                             hInstance,      // -- дескриптор экземпляра приложения -- //
                             nullptr            // -- указатель на данные, передаваемые в сообщении -- //
                             ); // -- создаем окно -- //
-   menuWindow = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_MENUWINDOW),hWnd,DLGPROC(WndProc));
-   testWindow = CreateWindow(szWindowClass, szTitle, WS_CHILD, 0, 300,
-                800, 300, hWnd, nullptr, hInstance, nullptr);
-   CreateWindow(L"BUTTON", L"menu", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 200, 200,
-                   50, 50, menuWindow, HMENU(555), hInstance, nullptr);
-   CreateWindow(L"BUTTON", L"test", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 100, 100,
-                   50, 50, testWindow, HMENU(556), hInstance, nullptr);
+   menuWindow = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_MENUWINDOW),hWnd,DLGPROC(MenuWndProc));
+   trenirovkaWindow = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_TRENIROVKAWINDOW),hWnd,DLGPROC(TrenirovkaWndProc));
+
    if (!hWnd)
    {
       return FALSE;
    }
 
    ShowWindow(hWnd, nCmdShow);
-   ShowWindow(menuWindow,nCmdShow);
-   //ShowWindow(testWindow,nCmdShow);
-
    UpdateWindow(hWnd);
+   mainWindow = hWnd;
 
    return TRUE;
 }
@@ -122,8 +126,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     int wmId, wmEvent;
-    //PAINTSTRUCT ps;
-    //HDC hdc;
 
     switch (message)
     {
@@ -136,14 +138,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case IDM_ABOUT:
             DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
             break;
-        case 555:
-            ShowWindow(menuWindow, SW_HIDE);
-            ShowWindow(testWindow, SW_SHOW);
-            break;
-        case 556:
-            ShowWindow(testWindow, SW_HIDE);
-            ShowWindow(menuWindow, SW_SHOW);
-            break;
         case IDM_EXIT:
             DestroyWindow(hWnd);
             break;
@@ -151,10 +145,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             return DefWindowProc(hWnd, message, wParam, lParam);
         }
         break;
-//    case WM_PAINT:
-//        hdc = BeginPaint(hWnd, &ps);
-//        EndPaint(hWnd, &ps);
-//        break;
+    case WM_SETFOCUS:
+        SetFocus(GetNextDlgTabItem(mainWindow, HWND(wParam), FALSE));
+        break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
@@ -162,6 +155,123 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
+}
+
+
+
+// Обработчик сообщений для главного меню (menuWindow)
+INT_PTR CALLBACK MenuWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam)
+    static LOGFONTW lf;
+    HFONT hFont1;
+    int wmId;
+    switch (message)
+    {
+    case WM_INITDIALOG:
+        // -- делаем шрифт побольше -- //
+        lf.lfHeight = 26;
+        lstrcpy(LPTSTR(&lf.lfFaceName), L"Microsoft Sans Serif");
+        hFont1 = CreateFontIndirect(&lf);
+        // -- устанавливаем шрифт для текста -- //
+        SendMessage(GetDlgItem(hDlg,IDC_TITLE), WM_SETFONT, WPARAM(hFont1), TRUE );
+        return TRUE;
+
+    case WM_COMMAND:
+        wmId    = LOWORD(wParam);
+        // Разобрать выбор в меню:
+        switch (wmId)
+        {
+        case IDB_TRENIROVKA:
+            ShowWindow(hDlg, SW_HIDE);
+            ShowWindow(trenirovkaWindow, SW_SHOW);
+            SetFocus(trenirovkaWindow);
+            SetFocus(GetDlgItem(trenirovkaWindow,IDC_ANSWER));
+            break;
+        }
+        break;
+    }
+
+    return FALSE;
+}
+
+// Обработчик сообщений для тренировки (trenirovkaWindow)
+INT_PTR CALLBACK TrenirovkaWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam)
+    static LOGFONTW lf;
+    HFONT hFont1;
+    int wmId;
+    HWND hAnswer = GetDlgItem(hDlg,IDC_ANSWER); // -- дескриптор поля для ввода ответа пользователя -- //
+    HWND hZadanie = GetDlgItem(hDlg,IDC_ZADANIE);   // -- дескриптор поля с текстом условия задания -- //
+    switch (message)
+    {
+    case WM_INITDIALOG:
+        // -- делаем шрифт побольше -- //
+        lf.lfHeight = 26;
+        lstrcpy(LPTSTR(&lf.lfFaceName), L"Microsoft Sans Serif");
+        hFont1 = CreateFontIndirect(&lf);
+        // -- устанавливаем шрифт для текста -- //
+        SendMessage(GetDlgItem(hDlg,IDC_TITLE), WM_SETFONT, WPARAM(hFont1), TRUE );
+        SendMessage(GetDlgItem(hDlg,IDC_ZADANIE), WM_SETFONT, WPARAM(hFont1), TRUE );
+        SendMessage(GetDlgItem(hDlg,IDC_ANSWER), WM_SETFONT, WPARAM(hFont1), TRUE );
+        SendMessage(GetDlgItem(hDlg,IDC_BADRESULT), WM_SETFONT, WPARAM(hFont1), TRUE );
+        SendMessage(GetDlgItem(hDlg,IDC_GOODRESULT), WM_SETFONT, WPARAM(hFont1), TRUE );
+        SetWindowText(hZadanie,trenirovka.getZadanie().c_str());    // -- при старте окна уже генерируется задание -- //
+        return TRUE;
+    case WM_CTLCOLORSTATIC:
+        if (HWND(lParam) == GetDlgItem(hDlg,IDC_BADRESULT))
+        {
+            SetTextColor(HDC(wParam), RGB(255, 20, 0));
+            SetBkMode(HDC(wParam), TRANSPARENT);
+            return INT_PTR(GetSysColorBrush(COLOR_3DFACE));
+        }
+        if (HWND(lParam) == GetDlgItem(hDlg,IDC_GOODRESULT))
+        {
+            SetTextColor(HDC(wParam), RGB(0, 155, 0));
+            SetBkMode(HDC(wParam), TRANSPARENT);
+            return INT_PTR(GetSysColorBrush(COLOR_3DFACE));
+        }
+        break;
+    case WM_COMMAND:
+        wmId    = LOWORD(wParam);
+        // Разобрать выбор в меню:
+        switch (wmId)
+        {
+        case IDB_TOMENU:
+            //trenirovka.clear();
+            ShowWindow(hDlg, SW_HIDE);
+            ShowWindow(menuWindow, SW_SHOW);
+            SetFocus(menuWindow);
+            break;
+        case IDB_HINT:
+            MessageBox(hDlg,trenirovka.getHint().c_str(),L"Подсказка",MB_ICONINFORMATION);
+            ShowWindow(GetDlgItem(hDlg,IDB_HINT), SW_HIDE); // -- скрываю кнопку -- //
+            break;
+        case IDB_GETZADANIE:
+            wchar_t otvet[100];
+            GetWindowText(hAnswer,otvet,100); // -- получаю ответ -- //
+            SetWindowText(hAnswer,L""); // -- очищаю поле ввода -- //
+            if (trenirovka.checkAnswer(otvet))  // -- сообщаю о правильности ответа -- //
+            {
+                ShowWindow(GetDlgItem(hDlg,IDC_BADRESULT), SW_HIDE);
+                ShowWindow(GetDlgItem(hDlg,IDC_GOODRESULT), SW_SHOW);
+            }
+            else
+            {
+                ShowWindow(GetDlgItem(hDlg,IDC_BADRESULT), SW_SHOW);
+                ShowWindow(GetDlgItem(hDlg,IDC_GOODRESULT), SW_HIDE);
+            }
+            trenirovka.clear(); // -- очищаю тренировку -- //
+            SetWindowText(hZadanie,trenirovka.getZadanie().c_str());    // -- генерирую новое задание -- //
+            SetFocus(GetDlgItem(hDlg,IDC_ANSWER));  // -- фокус на поле ввода -- //
+            ShowWindow(GetDlgItem(hDlg,IDB_HINT), SW_SHOW); // -- показываю кнопку подсказки -- //
+            break;
+        }
+        break;
+    }
+
+    return FALSE;
 }
 
 // Обработчик сообщений для окна "О программе".

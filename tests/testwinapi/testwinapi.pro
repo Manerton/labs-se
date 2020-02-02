@@ -3,11 +3,13 @@ CONFIG += c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_LFLAGS += -municode
+LIBS += -lgdi32
+QMAKE_LFLAGS += -municode -static
 
 SOURCES += \
     stdafx.cpp \
-    test.cpp
+    test.cpp \
+    trenirovka.cpp
 
 RC_FILE += test.rc
 
@@ -21,4 +23,5 @@ HEADERS += \
     resource.h \
     stdafx.h \
     targetver.h \
-    test.h
+    test.h \
+    trenirovka.h
