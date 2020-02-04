@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "test.h"
+#include "main.h"
 #include "trenirovka.h"
 #include "stdlib.h"
 
@@ -11,6 +11,7 @@
 static HINSTANCE hInst;								// -- текущий экземпляр -- //
 static WCHAR szTitle[MAX_LOADSTRING];				// -- текст строки заголовка -- //
 static WCHAR szWindowClass[MAX_LOADSTRING];			// -- имя класса главного окна -- //
+static WCHAR szFilename[] = L"stats.dat";
 static HWND mainWindow;
 static HWND menuWindow;
 static HWND trenirovkaWindow;
@@ -157,8 +158,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-
-
 // Обработчик сообщений для главного меню (menuWindow)
 INT_PTR CALLBACK MenuWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -213,8 +212,8 @@ INT_PTR CALLBACK TrenirovkaWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
         hFont1 = CreateFontIndirect(&lf);
         // -- устанавливаем шрифт для текста -- //
         SendMessage(GetDlgItem(hDlg,IDC_TITLE), WM_SETFONT, WPARAM(hFont1), TRUE );
-        SendMessage(GetDlgItem(hDlg,IDC_ZADANIE), WM_SETFONT, WPARAM(hFont1), TRUE );
-        SendMessage(GetDlgItem(hDlg,IDC_ANSWER), WM_SETFONT, WPARAM(hFont1), TRUE );
+        SendMessage(hZadanie, WM_SETFONT, WPARAM(hFont1), TRUE );
+        SendMessage(hAnswer, WM_SETFONT, WPARAM(hFont1), TRUE );
         SendMessage(GetDlgItem(hDlg,IDC_BADRESULT), WM_SETFONT, WPARAM(hFont1), TRUE );
         SendMessage(GetDlgItem(hDlg,IDC_GOODRESULT), WM_SETFONT, WPARAM(hFont1), TRUE );
         SetWindowText(hZadanie,trenirovka.getZadanie().c_str());    // -- при старте окна уже генерируется задание -- //

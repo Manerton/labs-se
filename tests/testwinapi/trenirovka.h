@@ -5,9 +5,9 @@
 #include <array>
 #include <string>
 
-class Trenirovka
+class Trenirovka    // -- класс для тренажера -- //
 {
-    const std::array<uint16_t,8> prime_array = {2,3,5,7,11,13,17,19};    // -- массив простых чисел от 2 до 19 -- //
+    const std::array<uint8_t,8> prime_array = {2,3,5,7,11,13,17,19};    // -- массив простых чисел от 2 до 19 -- //
     const uint16_t low_predel = 30; // -- нижний предел -- //
     const uint16_t up_predel = 1000;    // -- верхний предел -- //
     std::vector<uint16_t> number_array; // -- массив, состоящий из простых множителей числа-задания -- //

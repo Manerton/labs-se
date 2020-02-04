@@ -7,8 +7,8 @@ LIBS += -lgdi32
 QMAKE_LFLAGS += -municode -static
 
 SOURCES += \
+    main.cpp \
     stdafx.cpp \
-    test.cpp \
     trenirovka.cpp
 
 RC_FILE += test.rc
@@ -20,8 +20,7 @@ DISTFILES += \
 
 
 HEADERS += \
+    main.h \
     resource.h \
     stdafx.h \
-    targetver.h \
-    test.h \
     trenirovka.h

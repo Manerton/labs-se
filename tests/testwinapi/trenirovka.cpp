@@ -10,7 +10,7 @@ static std::mt19937 mt(seed);
 
 uint16_t Trenirovka::getPrimeNumber() const noexcept
 {
-    std::uniform_int_distribution<uint16_t> rand_range(0,7); // от 0 до 7, так как в массиве 8 элементов
+    std::uniform_int_distribution<uint16_t> rand_range(0,7); // индексы от 0 до 7, так как в массиве 8 элементов
     size_t i = rand_range(mt);
     return prime_array[i];
 }
