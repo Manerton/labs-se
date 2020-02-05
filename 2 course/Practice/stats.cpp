@@ -107,7 +107,7 @@ wstring Stats::statsFromFile()
         wstring ws;
         while (getline(file,ws))
         {
-            wss << ws << "\r\n";
+            wss << ws << L"\r\n";
         }
         return {wss.str()};
     }

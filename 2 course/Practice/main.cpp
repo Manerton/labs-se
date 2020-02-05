@@ -144,10 +144,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (wmId)
         {
         case IDM_ABOUT:
-            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, DLGPROC(About));
             break;
         case IDM_GUIDE:
-            DialogBox(hInst, MAKEINTRESOURCE(IDD_GUIDE), hWnd, About);
+            DialogBox(hInst, MAKEINTRESOURCE(IDD_GUIDE), hWnd, DLGPROC(About));
             break;
         case IDM_EXIT:
             DestroyWindow(hWnd);
@@ -221,7 +221,7 @@ LRESULT CALLBACK MenuWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         case IDB_TRENIROVKA:
             ShowWindow(hDlg, SW_HIDE);
             ShowWindow(trenirovkaWindow, SW_SHOW);
-            DialogBox(hInst, MAKEINTRESOURCE(IDD_GETNAME), trenirovkaWindow, getNameWndProc);
+            DialogBox(hInst, MAKEINTRESOURCE(IDD_GETNAME), trenirovkaWindow, DLGPROC(getNameWndProc));
             // -- начинаем тренировку -- //
 
             GetNewZadanie();
