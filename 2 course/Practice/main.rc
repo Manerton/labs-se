@@ -14,13 +14,14 @@
 // Menu resources
 //
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
-IDC_TEST MENU
+IDC_MAIN MENU
 {
     POPUP "&Меню"
     {
         MENUITEM "О программе", IDM_ABOUT
         MENUITEM "В&ыход", IDM_EXIT
     }
+    MENUITEM "&Инструкция", IDM_GUIDE
 }
 
 
@@ -36,11 +37,36 @@ FONT 8, "MS Shell Dlg", 0, 0, 1
 {
     CTEXT           "Астраханский государственный технический университет\nИнститут информационных технологий и коммуникаций", IDC_STATIC, 42, 14, 210, 19, SS_CENTER | SS_NOPREFIX, WS_EX_LEFT
     DEFPUSHBUTTON   "ОК", IDOK, 202, 135, 50, 14, WS_GROUP, WS_EX_LEFT
-    ICON            IDI_TEST, IDC_STATIC, 15, 15, 21, 20, SS_ICON, WS_EX_LEFT
+    ICON            IDI_MAIN, IDC_STATIC, 15, 15, 21, 20, SS_ICON, WS_EX_LEFT
     RTEXT           "кафедра\nАвтоматизированных систем\nобработки информации и управления", IDC_STATIC, 107, 39, 139, 26, SS_RIGHT | SS_NOPREFIX, WS_EX_LEFT
     CTEXT           "Практическая работа по теме:\n""Разложение натурального числа на простые множители""", IDC_STATIC, 29, 75, 210, 19, SS_CENTER | SS_NOPREFIX, WS_EX_LEFT
     RTEXT           "Выполнил: студент\nгруппы ДИПРБ-21\nКатунин С.С.", IDC_STATIC, 108, 100, 139, 26, SS_RIGHT | SS_NOPREFIX, WS_EX_LEFT
     LTEXT           "г. АСТРАХАНЬ 2020 г.", IDC_STATIC, 11, 139, 75, 9, SS_LEFT | SS_NOPREFIX, WS_EX_LEFT
+}
+
+
+
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+IDD_GETNAME DIALOGEX 0, 0, 259, 95
+STYLE DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_POPUP | WS_SYSMENU
+CAPTION "Тренажер"
+FONT 8, "MS Shell Dlg", 0, 0, 1
+{
+    EDITTEXT        IDC_TEXTEDIT, 15, 32, 231, 17, ES_AUTOHSCROLL, WS_EX_LEFT
+    CTEXT           "Введите ваше имя:", IDC_STATIC, 3, 14, 255, 14, SS_CENTER | SS_NOPREFIX, WS_EX_LEFT
+    DEFPUSHBUTTON   "ОК", IDOK, 199, 69, 50, 14, WS_GROUP, WS_EX_LEFT
+}
+
+
+
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+IDD_GUIDE DIALOGEX 0, 0, 262, 130
+STYLE DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_POPUP | WS_SYSMENU
+CAPTION "Инструкция"
+FONT 10, "Microsoft Sans Serif", 400, 0, 204
+{
+    DEFPUSHBUTTON   "ОК", IDOK, 189, 109, 50, 14, WS_GROUP, WS_EX_LEFT
+    LTEXT           "На экране будет представлено число, которое необходимо разложить на простые множители.\n\nДля ввода ответа необходимо в ""поле для ввода ответа"" ввести с клавиатуры простые множители через ПРОБЕЛ.\n\nМожно воспользоваться подсказкой или повторить предыдущее задание, нажав на соответствующую кнопку.\n\nЧтобы завершить работу тренажера, можно вернуться в меню или просто закрыть приложение.", IDC_STATIC, 17, 10, 227, 96, SS_LEFT | SS_NOPREFIX, WS_EX_LEFT
 }
 
 
@@ -58,6 +84,18 @@ FONT 10, "Microsoft Sans Serif", 400, 0, 204
 
 
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+IDD_STATS DIALOGEX 0, 0, 400, 280
+STYLE DS_CONTROL | DS_SETFONT | WS_CHILDWINDOW
+FONT 10, "Microsoft Sans Serif", 400, 0, 204
+{
+    EDITTEXT        IDC_TEXTEDIT, 8, 18, 384, 226, WS_VSCROLL | ES_AUTOHSCROLL | ES_MULTILINE | ES_READONLY, WS_EX_LEFT
+    CTEXT           "Статистика", IDC_TITLE, 1, 3, 399, 12, SS_CENTER | SS_NOPREFIX, WS_EX_LEFT
+    PUSHBUTTON      "Вернуться в меню", IDB_TOMENU, 319, 248, 73, 22, BS_MULTILINE, WS_EX_LEFT
+}
+
+
+
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 IDD_TRENIROVKAWINDOW DIALOGEX 0, 0, 400, 280
 STYLE DS_CONTROL | DS_SETFONT | WS_CHILDWINDOW
 FONT 10, "Microsoft Sans Serif", 400, 0, 204
@@ -65,12 +103,14 @@ FONT 10, "Microsoft Sans Serif", 400, 0, 204
     EDITTEXT        IDC_ANSWER, 10, 178, 314, 52, WS_GROUP | WS_VSCROLL | ES_AUTOVSCROLL | ES_LOWERCASE | ES_MULTILINE | ES_NOHIDESEL, WS_EX_LEFT
     DEFPUSHBUTTON   "Ответить и получить следующее задание", IDB_GETZADANIE, 330, 178, 62, 50, BS_CENTER | BS_VCENTER | BS_MULTILINE, WS_EX_LEFT
     LTEXT           "Нажмите кнопку ""Получить задание"" чтобы начать!", IDC_ZADANIE, 27, 38, 301, 26, SS_LEFT, WS_EX_LEFT
-    PUSHBUTTON      "Закончить\n и вернуться в меню", IDB_TOMENU, 319, 248, 73, 22, BS_MULTILINE, WS_EX_LEFT
     CTEXT           "Тренажёр", IDC_TITLE, 1, 14, 399, 16, SS_CENTER | SS_NOPREFIX, WS_EX_LEFT
     LTEXT           "Правильно!", IDC_GOODRESULT, 27, 71, 74, 17, NOT WS_VISIBLE | SS_LEFT | SS_CENTERIMAGE, WS_EX_LEFT
     LTEXT           "Поле для ввода ответа:", IDC_STATIC, 11, 166, 79, 9, SS_LEFT | SS_NOPREFIX, WS_EX_LEFT
     PUSHBUTTON      "Подсказка", IDB_HINT, 334, 27, 56, 21, BS_CENTER | BS_VCENTER | BS_MULTILINE, WS_EX_LEFT
     LTEXT           "Неправильно!", IDC_BADRESULT, 27, 71, 74, 17, NOT WS_VISIBLE | SS_LEFT | SS_CENTERIMAGE, WS_EX_LEFT
+    PUSHBUTTON      "Повторить", IDB_REPEAT, 334, 53, 56, 21, BS_CENTER | BS_VCENTER | BS_MULTILINE, WS_EX_LEFT
+    PUSHBUTTON      "Закончить\n и вернуться в меню", IDB_TOMENU, 319, 248, 73, 22, BS_MULTILINE, WS_EX_LEFT
+    CTEXT           "Для инструкции нажмите ALT+I", IDC_STATIC, 284, 2, 110, 10, SS_CENTER | SS_CENTERIMAGE | SS_NOPREFIX | SS_SUNKEN, WS_EX_LEFT
 }
 
 
@@ -82,7 +122,7 @@ LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 STRINGTABLE
 {
     IDS_APP_TITLE                 "title"
-    IDC_TEST                      "TEST"
+    IDC_MAIN                      "MAIN"
 }
 
 
@@ -91,11 +131,12 @@ STRINGTABLE
 // Accelerator resources
 //
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
-IDC_TEST ACCELERATORS
+IDC_MAIN ACCELERATORS
 {
     "?",            IDM_ABOUT, ASCII, ALT
     "/",            IDM_ABOUT, ASCII, ALT
     "q",            IDM_EXIT, ASCII, ALT
+    "i",            IDM_GUIDE, ASCII, ALT
 }
 
 
@@ -104,8 +145,8 @@ IDC_TEST ACCELERATORS
 // Icon resources
 //
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
-IDI_SMALL          ICON           "small.ico"
+IDI_MAIN           ICON           "main.ico"
 
 
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
-IDI_TEST           ICON           "test.ico"
+IDI_SMALL          ICON           "small.ico"

@@ -40,9 +40,25 @@ uint16_t Trenirovka::createNumber() noexcept
 
 std::wstring Trenirovka::getZadanie() noexcept
 {
-    uint16_t chislo = createNumber();
+    chislo = createNumber();
     std::wstring str = L"Разложите число " + std::to_wstring(chislo) + L" на простые множители.";
+
     return str;
+}
+
+std::wstring Trenirovka::getPrevZadanie() noexcept
+{
+    chislo = prevChislo;
+    number_array = previous_number_array;
+    std::wstring str = L"Разложите число " + std::to_wstring(prevChislo) + L" на простые множители.";
+    return str;
+}
+
+void Trenirovka::savePrevZadanie() noexcept
+{
+    // -- сохраняем число и массив -- //
+    prevChislo = chislo;
+    previous_number_array = number_array;
 }
 
 std::wstring Trenirovka::getHint() noexcept

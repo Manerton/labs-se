@@ -8,19 +8,19 @@ QMAKE_LFLAGS += -municode -static
 
 SOURCES += \
     main.cpp \
+    stats.cpp \
     stdafx.cpp \
     trenirovka.cpp
 
-RC_FILE += test.rc
+RC_FILE += main.rc
 
 DISTFILES += \
     small.ico \
-    test.aps \
-    test.ico
+    main.ico
 
 
 HEADERS += \
-    main.h \
     resource.h \
+    stats.h \
     stdafx.h \
     trenirovka.h
