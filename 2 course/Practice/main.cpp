@@ -192,7 +192,7 @@ inline void GetPrevZadanie() // -- подготовка к выводу пред
     SetWindowText(hZadanie,trenirovka.getPrevZadanie().c_str());    // -- вывожу предыдущее задание -- //
     SetFocus(hAnswer);  // -- фокус на поле ввода -- //
 }
-#include <sstream>
+
 // Обработчик сообщений для главного меню (menuWindow)
 LRESULT CALLBACK MenuWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -230,7 +230,15 @@ LRESULT CALLBACK MenuWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             ShowWindow(hDlg, SW_HIDE);
             ShowWindow(statsWindow, SW_SHOW);
             // -- читаем стату из файла -- //
-            SetWindowText(GetDlgItem(statsWindow,IDC_TEXTEDIT),stats.statsFromFile().c_str());
+            std::wstring ws = stats.statsFromFile();
+            if (ws == L"Файла со статистикой не существует.")
+            {
+                MessageBox(hDlg,ws.c_str(),L"Ошибка",MB_ICONERROR);
+            }
+            else
+            {
+                SetWindowText(GetDlgItem(statsWindow,IDC_TEXTEDIT),stats.statsFromFile().c_str());
+            }
             break;
         }
         break;

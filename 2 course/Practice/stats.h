@@ -75,7 +75,6 @@ public:
     void repeat() noexcept {++count_repeat;}
     void right() noexcept;
     void wrong() noexcept;
-    void getStats();
     void statsToFile();
     bool checkName();
     void changeName(const std::wstring &ws);

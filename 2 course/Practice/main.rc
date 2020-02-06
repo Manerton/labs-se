@@ -121,7 +121,7 @@ FONT 10, "Microsoft Sans Serif", 400, 0, 204
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 STRINGTABLE
 {
-    IDS_APP_TITLE                 "title"
+    IDS_APP_TITLE                 "Программа-тренажер «Разложение натурального числа на простые множители»"
     IDC_MAIN                      "MAIN"
 }
 

@@ -16,7 +16,8 @@ RC_FILE += main.rc
 
 DISTFILES += \
     small.ico \
-    main.ico
+    main.ico \
+    uml.qmodel
 
 
 HEADERS += \
