@@ -133,13 +133,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY	- ввести сообщение о выходе и вернуться -- //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    int wmId, wmEvent;
+    int wmId;
 
     switch (message)
     {
     case WM_COMMAND:
         wmId    = LOWORD(wParam);
-        wmEvent = HIWORD(wParam);
         // Разобрать выбор в меню:
         switch (wmId)
         {
@@ -184,7 +183,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 inline void GetNewZadanie() // -- подготовка к выводу нового задания и последующий вывод -- //
 {
-    trenirovka.clear(); // -- очищаю тренировку (массивы внутри класса Trenirovka) -- //
+    trenirovka.clear_all(); // -- очищаю тренировку (массивы внутри класса Trenirovka) -- //
 
     HWND hAnswer = GetDlgItem(trenirovkaWindow,IDC_ANSWER); // -- дескриптор поля для ввода ответа пользователя -- //
     HWND hZadanie = GetDlgItem(trenirovkaWindow,IDC_ZADANIE);   // -- дескриптор поля с текстом условия задания -- //
@@ -193,17 +192,6 @@ inline void GetNewZadanie() // -- подготовка к выводу ново�
     SetWindowText(hZadanie,trenirovka.getZadanie().c_str());    // -- генерирую новое задание и вывожу его -- //
     SetFocus(hAnswer);  // -- фокус на поле ввода -- //
     ShowWindow(hHint, SW_SHOW); // -- показываю кнопку подсказки -- //
-}
-
-inline void GetPrevZadanie() // -- подготовка к выводу предыдущего задания и последующий вывод -- //
-{
-    trenirovka.clear(); // -- очищаю тренировку (массивы внутри класса Trenirovka) -- //
-
-    HWND hAnswer = GetDlgItem(trenirovkaWindow,IDC_ANSWER); // -- дескриптор поля для ввода ответа пользователя -- //
-    HWND hZadanie = GetDlgItem(trenirovkaWindow,IDC_ZADANIE);   // -- дескриптор поля с текстом условия задания -- //
-
-    SetWindowText(hZadanie,trenirovka.getPrevZadanie().c_str());    // -- вывожу предыдущее задание -- //
-    SetFocus(hAnswer);  // -- фокус на поле ввода -- //
 }
 
 // Обработчик сообщений для главного меню (menuWindow)
@@ -247,6 +235,7 @@ LRESULT CALLBACK MenuWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             std::wstring ws = stats.statsFromFile();
             if (ws == L"Файла со статистикой не существует.")
             {
+                SetWindowText(GetDlgItem(statsWindow,IDC_TEXTEDIT),L"");
                 MessageBox(hDlg,ws.c_str(),L"Ошибка",MB_ICONERROR);
             }
             else
@@ -315,6 +304,10 @@ LRESULT CALLBACK TrenirovkaWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
             // -- скрываю результат (правильно,неправильно) -- //
             ShowWindow(GetDlgItem(hDlg,IDC_GOODRESULT), SW_HIDE);
             ShowWindow(GetDlgItem(hDlg,IDC_BADRESULT), SW_HIDE);
+
+            ShowWindow(GetDlgItem(hDlg,IDC_ANSWER), SW_SHOW); // -- показываю поле для ввода -- //
+            ShowWindow(GetDlgItem(hDlg,IDC_ANSWER_TITLE), SW_SHOW);
+            SetWindowText(GetDlgItem(hDlg,IDB_GETZADANIE),L"Ответить и получить следующее задание");
             // -- скрываю само окно с тренажером -- //
             ShowWindow(hDlg, SW_HIDE);
             // -- включаю окно с меню -- //
@@ -333,6 +326,7 @@ LRESULT CALLBACK TrenirovkaWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
         case IDB_REPEAT:
             ShowWindow(GetDlgItem(hDlg,IDC_ANSWER), SW_SHOW); // -- показываю поле для ввода -- //
             ShowWindow(GetDlgItem(hDlg,IDC_ANSWER_TITLE), SW_SHOW);
+            SetFocus(hAnswer);  // -- фокус на поле ввода -- //
             SetWindowText(GetDlgItem(hDlg,IDB_GETZADANIE),L"Ответить и получить следующее задание");
 
             stats.repeat(); // -- собираем статистику -- //
@@ -341,48 +335,52 @@ LRESULT CALLBACK TrenirovkaWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
             ShowWindow(GetDlgItem(hDlg,IDC_GOODRESULT), SW_HIDE); // -- скрываю результат -- //
             ShowWindow(GetDlgItem(hDlg,IDB_REPEAT), SW_HIDE); // -- скрываю кнопку повтора -- //
 
-            GetPrevZadanie(); // -- вывод прошлого задания -- //
+            trenirovka.clear_answer_array(); // -- очищаю прошлый ответ юзера -- //
             break;
         case IDB_GETZADANIE:
             const uint8_t max_length = 50;
             wchar_t otvet[max_length];
             GetWindowText(hAnswer,otvet,max_length); // -- получаю ответ -- //
             SetWindowText(hAnswer,L""); // -- очищаю поле ввода -- //
-
-            ShowWindow(GetDlgItem(hDlg,IDC_ANSWER), SW_SHOW); // -- показываю поле для ввода -- //
-            ShowWindow(GetDlgItem(hDlg,IDC_ANSWER_TITLE), SW_SHOW);
-            SetWindowText(GetDlgItem(hDlg,IDB_GETZADANIE),L"Ответить и получить следующее задание");
-
-            stats.complete(); // -- собираем статистику -- //
-            trenirovka.savePrevZadanie();
-            if (trenirovka.checkAnswer(otvet))  // -- сообщаю о правильности ответа -- //
+            // -- если поле для ввода было доступно пользователю -- //
+            // -- то обрабатываем ответ пользователя -- //
+            // -- иначе ожидаем от пользователя команды повтора или получения следующего задания -- //
+            if (IsWindowVisible(GetDlgItem(hDlg,IDC_ANSWER)))
             {
-                ShowWindow(GetDlgItem(hDlg,IDC_BADRESULT), SW_HIDE);
-                ShowWindow(GetDlgItem(hDlg,IDC_GOODRESULT), SW_SHOW);
-                ShowWindow(GetDlgItem(hDlg,IDB_REPEAT), SW_HIDE); // -- скрываю кнопку повтора -- //
-                stats.right(); // -- собираем статистику -- //
-                GetNewZadanie(); // -- след. задание -- //
-            }
-            else
-            {
-                ShowWindow(GetDlgItem(hDlg,IDC_BADRESULT), SW_SHOW);
-                ShowWindow(GetDlgItem(hDlg,IDC_GOODRESULT), SW_HIDE);
 
-                if (stats.isRepeatActivated())  // -- если была нажата кнопка повтор, т.е если была совершена еще одна ошибка уже в режиме повтора -- //
+                stats.complete(); // -- собираем статистику -- //
+                if (trenirovka.checkAnswer(otvet))  // -- сообщаю о правильности ответа -- //
                 {
+                    ShowWindow(GetDlgItem(hDlg,IDC_BADRESULT), SW_HIDE);
+                    ShowWindow(GetDlgItem(hDlg,IDC_GOODRESULT), SW_SHOW);
+                    ShowWindow(GetDlgItem(hDlg,IDB_REPEAT), SW_HIDE); // -- скрываю кнопку повтора -- //
+                    stats.right(); // -- собираем статистику -- //
+                    GetNewZadanie(); // -- след. задание -- //
+                }
+                else
+                {
+                    ShowWindow(GetDlgItem(hDlg,IDC_BADRESULT), SW_SHOW);
+                    ShowWindow(GetDlgItem(hDlg,IDC_GOODRESULT), SW_HIDE);
+                    ShowWindow(GetDlgItem(hDlg,IDB_REPEAT), SW_SHOW); // -- показываю кнопку повтора -- //
+
                     ShowWindow(GetDlgItem(hDlg,IDC_ANSWER), SW_HIDE);   // -- скрываем поле ввода -- //
                     ShowWindow(GetDlgItem(hDlg,IDC_ANSWER_TITLE), SW_HIDE);
                     // -- так как поле ввода скрыто, ответа тут нет, только получение след. задания -- //
                     // -- пользователь может или получить след. задание или повторить текущее неправильно решенное -- //
                     SetWindowText(GetDlgItem(hDlg,IDB_GETZADANIE),L"Получить следующее задание");
+
+                    stats.wrong(); // -- собираем статистику -- //
                 }
-                else GetNewZadanie();
-
-                ShowWindow(GetDlgItem(hDlg,IDB_REPEAT), SW_SHOW); // -- показываю кнопку повтора -- //
-
-                stats.wrong(); // -- собираем статистику -- //
             }
-            stats.disableRepeatFlag(); // -- выходим из режима повтора -- //
+            else    // -- поле ввода было не доступно и пользователь нажал "Получить следующее задание" -- //
+            {
+                GetNewZadanie(); // -- след. задание -- //
+                ShowWindow(GetDlgItem(hDlg,IDC_ANSWER), SW_SHOW); // -- показываю поле для ввода -- //
+                ShowWindow(GetDlgItem(hDlg,IDC_ANSWER_TITLE), SW_SHOW);
+                SetWindowText(GetDlgItem(hDlg,IDB_GETZADANIE),L"Ответить и получить следующее задание");
+                ShowWindow(GetDlgItem(hDlg,IDC_BADRESULT), SW_HIDE); // -- скрываю результат -- //
+                ShowWindow(GetDlgItem(hDlg,IDB_REPEAT), SW_HIDE); // -- скрываю кнопку повтора -- //
+            }
             break;
         }
         break;

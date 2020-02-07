@@ -52,21 +52,6 @@ std::wstring Trenirovka::getZadanie() noexcept
     return str;
 }
 
-std::wstring Trenirovka::getPrevZadanie() noexcept
-{
-    chislo = prevChislo;
-    number_array = previous_number_array;
-    std::wstring str = L"Разложите число " + std::to_wstring(prevChislo) + L" на простые множители.";
-    return str;
-}
-
-void Trenirovka::savePrevZadanie() noexcept
-{
-    // -- сохраняем число и массив -- //
-    prevChislo = chislo;
-    previous_number_array = number_array;
-}
-
 std::wstring Trenirovka::getHint() noexcept
 {
     // -- получаю случайный простой множитель из массива в качестве подсказки -- //
@@ -99,7 +84,12 @@ bool Trenirovka::checkAnswer(const std::wstring &str) noexcept
     return false;
 }
 
-void Trenirovka::clear()
+void Trenirovka::clear_answer_array()
+{
+    answer_array.clear();
+}
+
+void Trenirovka::clear_all()
 {
     number_array.clear();
     answer_array.clear();

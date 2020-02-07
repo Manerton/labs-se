@@ -78,7 +78,7 @@ void Stats::statsToFile()
     {
         wss << L"Отношение количества правильных ответов к количеству неправильных: " << ratio_right_wrong << endl;
     }
-    wss << L"---------------------------------------" << endl;
+    wss << L"----------------------------------------" << endl;
 
     wofstream file(filename, ios::app);
     if (file)

@@ -12,7 +12,6 @@ class Stats // -- класс для сбора статистики -- //
     std::wstring username = L"noname";
 
     bool hintActivated = false;
-    bool repeatActivated = false;
 
     uint64_t count_complited = 0; // -- количество выполненных упражнений -- //
     uint64_t count_hint = 0; // -- количество использованных подсказок -- //
@@ -75,15 +74,6 @@ public:
     }
     void repeat() noexcept {
         ++count_repeat;
-        repeatActivated = true;
-    }
-    void disableRepeatFlag()
-    {
-        repeatActivated = false;
-    }
-    bool isRepeatActivated()
-    {
-        return repeatActivated;
     }
     void right() noexcept;
     void wrong() noexcept;

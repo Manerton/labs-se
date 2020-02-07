@@ -49,8 +49,8 @@
                          </base-DElement>
                          <object>{ccb0754d-609c-4f05-ba6e-19aeaf7c5d32}</object>
                          <name>Trenirovka</name>
-                         <pos>x:375;y:345</pos>
-                         <rect>x:-125;y:-160;w:250;h:320</rect>
+                         <pos>x:505;y:350</pos>
+                         <rect>x:-120;y:-140;w:240;h:280</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
                         </DObject>
@@ -71,7 +71,7 @@
                          </base-DElement>
                          <object>{c7719bc2-3c14-466e-8d5a-c26ec601f10d}</object>
                          <name>Stats</name>
-                         <pos>x:645;y:310</pos>
+                         <pos>x:775;y:315</pos>
                          <rect>x:-120;y:-290;w:240;h:580</rect>
                          <visual-role>0</visual-role>
                          <visual-role2>4</visual-role2>
@@ -93,7 +93,7 @@
                          </base-DElement>
                          <object>{23e99db8-5736-4195-bf21-abfdfd9e2440}</object>
                          <name>Main</name>
-                         <pos>x:495;y:705</pos>
+                         <pos>x:625;y:710</pos>
                          <rect>x:-85;y:-40;w:170;h:80</rect>
                          <auto-sized>false</auto-sized>
                          <visual-role>0</visual-role>
@@ -144,7 +144,7 @@
                     </item>
                    </qlist>
                   </elements>
-                  <last-modified>1580949458089</last-modified>
+                  <last-modified>1581103004151</last-modified>
                   <toolbarid>General</toolbarid>
                  </MDiagram>
                 </base-MDiagram>
@@ -231,63 +231,49 @@
                  <qlist>
                   <item>
                    <MClassMember>
-                    <uid>{365f9cee-1e58-470e-9f24-18fe2d05062d}</uid>
+                    <uid>{340df849-2e25-42d1-a527-6af902fd453d}</uid>
                     <type>1</type>
                     <declaration>const std::array&lt;uint8_t,8&gt; prime_array</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{24298771-97d8-4876-bccb-ccce214cf9e4}</uid>
+                    <uid>{c674f34e-d782-46af-bf9d-244df3bb6c4e}</uid>
                     <type>1</type>
                     <declaration>const uint16_t low_predel</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{7bfd231d-c721-4014-bed4-adb3bc269bf7}</uid>
+                    <uid>{d6fc44d2-0453-4433-9190-46883d696a1b}</uid>
                     <type>1</type>
                     <declaration>const uint16_t up_predel</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{5cf17fd4-1896-4a25-9965-a0c3ca509ead}</uid>
+                    <uid>{7544e08e-fafd-49ef-ad2e-f75505bd13ff}</uid>
                     <type>1</type>
                     <declaration>uint16_t chislo</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{85e27a60-4a93-423b-9265-ed6d75507809}</uid>
+                    <uid>{e2f9279b-fc06-43eb-90da-1c9bc8779ad9}</uid>
                     <type>1</type>
                     <declaration>std::vector&lt;uint16_t&gt; number_array</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{98300a7c-b1ec-4d88-95c0-e1f150d09940}</uid>
+                    <uid>{72fe599d-40b2-4f31-b636-f23dddcb26c3}</uid>
                     <type>1</type>
                     <declaration>std::vector&lt;uint16_t&gt; answer_array</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{4fb89e3f-c0e1-4d3e-8dd8-09a0487b4027}</uid>
-                    <type>1</type>
-                    <declaration>std::vector&lt;uint16_t&gt; previous_number_array</declaration>
-                   </MClassMember>
-                  </item>
-                  <item>
-                   <MClassMember>
-                    <uid>{a7d726e4-c67d-4f51-9948-c37afaf727c8}</uid>
-                    <type>1</type>
-                    <declaration>uint16_t prevChislo</declaration>
-                   </MClassMember>
-                  </item>
-                  <item>
-                   <MClassMember>
-                    <uid>{1c6598e3-5658-4df6-8fb8-403d8b3a8546}</uid>
+                    <uid>{9b675b49-57f2-4d77-9467-421483f668de}</uid>
                     <type>2</type>
                     <properties>4</properties>
                     <declaration>uint16_t getPrimeNumber()</declaration>
@@ -295,21 +281,21 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{c8c4e8f6-814b-47bc-8b54-c0a4e6b68123}</uid>
+                    <uid>{0e0648c9-6cb0-43aa-81cc-2cdb78641192}</uid>
                     <type>2</type>
                     <declaration>uint16_t createNumber()</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{2d1e7460-0473-49df-8884-181ca48a2989}</uid>
+                    <uid>{f4e8631e-ea56-4438-83e2-45484c7c4dbd}</uid>
                     <type>2</type>
                     <declaration>void parseAnswer(const std::wstring &amp;str)</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{39302644-8063-42bd-8315-593500113c57}</uid>
+                    <uid>{a6da92b3-707a-424f-847b-378ecb34ea9e}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>Trenirovka()</declaration>
@@ -317,7 +303,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{19ea8191-0f0e-4329-9625-176c64d0a1c9}</uid>
+                    <uid>{67845bf0-f6e2-47ea-9ec2-8600f7594f99}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>std::wstring getZadanie()</declaration>
@@ -325,23 +311,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{c0af1be2-64a2-4de4-9424-3b3b3c24a308}</uid>
-                    <visibility>1</visibility>
-                    <type>2</type>
-                    <declaration>std::wstring getPrevZadanie()</declaration>
-                   </MClassMember>
-                  </item>
-                  <item>
-                   <MClassMember>
-                    <uid>{9bf1cc48-db18-427f-9714-d84c606cc390}</uid>
-                    <visibility>1</visibility>
-                    <type>2</type>
-                    <declaration>void savePrevZadanie()</declaration>
-                   </MClassMember>
-                  </item>
-                  <item>
-                   <MClassMember>
-                    <uid>{d2364883-b7fc-42a7-82b4-36757415cb6a}</uid>
+                    <uid>{092609ed-808b-4ea3-b7f7-f6573ddb77a9}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>std::wstring getHint()</declaration>
@@ -349,7 +319,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{65f0f387-6f90-4aab-98d2-4194be210c1a}</uid>
+                    <uid>{de4a1909-c120-4117-8d8b-fc2ded61bae0}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>bool checkAnswer(const std::wstring &amp;str)</declaration>
@@ -357,10 +327,18 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{cfb827af-ea9d-4a94-b6a6-468970290fc2}</uid>
+                    <uid>{8941e12e-4a89-43a4-9553-1415a4bf23b2}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
-                    <declaration>void clear()</declaration>
+                    <declaration>void clear_all()</declaration>
+                   </MClassMember>
+                  </item>
+                  <item>
+                   <MClassMember>
+                    <uid>{a8b2d0cf-7aaa-44da-9077-f6b5f973bef1}</uid>
+                    <visibility>1</visibility>
+                    <type>2</type>
+                    <declaration>void clear_answer_array()</declaration>
                    </MClassMember>
                   </item>
                  </qlist>
@@ -391,189 +369,189 @@
                  <qlist>
                   <item>
                    <MClassMember>
-                    <uid>{07a8db3f-5b79-4f92-bcbd-0cd1af3dfaa3}</uid>
+                    <uid>{34628d21-ad03-4306-afa7-556aada6e514}</uid>
                     <type>1</type>
                     <declaration>std::string filename</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{595547a4-8958-4581-8ff1-d5fd20cef444}</uid>
+                    <uid>{9b16c945-7a71-449e-85b0-3b62b92fecdc}</uid>
                     <type>1</type>
                     <declaration>std::wstring username</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{f93091ea-5bad-46c9-acf9-4f31cbd54398}</uid>
+                    <uid>{3a253e1e-6c62-45f1-b140-bfdfc3f30191}</uid>
                     <type>1</type>
                     <declaration>bool hintActivated</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{22fff6ce-f6ef-41a2-9eb5-0d3c536c8a10}</uid>
+                    <uid>{aee12ec8-16ac-42f8-9f5e-fed2d5745e86}</uid>
                     <type>1</type>
                     <declaration>uint64_t count_complited</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{5f0dcb01-fbe4-46dc-91f2-4605ba3d8b14}</uid>
+                    <uid>{39b7fbeb-fe21-4dab-a645-80c468031468}</uid>
                     <type>1</type>
                     <declaration>uint64_t count_hint</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{61fb712f-3ec1-49bf-9ee7-440513ec3dcc}</uid>
+                    <uid>{9e8ff4fb-e78b-4e7f-8fe9-462ef3672254}</uid>
                     <type>1</type>
                     <declaration>uint64_t count_repeat</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{be7ea6bb-6e98-40de-8550-c61708de0bd6}</uid>
+                    <uid>{484cf679-5175-4afe-82b0-35b995920419}</uid>
                     <type>1</type>
                     <declaration>uint64_t count_right</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{06163fa8-1235-4bad-9e3b-5de2995f146e}</uid>
+                    <uid>{0626a036-3b23-42ec-88df-9b776bc56816}</uid>
                     <type>1</type>
                     <declaration>uint64_t count_hinted_right</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{3e85bd1a-0b85-48f2-97e1-e847db84d0fd}</uid>
+                    <uid>{6c6794de-5f06-449f-bda7-dbb6d986bd96}</uid>
                     <type>1</type>
                     <declaration>double percent_right</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{ba881c48-14fa-4139-9e3d-e39d57c6d813}</uid>
+                    <uid>{5546e037-71c4-40e2-bc11-fd5b7e656838}</uid>
                     <type>1</type>
                     <declaration>uint64_t count_wrong</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{b5b829f5-6f45-4e7b-ad90-0e87c6e6053b}</uid>
+                    <uid>{998f5f7a-a4d1-42a5-8730-97d6e38d31e5}</uid>
                     <type>1</type>
                     <declaration>uint64_t count_hinted_wrong</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{77efbb38-9c23-4987-8649-0fc26fc8799b}</uid>
+                    <uid>{ca581edb-31cd-418a-88aa-0c2bfe67a224}</uid>
                     <type>1</type>
                     <declaration>double percent_wrong</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{283258e6-61ef-4e24-9d01-c75c48acbb30}</uid>
+                    <uid>{7c80c6dc-0e4e-4903-9818-0aa30d96cc9c}</uid>
                     <type>1</type>
                     <declaration>uint64_t current_series_right</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{748d1a21-f2f4-4fb6-bd60-b69f33a910a2}</uid>
+                    <uid>{47954909-b843-4e4f-a6df-68a25b9b54e1}</uid>
                     <type>1</type>
                     <declaration>uint64_t series_right</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{247f2731-ec44-49a0-8505-9e212f153f87}</uid>
+                    <uid>{6f4a8958-3ccd-4056-abaf-264fe360dd54}</uid>
                     <type>1</type>
                     <declaration>uint64_t current_series_wrong</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{6e9f1990-bf1d-4c50-85db-75c39ef03e0e}</uid>
+                    <uid>{ac3c50c2-b68b-4c1a-b1b6-79d54929da44}</uid>
                     <type>1</type>
                     <declaration>uint64_t series_wrong</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{967f51bb-4aa8-46a6-9860-03ee60b76762}</uid>
+                    <uid>{8b39e3ef-f35c-46c6-a916-55e6c4a863e0}</uid>
                     <type>1</type>
                     <declaration>uint64_t count_series_right</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{596cd8a2-03c1-420b-afa1-4509bf3ee25d}</uid>
+                    <uid>{d3384fc7-a36e-44c2-a47c-827ff12596bf}</uid>
                     <type>1</type>
                     <declaration>double avg_series_right</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{babd5314-a039-4636-a068-1f92c4d22e49}</uid>
+                    <uid>{00344fd6-40bf-4acf-8cd1-e2724b95c06d}</uid>
                     <type>1</type>
                     <declaration>uint64_t summa_series_right</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{627c4bfc-8a13-45ba-9a71-613c735fa651}</uid>
+                    <uid>{28acd619-c8e4-473f-9b8e-ee8e9401eda0}</uid>
                     <type>1</type>
                     <declaration>double ratio_right_wrong</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{9babe7f8-409b-40df-89ee-e8ffd3eb3269}</uid>
+                    <uid>{1ef3c9ee-932b-4fd9-8dac-fdfc4850deff}</uid>
                     <type>2</type>
                     <declaration>void check_for_max_series()</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{6e85582e-0291-4ddd-8e86-46930c0c2e3e}</uid>
+                    <uid>{6423cf4e-72a5-46c5-8fa5-acbbe748e9e7}</uid>
                     <type>2</type>
                     <declaration>void add_series_right()</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{9ae104df-8419-413d-adff-a622f4873c6b}</uid>
+                    <uid>{86fb7699-a184-4312-9dba-c875f8374557}</uid>
                     <type>2</type>
                     <declaration>void calculate_percent_right()</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{ab7d0c36-82cc-4e0d-bd59-dabd3147b7f5}</uid>
+                    <uid>{b4e98b0c-0664-4f1e-a8c3-e4e6b0040492}</uid>
                     <type>2</type>
                     <declaration>void calculate_percent_wrong()</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{840564af-6ae8-4fb1-bf80-45a5525a88ce}</uid>
+                    <uid>{93616f47-a418-4153-b208-45160d902a74}</uid>
                     <type>2</type>
                     <declaration>void calculate_avg_series_right()</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{d28aa32f-4fc6-4e95-a144-30843e7c9a07}</uid>
+                    <uid>{ae277caf-e12a-447c-ab08-4556a6256591}</uid>
                     <type>2</type>
                     <declaration>void calculate_ratio()</declaration>
                    </MClassMember>
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{433fc1ec-a226-4f45-9b87-7ef387337154}</uid>
+                    <uid>{e288ac3f-da32-4f48-b4d1-4e355ebd89d2}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>Stats()</declaration>
@@ -581,7 +559,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{1bc113d1-a630-44a8-8c47-372160f3cdf4}</uid>
+                    <uid>{f29123f3-2368-4ad9-8953-e6a6f3672e95}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>void complete()</declaration>
@@ -589,7 +567,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{153bcc10-fc56-472c-83c1-a1f0571b6b59}</uid>
+                    <uid>{14469b7a-2e30-4d88-8902-c025a1809cf8}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>void hint()</declaration>
@@ -597,7 +575,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{692bc005-a23e-4039-9c37-69e043dd945b}</uid>
+                    <uid>{dc160a2a-3f70-4cf0-87b6-67980463dcf1}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>void repeat()</declaration>
@@ -605,7 +583,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{04d50a55-d493-4184-b948-20aaba4da814}</uid>
+                    <uid>{101ac948-9f87-45c8-b884-e932257f4934}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>void right()</declaration>
@@ -613,7 +591,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{4ad34daa-5a67-479a-811f-bd06290af2ea}</uid>
+                    <uid>{de08c75a-0bb8-4376-b49c-26e103d0b869}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>void wrong()</declaration>
@@ -621,7 +599,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{58bcf049-14e9-4ff0-8025-3cb84f1d1eda}</uid>
+                    <uid>{22589495-6276-4eca-8179-c31fd941514e}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>void getStats()</declaration>
@@ -629,7 +607,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{ff25575f-8486-4908-bdc8-d0e06e589ceb}</uid>
+                    <uid>{1fe57ae7-3e1b-4438-b4ec-3a6c72398ef8}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>void statsToFile()</declaration>
@@ -637,7 +615,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{472aedd8-e058-4e59-a6f4-01b277c717f2}</uid>
+                    <uid>{528220af-1c7a-46f4-8422-ae6eb2cc329d}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>bool checkName()</declaration>
@@ -645,7 +623,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{63cddf56-2703-4d2b-86d4-b9a9ae80bf6b}</uid>
+                    <uid>{f6efa7c4-ac0f-4aa2-8401-0b2242c8c39f}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>void changeName(const std::wstring &amp;ws)</declaration>
@@ -653,7 +631,7 @@
                   </item>
                   <item>
                    <MClassMember>
-                    <uid>{3a239dd2-cca2-408a-a7c4-3933a1db43f6}</uid>
+                    <uid>{6eb5cda9-5025-415b-b347-a9ba95e53bbc}</uid>
                     <visibility>1</visibility>
                     <type>2</type>
                     <declaration>std::wstring statsFromFile()</declaration>
