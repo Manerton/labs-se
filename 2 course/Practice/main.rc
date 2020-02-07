@@ -105,12 +105,14 @@ FONT 10, "Microsoft Sans Serif", 400, 0, 204
     LTEXT           "Нажмите кнопку ""Получить задание"" чтобы начать!", IDC_ZADANIE, 27, 38, 301, 26, SS_LEFT, WS_EX_LEFT
     CTEXT           "Тренажёр", IDC_TITLE, 1, 14, 399, 16, SS_CENTER | SS_NOPREFIX, WS_EX_LEFT
     LTEXT           "Правильно!", IDC_GOODRESULT, 27, 71, 74, 17, NOT WS_VISIBLE | SS_LEFT | SS_CENTERIMAGE, WS_EX_LEFT
-    LTEXT           "Поле для ввода ответа:", IDC_STATIC, 11, 166, 79, 9, SS_LEFT | SS_NOPREFIX, WS_EX_LEFT
-    PUSHBUTTON      "Подсказка", IDB_HINT, 334, 27, 56, 21, BS_CENTER | BS_VCENTER | BS_MULTILINE, WS_EX_LEFT
+    LTEXT           "Поле для ввода ответа:", IDC_ANSWER_TITLE, 11, 166, 79, 9, SS_LEFT | SS_NOPREFIX, WS_EX_LEFT
+    PUSHBUTTON      "Подсказка", IDB_HINT, 334, 67, 56, 21, BS_CENTER | BS_VCENTER | BS_MULTILINE, WS_EX_LEFT
     LTEXT           "Неправильно!", IDC_BADRESULT, 27, 71, 74, 17, NOT WS_VISIBLE | SS_LEFT | SS_CENTERIMAGE, WS_EX_LEFT
-    PUSHBUTTON      "Повторить", IDB_REPEAT, 334, 53, 56, 21, BS_CENTER | BS_VCENTER | BS_MULTILINE, WS_EX_LEFT
+    PUSHBUTTON      "Повторить", IDB_REPEAT, 334, 94, 56, 21, BS_CENTER | BS_VCENTER | BS_MULTILINE, WS_EX_LEFT
     PUSHBUTTON      "Закончить\n и вернуться в меню", IDB_TOMENU, 319, 248, 73, 22, BS_MULTILINE, WS_EX_LEFT
     CTEXT           "Для инструкции нажмите ALT+I", IDC_STATIC, 284, 2, 110, 10, SS_CENTER | SS_CENTERIMAGE | SS_NOPREFIX | SS_SUNKEN, WS_EX_LEFT
+    CTEXT           "Для подсказки нажмите F1", IDC_STATIC, 284, 14, 110, 10, SS_CENTER | SS_CENTERIMAGE | SS_NOPREFIX | SS_SUNKEN, WS_EX_LEFT
+    CTEXT           "Для повтора нажмите R", IDC_STATIC, 284, 26, 110, 10, SS_CENTER | SS_CENTERIMAGE | SS_NOPREFIX | SS_SUNKEN, WS_EX_LEFT
 }
 
 
@@ -137,6 +139,11 @@ IDC_MAIN ACCELERATORS
     "/",            IDM_ABOUT, ASCII, ALT
     "q",            IDM_EXIT, ASCII, ALT
     "i",            IDM_GUIDE, ASCII, ALT
+    VK_F1,         IDM_HINT, VIRTKEY
+    "й",            IDM_EXIT, ASCII, ALT
+    "ш",            IDM_GUIDE, ASCII, ALT
+    "r",            IDM_REPEAT, ASCII
+    "к",            IDM_REPEAT, ASCII
 }
 
 

@@ -20,7 +20,7 @@ class Trenirovka    // -- класс для тренажера -- //
     uint16_t getPrimeNumber() const noexcept;   // -- получить случайное простое число из массива prime_array -- //
     uint16_t createNumber() noexcept;    // -- сформировать массив number_array и получить число-задание для getZadanie -- //
     void parseAnswer(const std::wstring &str) noexcept; // -- разобрать ответ и заполнить массив answer_array -- //
-
+    bool Repeated = false;
 public:
     Trenirovka() = default;
     std::wstring getZadanie() noexcept;    // -- получить строку с заданием (с числом, которое надо разложить) -- //

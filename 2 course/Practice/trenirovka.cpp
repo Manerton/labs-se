@@ -35,6 +35,12 @@ uint16_t Trenirovka::createNumber() noexcept
             end = true; // -- так как число уже больше предела -- //
         }
     }
+
+    if (c < low_predel) // -- если число получилось меньше предела -- //
+    {
+        c = low_predel;
+        number_array = {2, 5, 3};
+    }
     return c;
 }
 

@@ -19,9 +19,12 @@
 #define IDB_GETZADANIE                          203
 #define IDB_HINT                                204
 #define IDB_REPEAT                              205
+#define IDM_HINT                                228
+#define IDM_REPEAT                              229
+#define IDC_ANSWER                              255
+#define IDC_ANSWER_TITLE                        256
 #define IDC_ZADANIE                             300
 #define IDC_TITLE                               301
-#define IDC_ANSWER                              302
 #define IDC_BADRESULT                           303
 #define IDC_GOODRESULT                          304
 #define IDC_TEXTEDIT                            310

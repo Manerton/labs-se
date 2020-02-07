@@ -1,8 +1,7 @@
 #include "stats.h"
-#include "stats.h"
-#include <iostream>
 #include <sstream>
 #include <fstream>
+#include <ctime>
 
 using namespace std;
 
@@ -58,6 +57,10 @@ void Stats::statsToFile()
     calculate_percent_wrong();
     calculate_avg_series_right();
     calculate_ratio();
+    time_t td;
+    td = time(nullptr);
+    wss << L"Дата и время завершения тренировки: ";
+    wss << ctime(&td);
     wss << L"Имя пользователя: " << username << endl;
     wss << L"Количество выполненных упражнений: " << count_complited << endl;
     wss << L"Количество использованных подсказок: " << count_hint << endl;
