@@ -14,17 +14,6 @@ TEST_CASE("Тесты класс Array в doctest")
     std::vector<int> a;
 
 
-
-
-
-    while (*it < a)
-    {
-        ++it;
-    }
-
-
-
-
     SUBCASE("Тест создание и присваивание") // -- создание и присваивание --
     {
         Array two;
