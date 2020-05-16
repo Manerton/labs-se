@@ -6,13 +6,16 @@
 #include <cstring>
 #include <vector>
 #include <tuple>
+#include <array>
 
 // -- очередь нуждающихся в улучшении жилищных условий -- //
 class Queue
 {
+   public:
+    // кортеж Tuple
     using Lodger = std::tuple<
-    char[8],    // ID
-    uint32_t,   // Family_member_count
+    uint32_t,    // ID
+    uint8_t,   // Family_member_count
     uint16_t,   // Year
     uint8_t,    // Month
     float,      // Area_occupied
@@ -20,7 +23,7 @@ class Queue
     float       // Area_required
     >; // -- квартирант/очередник -- //
 
-    enum class LodgerIndex{
+    enum class LodgerIndex : uint8_t {
         ID,                     // идентификационный номер очередника
         Family_member_count,    // количество членов семьи
         Year,                   // год
@@ -30,16 +33,37 @@ class Queue
         Area_required           // необходимые жилищные условия (требуемая площадь)
     };
 
+private:
     std::string name; // -- фамилия сотрудника, ведущего очередь -- //
-    uint32_t count_of_people; // -- количество очередников -- //
-    char date[8]; // -- дата создания -- //
+    uint32_t count_of_people = 0; // -- количество очередников -- //
+    char date[9]; // -- дата создания в формате ДД.ММ.ГГ -- //
     std::vector<Lodger> Lodger_array;
+
+    // -- главные проверки выбрасывают исключения, поэтому главные проверки имеют тип void -- //
+    void check_date_format(const char* date) const; // -- формат даты должен быть ДД.ММ.ГГ и не больше 8 символов -- //
+    bool check_for_digits_in_date(const char *date) const noexcept; // -- проверка на лишние символы (т.е не цифры) внутри даты -- //
+    void check_length_for_ID(uint32_t ID) const; // -- проверка на длину ID, не должно быть больше 8 символов -- //
+
 public:
-    Queue(const std::string& _name = "noname", uint32_t _count_of_people = 0, const char _date[8] = "01.01.00") noexcept
-        : name(_name), count_of_people(_count_of_people)
+    Queue(const std::string& _name = "noname", const char* _date = "01.01.00")
+        : name{_name}
     {
-        std::copy(_date,_date+strlen(_date),date);
+        check_date_format(_date);
+        strcpy(date,_date);
     }
+
+    // -- геты -- //
+    std::string getName() const;
+    uint32_t getCount_of_people() const;
+    const std::string getDate() const;
+    uint32_t getID_from_lodger(const Lodger& lodger) const;
+
+    void add(const Lodger& lodger);
+
+    // -- исключения -- //
+
+    class wrong_data_format {};
+    class ID_out_of_bounds {};
 
 };
 
