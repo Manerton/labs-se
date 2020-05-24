@@ -23,6 +23,8 @@ class Queue
     float       // Area_required
     >; // -- квартирант/очередник -- //
 
+    using iterator = std::vector<Lodger>::iterator;
+
     enum class LodgerIndex : uint8_t {
         ID,                     // идентификационный номер очередника
         Family_member_count,    // количество членов семьи
@@ -44,6 +46,9 @@ private:
     bool check_for_digits_in_date(const char *date) const noexcept; // -- проверка на лишние символы (т.е не цифры) внутри даты -- //
     void check_length_for_ID(uint32_t ID) const; // -- проверка на длину ID, не должно быть больше 8 символов -- //
 
+    // Сортировка для поисков
+    void sort_by_date();
+    iterator find_date(uint16_t Year, uint8_t Month); // находим итератор элемента с датой, до или после которой мы будем искать элементы
 public:
     Queue(const std::string& _name = "noname", const char* _date = "01.01.00")
         : name{_name}
@@ -53,17 +58,31 @@ public:
     }
 
     // -- геты -- //
-    std::string getName() const;
-    uint32_t getCount_of_people() const;
-    const std::string getDate() const;
-    uint32_t getID_from_lodger(const Lodger& lodger) const;
+    std::string get_Name() const noexcept;
+    uint32_t get_Count_of_people() const noexcept;
+    std::string get_Date() const noexcept;
+    uint32_t get_ID(const Lodger& lodger) const noexcept;
+    uint8_t get_Family_member_count(const Lodger& lodger) const noexcept;
+    uint16_t get_Year(const Lodger& lodger) const noexcept;
+    uint8_t get_Month(const Lodger& lodger) const noexcept;
+    float get_Area_occupied(const Lodger& lodger) const noexcept;
+    uint8_t get_Rooms_count(const Lodger& lodger) const noexcept;
+    float get_Area_required(const Lodger& lodger) const noexcept;
 
-    void add(const Lodger& lodger);
+    // -- основные операции -- //
+    void add(const Lodger& lodger); // добавление
+
+    iterator find_by_ID(uint32_t ID); // поиск по ID, возвращает итератор на элемент
+    std::vector<Lodger> find_before_date(uint16_t Year, uint8_t Month); // поиск по дате (до заданной даты), возвращает контейнер с элементами
+    std::vector<Lodger> find_after_date(uint16_t Year, uint8_t Month); // поиск по дате (после заданной даты)
+
+    std::string lodger_toString(const Lodger &lodger) const noexcept;
 
     // -- исключения -- //
 
-    class wrong_data_format {};
-    class ID_out_of_bounds {};
+    class wrong_data_format {};     // неправильный формат даты
+    class ID_out_of_bounds {};      // у ID больше 8 символов
+    class element_not_found {};     // элемент в контейнере не найден
 
 };
 

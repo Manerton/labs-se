@@ -1,5 +1,6 @@
 #include "queue.h"
 #include <cmath>
+#include <sstream>
 
 // -- проверка на цифры внутри даты -- //
 bool Queue::check_for_digits_in_date(const char *date) const noexcept
@@ -49,35 +50,147 @@ void Queue::check_length_for_ID(uint32_t ID) const
     if (id_len > max_id_len) throw ID_out_of_bounds();
 }
 
-std::string Queue::getName() const
+std::string Queue::get_Name() const noexcept
 {
     return name;
 }
 
-uint32_t Queue::getCount_of_people() const
+uint32_t Queue::get_Count_of_people() const noexcept
 {
     return count_of_people;
 }
 
-const std::string Queue::getDate() const
+std::string Queue::get_Date() const noexcept
 {
     return std::string{date};
 }
 
-uint32_t Queue::getID_from_lodger(const Queue::Lodger &lodger) const
+uint32_t Queue::get_ID(const Lodger &lodger) const noexcept
 {
-    const auto indexID = static_cast<int>(LodgerIndex::ID);
-    return std::get<indexID>(lodger);
+    const auto index = static_cast<int>(LodgerIndex::ID);
+    return std::get<index>(lodger);
 }
 
-void Queue::add(const Queue::Lodger &lodger)
+uint8_t Queue::get_Family_member_count(const Lodger &lodger) const noexcept
+{
+    const auto index = static_cast<int>(LodgerIndex::Family_member_count);
+    return std::get<index>(lodger);
+}
+
+uint16_t Queue::get_Year(const Lodger &lodger) const noexcept
+{
+    const auto index = static_cast<int>(LodgerIndex::Year);
+    return std::get<index>(lodger);
+}
+
+uint8_t Queue::get_Month(const Lodger &lodger) const noexcept
+{
+    const auto index = static_cast<int>(LodgerIndex::Month);
+    return std::get<index>(lodger);
+}
+
+float Queue::get_Area_occupied(const Lodger &lodger) const noexcept
+{
+    const auto index = static_cast<int>(LodgerIndex::Area_occupied);
+    return std::get<index>(lodger);
+}
+
+uint8_t Queue::get_Rooms_count(const Lodger &lodger) const noexcept
+{
+    const auto index = static_cast<int>(LodgerIndex::Rooms_count);
+    return std::get<index>(lodger);
+}
+
+float Queue::get_Area_required(const Lodger &lodger) const noexcept
+{
+    const auto index = static_cast<int>(LodgerIndex::Area_required);
+    return std::get<index>(lodger);
+}
+
+// добавление
+void Queue::add(const Lodger &lodger)
 {
     // проверим ID на допустимость
-    // а вообще надо все параметры проверить на допустимость
 
-    uint32_t ID = getID_from_lodger(lodger);
+    uint32_t ID = get_ID(lodger);
     check_length_for_ID(ID);
 
     Lodger_array.push_back(lodger);
     ++count_of_people;
+}
+
+// поиск по ID, возвращает итератор на элемент
+Queue::iterator Queue::find_by_ID(uint32_t ID)
+{
+    // лямбда функция для сравнения ID переданного в функцию поиска и ID проверяемого элемента типа Lodger
+    auto is_ID_equal = [this, ID](const Lodger &lodger) -> bool
+    {
+        return (ID == get_ID(lodger));
+    };
+    auto it = std::find_if(Lodger_array.begin(),Lodger_array.end(), is_ID_equal);
+    if (it == Lodger_array.end()) throw element_not_found();
+    return it;
+}
+
+void Queue::sort_by_date()
+{
+    std::sort(Lodger_array.begin(),Lodger_array.end(), [this](Lodger &a, Lodger &b)
+    {
+        const auto year_a = get_Year(a);
+        const auto year_b = get_Year(b);
+        if (year_a == year_b)
+        {
+            const auto month_a = get_Month(a);
+            const auto month_b = get_Month(b);
+            return month_a < month_b;
+        }
+        else { return year_a < year_b; }
+    });
+}
+// находим итератор элемента с датой, до или после которой мы будем искать элементы
+Queue::iterator Queue::find_date(uint16_t Year, uint8_t Month)
+{
+    auto date_predicate = [this, Year, Month](const Lodger &lodger) -> bool
+    {
+        if (Year == get_Year(lodger))
+        {
+            return Month <= get_Month(lodger);
+        }
+        else { return Year < get_Year(lodger); }
+    };
+
+    sort_by_date();
+    auto it = std::find_if(Lodger_array.begin(),Lodger_array.end(), date_predicate);
+    return it;
+}
+// поиск по дате (до заданной даты), возвращает контейнер с элементами
+std::vector<Queue::Lodger> Queue::find_before_date(uint16_t Year, uint8_t Month)
+{
+    auto it = find_date(Year,Month);
+    return std::vector<Lodger>{Lodger_array.begin(),it};
+}
+// поиск по дате (после заданной даты)
+std::vector<Queue::Lodger> Queue::find_after_date(uint16_t Year, uint8_t Month)
+{
+    auto it = find_date(Year,Month);
+    // если у элемента дата равна заданной, то я исключаю этот элемент из результирующего контейнера
+    // так как нас интересуют элементы после заданной даты, а не с заданной датой
+    if (Year == get_Year(*it) && Month == get_Month(*it)) ++it;
+    return std::vector<Lodger>{it, Lodger_array.end()};
+}
+
+std::string Queue::lodger_toString(const Lodger &lodger) const noexcept
+{
+    std::stringstream ss;
+
+    ss << get_ID(lodger) << " "
+       << int(get_Family_member_count(lodger)) << " "
+       << get_Year(lodger) << " "
+       << int(get_Month(lodger)) << " "
+       << get_Area_occupied(lodger) << " "
+       << int(get_Rooms_count(lodger)) << " "
+       << get_Area_required(lodger);
+
+    std::string s(ss.str());
+    return s;
 }
