@@ -16,6 +16,7 @@ bool Queue::check_for_digits_in_date(const char *date) const noexcept
     return true;
 
 }
+
 // -- формат даты должен быть ДД.ММ.ГГ и не больше 8 символов -- //
 void Queue::check_date_format(const char *date) const
 {
@@ -38,6 +39,7 @@ void Queue::check_date_format(const char *date) const
 
     if ((day > max_days) || (month > max_month)) throw wrong_data_format();
 }
+
 // -- проверка на длину ID, не должно быть больше 8 символов -- //
 void Queue::check_length_for_ID(uint32_t ID) const
 {
@@ -107,6 +109,18 @@ float Queue::get_Area_required(const Lodger &lodger) const noexcept
     return std::get<index>(lodger);
 }
 
+// получить итератор на первый элемент очереди
+Queue::iterator Queue::begin() noexcept
+{
+    return Lodger_array.begin();
+}
+
+// получить итератор указывающий после последнего элемента очереди
+Queue::iterator Queue::end() noexcept
+{
+    return Lodger_array.end();
+}
+
 // добавление
 void Queue::add(const Lodger &lodger)
 {
@@ -117,6 +131,31 @@ void Queue::add(const Lodger &lodger)
 
     Lodger_array.push_back(lodger);
     ++count_of_people;
+}
+
+// удаление одного элемента по итератору
+void Queue::erase(const iterator &it)
+{
+    size_t size_before = Lodger_array.size();
+    Lodger_array.erase(it);
+    if (size_before-1 == Lodger_array.size())
+    {
+        --count_of_people;
+    }
+}
+
+// удаление нескольких элементов по диапазону
+void Queue::erase(const iterator &first, const iterator &last)
+{
+    size_t size_before = Lodger_array.size();
+    Lodger_array.erase(first,last);
+    count_of_people -= ( size_before - Lodger_array.size() );
+}
+
+// замена элемента (pos - какой заменяем, lodger - на какой заменяем)
+void Queue::replace(const iterator &pos, const Lodger &lodger)
+{
+    *pos = lodger;
 }
 
 // поиск по ID, возвращает итератор на элемент
@@ -132,6 +171,7 @@ Queue::iterator Queue::find_by_ID(uint32_t ID)
     return it;
 }
 
+// сортировка по дате
 void Queue::sort_by_date()
 {
     std::sort(Lodger_array.begin(),Lodger_array.end(), [this](Lodger &a, Lodger &b)
@@ -147,8 +187,20 @@ void Queue::sort_by_date()
         else { return year_a < year_b; }
     });
 }
+
+// сортировка по требуемой площади
+void Queue::sort_by_area()
+{
+    std::sort(Lodger_array.begin(),Lodger_array.end(), [this](Lodger &a, Lodger &b)
+    {
+        const auto area_a = get_Area_required(a);
+        const auto area_b = get_Area_required(b);
+        return area_a < area_b;
+    });
+}
+
 // находим итератор элемента с датой, до или после которой мы будем искать элементы
-Queue::iterator Queue::find_date(uint16_t Year, uint8_t Month)
+Queue::iterator Queue::find_date_iterator(uint16_t Year, uint8_t Month)
 {
     auto date_predicate = [this, Year, Month](const Lodger &lodger) -> bool
     {
@@ -163,22 +215,53 @@ Queue::iterator Queue::find_date(uint16_t Year, uint8_t Month)
     auto it = std::find_if(Lodger_array.begin(),Lodger_array.end(), date_predicate);
     return it;
 }
+
 // поиск по дате (до заданной даты), возвращает контейнер с элементами
 std::vector<Queue::Lodger> Queue::find_before_date(uint16_t Year, uint8_t Month)
 {
-    auto it = find_date(Year,Month);
+    auto it = find_date_iterator(Year,Month);
+    if (it == Lodger_array.begin()) throw element_not_found();
     return std::vector<Lodger>{Lodger_array.begin(),it};
 }
+
 // поиск по дате (после заданной даты)
 std::vector<Queue::Lodger> Queue::find_after_date(uint16_t Year, uint8_t Month)
 {
-    auto it = find_date(Year,Month);
+    auto it = find_date_iterator(Year,Month);
+    auto it_end = Lodger_array.end();
     // если у элемента дата равна заданной, то я исключаю этот элемент из результирующего контейнера
     // так как нас интересуют элементы после заданной даты, а не с заданной датой
-    if (Year == get_Year(*it) && Month == get_Month(*it)) ++it;
+    if (it != it_end)
+    {
+        if (Year == get_Year(*it) && Month == get_Month(*it)) ++it;
+    }
+
+    if (it == it_end) throw element_not_found();
     return std::vector<Lodger>{it, Lodger_array.end()};
 }
 
+// находим итератор элемента с требуемой площадью, после которой мы будем искать элементы (включая элемент на который указывает итератор)
+Queue::iterator Queue::find_area_iterator(float Area_required)
+{
+    auto area_predicate = [this, Area_required](const Lodger &lodger) -> bool
+    {
+        return get_Area_required(lodger) >= Area_required;
+    };
+
+    sort_by_area();
+    auto it = std::find_if(Lodger_array.begin(),Lodger_array.end(), area_predicate);
+    return it;
+}
+
+// поиск по требуемой площади (не меньше заданной)
+std::vector<Queue::Lodger> Queue::find_by_area(float Area_required)
+{
+    auto it = find_area_iterator(Area_required);
+    if (it == Lodger_array.end()) throw element_not_found();
+    return std::vector<Lodger>{it, Lodger_array.end()};
+}
+
+// примитивный перевод значений lodger в строку
 std::string Queue::lodger_toString(const Lodger &lodger) const noexcept
 {
     std::stringstream ss;

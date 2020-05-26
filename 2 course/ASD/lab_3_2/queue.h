@@ -23,7 +23,7 @@ class Queue
     float       // Area_required
     >; // -- квартирант/очередник -- //
 
-    using iterator = std::vector<Lodger>::iterator;
+    using iterator = std::vector<Lodger>::iterator; // сокращение
 
     enum class LodgerIndex : uint8_t {
         ID,                     // идентификационный номер очередника
@@ -46,9 +46,9 @@ private:
     bool check_for_digits_in_date(const char *date) const noexcept; // -- проверка на лишние символы (т.е не цифры) внутри даты -- //
     void check_length_for_ID(uint32_t ID) const; // -- проверка на длину ID, не должно быть больше 8 символов -- //
 
-    // Сортировка для поисков
+    // закрытые методы для поисков
     void sort_by_date();
-    iterator find_date(uint16_t Year, uint8_t Month); // находим итератор элемента с датой, до или после которой мы будем искать элементы
+    void sort_by_area();
 public:
     Queue(const std::string& _name = "noname", const char* _date = "01.01.00")
         : name{_name}
@@ -68,15 +68,25 @@ public:
     float get_Area_occupied(const Lodger& lodger) const noexcept;
     uint8_t get_Rooms_count(const Lodger& lodger) const noexcept;
     float get_Area_required(const Lodger& lodger) const noexcept;
+    iterator begin() noexcept;
+    iterator end() noexcept;
 
     // -- основные операции -- //
     void add(const Lodger& lodger); // добавление
+    void erase(const iterator& pos); // удаление одного элемента по итератору
+    void erase(const iterator& first, const iterator &last); // удаление нескольких элементов по диапазону
+    void replace(const iterator& pos, const Lodger& lodger); // замена элемента (pos - какой заменяем, lodger - на какой заменяем)
 
+    // эти поиски возвращают итератор, например для удаления одного или нескольких элементов (диапазона)
     iterator find_by_ID(uint32_t ID); // поиск по ID, возвращает итератор на элемент
+    iterator find_date_iterator(uint16_t Year, uint8_t Month); // находим итератор элемента с датой, до или после которой мы будем искать элементы
+    iterator find_area_iterator(float Area_required); // находим итератор элемента с требуемой площадью, после которой мы будем искать элементы (включая элемент на который указывает итератор)
+    // эти поиски возвращают контейнеры с элементами
     std::vector<Lodger> find_before_date(uint16_t Year, uint8_t Month); // поиск по дате (до заданной даты), возвращает контейнер с элементами
-    std::vector<Lodger> find_after_date(uint16_t Year, uint8_t Month); // поиск по дате (после заданной даты)
+    std::vector<Lodger> find_after_date(uint16_t Year, uint8_t Month); // поиск по дате (после заданной даты) 
+    std::vector<Lodger> find_by_area(float Area_required); // поиск по требуемой площади (не меньше заданной)
 
-    std::string lodger_toString(const Lodger &lodger) const noexcept;
+    std::string lodger_toString(const Lodger &lodger) const noexcept; // примитивный перевод значений lodger в строку
 
     // -- исключения -- //
 
