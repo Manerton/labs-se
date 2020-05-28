@@ -1,5 +1,9 @@
 #include "queue.h"
 #include <cmath>
+#include <random>
+#include <unordered_set>
+#include <iterator>
+#include <ctime>
 #include <sstream>
 
 // -- проверка на цифры внутри даты -- //
@@ -158,6 +162,34 @@ void Queue::replace(const iterator &pos, const Lodger &lodger)
     *pos = lodger;
 }
 
+// count - количество сгенерированных элементов
+void Queue::generate_random_data(size_t count)
+{
+    time_t seed = time(nullptr);
+    std::mt19937 mt(seed);
+    // диапазоны для рандома
+    std::uniform_int_distribution<uint32_t> id(1,99999999); // ID до 8 символов
+    std::uniform_int_distribution<uint8_t> family_count(1,20); // до 20 детей в семье, к примеру
+    std::uniform_int_distribution<uint16_t> year(2000,2020);
+    std::uniform_int_distribution<uint8_t> month(1,12);
+    std::uniform_real_distribution<float> area_occupied(0,100); // пусть до 100 кв метров
+    std::uniform_int_distribution<uint8_t> rooms_count(1,12);
+    std::uniform_real_distribution<float> area_required(0,200);
+    // сгенерируем неповторяющиеся уникальные ID
+    std::unordered_set<int> set;
+    while (set.size() < count) set.insert(id(mt));
+    for (size_t i = 0; i < count; ++i)
+    {
+        auto set_iterator = set.begin();
+        float old_area = area_occupied(mt);
+        float new_area = area_required(mt);
+        while (new_area <= old_area) new_area = area_required(mt);
+        std::advance(set_iterator,i);
+        Lodger lodg(*set_iterator,family_count(mt),year(mt),month(mt),old_area,rooms_count(mt),new_area);
+        Lodger_array.push_back(lodg);
+    }
+}
+
 // поиск по ID, возвращает итератор на элемент
 Queue::iterator Queue::find_by_ID(uint32_t ID)
 {
@@ -171,25 +203,51 @@ Queue::iterator Queue::find_by_ID(uint32_t ID)
     return it;
 }
 
-// сортировка по дате
-void Queue::sort_by_date()
+// булева функция, условие-сравнение при сортировке
+bool Queue::uslovie_for_sort_by_date(const Lodger &a, const Lodger &b)
 {
-    std::sort(Lodger_array.begin(),Lodger_array.end(), [this](Lodger &a, Lodger &b)
+    const auto year_a = get_Year(a);
+    const auto year_b = get_Year(b);
+    if (year_a == year_b)
     {
-        const auto year_a = get_Year(a);
-        const auto year_b = get_Year(b);
-        if (year_a == year_b)
-        {
-            const auto month_a = get_Month(a);
-            const auto month_b = get_Month(b);
-            return month_a < month_b;
-        }
-        else { return year_a < year_b; }
+        const auto month_a = get_Month(a);
+        const auto month_b = get_Month(b);
+        return month_a < month_b;
+    }
+    else { return year_a < year_b; }
+}
+
+// сортировка по дате
+void Queue::sort_by_date_std()
+{
+    std::sort(Lodger_array.begin(),Lodger_array.end(), [this](const Lodger &a, const Lodger &b)
+    {
+        return uslovie_for_sort_by_date(a,b);
     });
 }
 
+void Queue::sort_by_date()
+{
+    size_t N = Lodger_array.size();
+    for (size_t i = 0; i < N-1; ++i)
+    {
+        size_t k = i;
+        auto x = Lodger_array[i];
+        for (size_t j = i+1; j < N; ++j)
+        {
+            if (uslovie_for_sort_by_date(Lodger_array[j],x))
+            {
+                k = j;
+                x = Lodger_array[j];
+            }
+        }
+        Lodger_array[k] = Lodger_array[i];
+        Lodger_array[i] = x;
+    }
+}
+
 // сортировка по требуемой площади
-void Queue::sort_by_area()
+void Queue::sort_by_area_std()
 {
     std::sort(Lodger_array.begin(),Lodger_array.end(), [this](Lodger &a, Lodger &b)
     {
@@ -197,6 +255,28 @@ void Queue::sort_by_area()
         const auto area_b = get_Area_required(b);
         return area_a < area_b;
     });
+}
+
+void Queue::sort_by_area()
+{
+    size_t N = Lodger_array.size();
+    for (size_t i = 0; i < N-1; ++i)
+    {
+        size_t k = i;
+        auto x = Lodger_array[i];
+        for (size_t j = i+1; j < N; ++j)
+        {
+            const float area_j = get_Area_required(Lodger_array[j]);
+            const float area_x = get_Area_required(x);
+            if (area_j < area_x)
+            {
+                k = j;
+                x = Lodger_array[j];
+            }
+        }
+        Lodger_array[k] = Lodger_array[i];
+        Lodger_array[i] = x;
+    }
 }
 
 // находим итератор элемента с датой, до или после которой мы будем искать элементы

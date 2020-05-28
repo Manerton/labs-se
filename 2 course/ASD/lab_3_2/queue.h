@@ -46,9 +46,8 @@ private:
     bool check_for_digits_in_date(const char *date) const noexcept; // -- проверка на лишние символы (т.е не цифры) внутри даты -- //
     void check_length_for_ID(uint32_t ID) const; // -- проверка на длину ID, не должно быть больше 8 символов -- //
 
-    // закрытые методы для поисков
-    void sort_by_date();
-    void sort_by_area();
+
+    bool uslovie_for_sort_by_date(const Lodger &a, const Lodger &b); // булева функция, условие-сравнение при сортировке
 public:
     Queue(const std::string& _name = "noname", const char* _date = "01.01.00")
         : name{_name}
@@ -77,10 +76,19 @@ public:
     void erase(const iterator& first, const iterator &last); // удаление нескольких элементов по диапазону
     void replace(const iterator& pos, const Lodger& lodger); // замена элемента (pos - какой заменяем, lodger - на какой заменяем)
 
+    // заполнение очереди (контейнера случайными значениями)
+    void generate_random_data(size_t count); // count - количество сгенерированных элементов
+
+    // сортировки
+    void sort_by_date();
+    void sort_by_date_std();
+    void sort_by_area();
+    void sort_by_area_std();
     // эти поиски возвращают итератор, например для удаления одного или нескольких элементов (диапазона)
     iterator find_by_ID(uint32_t ID); // поиск по ID, возвращает итератор на элемент
     iterator find_date_iterator(uint16_t Year, uint8_t Month); // находим итератор элемента с датой, до или после которой мы будем искать элементы
     iterator find_area_iterator(float Area_required); // находим итератор элемента с требуемой площадью, после которой мы будем искать элементы (включая элемент на который указывает итератор)
+
     // эти поиски возвращают контейнеры с элементами
     std::vector<Lodger> find_before_date(uint16_t Year, uint8_t Month); // поиск по дате (до заданной даты), возвращает контейнер с элементами
     std::vector<Lodger> find_after_date(uint16_t Year, uint8_t Month); // поиск по дате (после заданной даты) 

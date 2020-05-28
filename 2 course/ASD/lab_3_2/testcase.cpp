@@ -200,8 +200,8 @@ TEST_CASE("Тесты класса Queue в doctest")
         CHECK(a.get_Year(*it) == 2077);
     }
 
-//    SUBCASE("Тест производительности")
-//    {
+    SUBCASE("Тест производительности")
+    {
 //        auto somefunc = [](std::vector<int> &v)
 //        {
 //            for (int i = 0; i < 100000000; ++i)
@@ -209,13 +209,39 @@ TEST_CASE("Тесты класса Queue в doctest")
 //                v.at(i);
 //            }
 //        };
-//        std::vector<int> vec(100000000,8);
-//        const auto start = std::chrono::steady_clock::now();
-//        somefunc(vec);
-//        const auto end = std::chrono::steady_clock::now();
-//        const auto res = duration_cast<sec>(end - start);
-//        MESSAGE(res.count());
-//    }
+        Queue a("Vanya", "17.11.18");
+        size_t count = 10000;
+        a.generate_random_data(count);
+        auto start = std::chrono::steady_clock::now();
+        a.sort_by_area_std();
+        auto end = std::chrono::steady_clock::now();
+        auto res = duration_cast<sec>(end - start);
+        MESSAGE("STD sort by area: " + std::to_string(res.count()));
+
+        Queue b("Vanyok", "17.11.19");
+        b.generate_random_data(count);
+        start = std::chrono::steady_clock::now();
+        b.sort_by_area();
+        end = std::chrono::steady_clock::now();
+        res = duration_cast<sec>(end - start);
+        MESSAGE("non-STD sort by area: " + std::to_string(res.count()));
+
+        Queue c("Vasya", "17.11.19");
+        c.generate_random_data(count);
+        start = std::chrono::steady_clock::now();
+        c.sort_by_date_std();
+        end = std::chrono::steady_clock::now();
+        res = duration_cast<sec>(end - start);
+        MESSAGE("STD sort by date: " + std::to_string(res.count()));
+
+        Queue d("Vasyan", "17.11.19");
+        d.generate_random_data(count);
+        start = std::chrono::steady_clock::now();
+        d.sort_by_date();
+        end = std::chrono::steady_clock::now();
+        res = duration_cast<sec>(end - start);
+        MESSAGE("non-STD sort by date: " + std::to_string(res.count()));
+    }
 
     SUBCASE("Тест исключений")
     {
