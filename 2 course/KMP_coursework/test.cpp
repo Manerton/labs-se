@@ -337,7 +337,7 @@ void Test::on_return_to_menu_button_3_clicked()
     emit return_to_menu();
 }
 
-void Test::on_pushButton_stats_clicked()
+void Test::on_pushButton_results_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->stats);
     read_stat();

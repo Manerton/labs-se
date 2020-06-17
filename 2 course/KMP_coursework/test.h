@@ -65,7 +65,9 @@ private slots:
     void on_return_to_menu_button_clicked();    // -- возврат в меню -- //
     void on_return_to_menu_button_2_clicked();
     void on_return_to_menu_button_3_clicked();
-    void on_pushButton_stats_clicked();   // -- посмотреть статистику -- //
+    //void on_pushButton_stats_clicked();   // -- посмотреть статистику -- //
+
+    void on_pushButton_results_clicked();
 
 private:
     Ui::Test *ui;
