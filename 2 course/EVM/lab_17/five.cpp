@@ -179,10 +179,3 @@ Five operator/(const Five &a, const Five &b)
     t /= b;
     return t;
 }
-
-
-
-
-
-
-

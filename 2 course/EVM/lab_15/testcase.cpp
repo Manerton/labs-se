@@ -192,7 +192,7 @@ TEST_CASE("Тесты класса Five в doctest")
         CHECK(res == a);
 
         a = {"0"};
-        b = {"1213"};
+        b = {"1210"};
         a /= b;
         res = {0};
         CHECK(res == a);
@@ -228,7 +228,7 @@ TEST_CASE("Тесты класса Five в doctest")
                             Five c = a-b;
                            }())); // -- a < b при вычитание -- //
         CHECK_THROWS(([&](){Five a = {1,2};
-                            Five b = {0};
+                            Five b = {0,0};
                             Five c = a/b;
                            }())); // -- деление на ноль -- //
     }
