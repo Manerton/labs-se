@@ -33,7 +33,7 @@ public:
     Array(Array&& other) noexcept;              // -- конструктор переноса -- //
     Array& operator=(const Array& other);
     Array& operator=(Array&& other) noexcept;   // -- операция перемещения -- //
-    inline ~Array() { delete data; }
+    virtual ~Array() { delete data; }
 
     // -- индексирование и push/pop back -- //
     reference operator[](size_type index);
