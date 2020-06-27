@@ -61,7 +61,7 @@ std::string Queue::get_Name() const noexcept
     return name;
 }
 
-uint32_t Queue::get_Count_of_people() const noexcept
+Queue::size_type Queue::get_Count_of_people() const noexcept
 {
     return count_of_people;
 }
@@ -71,43 +71,43 @@ std::string Queue::get_Date() const noexcept
     return std::string{date};
 }
 
-uint32_t Queue::get_ID(const Lodger &lodger) const noexcept
+uint32_t Queue::get_ID(Queue::const_reference lodger) const noexcept
 {
     const auto index = static_cast<int>(LodgerIndex::ID);
     return std::get<index>(lodger);
 }
 
-uint8_t Queue::get_Family_member_count(const Lodger &lodger) const noexcept
+uint8_t Queue::get_Family_member_count(Queue::const_reference lodger) const noexcept
 {
     const auto index = static_cast<int>(LodgerIndex::Family_member_count);
     return std::get<index>(lodger);
 }
 
-uint16_t Queue::get_Year(const Lodger &lodger) const noexcept
+uint16_t Queue::get_Year(Queue::const_reference lodger) const noexcept
 {
     const auto index = static_cast<int>(LodgerIndex::Year);
     return std::get<index>(lodger);
 }
 
-uint8_t Queue::get_Month(const Lodger &lodger) const noexcept
+uint8_t Queue::get_Month(Queue::const_reference lodger) const noexcept
 {
     const auto index = static_cast<int>(LodgerIndex::Month);
     return std::get<index>(lodger);
 }
 
-float Queue::get_Area_occupied(const Lodger &lodger) const noexcept
+float Queue::get_Area_occupied(Queue::const_reference lodger) const noexcept
 {
     const auto index = static_cast<int>(LodgerIndex::Area_occupied);
     return std::get<index>(lodger);
 }
 
-uint8_t Queue::get_Rooms_count(const Lodger &lodger) const noexcept
+uint8_t Queue::get_Rooms_count(Queue::const_reference lodger) const noexcept
 {
     const auto index = static_cast<int>(LodgerIndex::Rooms_count);
     return std::get<index>(lodger);
 }
 
-float Queue::get_Area_required(const Lodger &lodger) const noexcept
+float Queue::get_Area_required(Queue::const_reference lodger) const noexcept
 {
     const auto index = static_cast<int>(LodgerIndex::Area_required);
     return std::get<index>(lodger);
@@ -126,7 +126,7 @@ Queue::iterator Queue::end() noexcept
 }
 
 // добавление
-void Queue::add(const Lodger &lodger)
+void Queue::add(Queue::const_reference lodger)
 {
     // проверим ID на допустимость
 
@@ -168,7 +168,6 @@ void Queue::generate_random_data(size_t count)
     time_t seed = time(nullptr);
     std::mt19937 mt(seed);
     // диапазоны для рандома
-    std::uniform_int_distribution<uint32_t> id(1,99999999); // ID до 8 символов
     std::uniform_int_distribution<uint8_t> family_count(1,20); // до 20 детей в семье, к примеру
     std::uniform_int_distribution<uint16_t> year(2000,2020);
     std::uniform_int_distribution<uint8_t> month(1,12);
@@ -176,35 +175,60 @@ void Queue::generate_random_data(size_t count)
     std::uniform_int_distribution<uint8_t> rooms_count(1,12);
     std::uniform_real_distribution<float> area_required(0,200);
     // сгенерируем неповторяющиеся уникальные ID
-    std::unordered_set<int> set;
-    while (set.size() < count) set.insert(id(mt));
     for (size_t i = 0; i < count; ++i)
     {
-        auto set_iterator = set.begin();
+        uint32_t ID = i+1;
         float old_area = area_occupied(mt);
         float new_area = area_required(mt);
         while (new_area <= old_area) new_area = area_required(mt);
-        std::advance(set_iterator,i);
-        Lodger lodg(*set_iterator,family_count(mt),year(mt),month(mt),old_area,rooms_count(mt),new_area);
+        Lodger lodg(ID,family_count(mt),year(mt),month(mt),old_area,rooms_count(mt),new_area);
         Lodger_array.push_back(lodg);
+    }
+    std::shuffle(Lodger_array.begin(),Lodger_array.end(),mt);
+}
+
+void Queue::sort_by_id()
+{
+    size_t N = Lodger_array.size();
+    for (size_t i = 0; i < N-1; ++i)
+    {
+        size_t k = i;
+        auto x = Lodger_array[i];
+        for (size_t j = i+1; j < N; ++j)
+        {
+            if (get_ID(Lodger_array[j]) < get_ID(x))
+            {
+                k = j;
+                x = Lodger_array[j];
+            }
+        }
+        Lodger_array[k] = Lodger_array[i];
+        Lodger_array[i] = x;
     }
 }
 
+void Queue::sort_by_id_std()
+{
+    std::sort(Lodger_array.begin(),Lodger_array.end(), [this](Queue::const_reference a, Queue::const_reference b)
+      {
+                  return get_ID(a) < get_ID(b);
+      });
+}
+
 // поиск по ID, возвращает итератор на элемент
-Queue::iterator Queue::find_by_ID(uint32_t ID)
+Queue::iterator Queue::find_by_ID_std(uint32_t ID)
 {
     // лямбда функция для сравнения ID переданного в функцию поиска и ID проверяемого элемента типа Lodger
-    auto is_ID_equal = [this, ID](const Lodger &lodger) -> bool
+    auto is_ID_equal = [this, ID](Queue::const_reference lodger) -> bool
     {
         return (ID == get_ID(lodger));
     };
     auto it = std::find_if(Lodger_array.begin(),Lodger_array.end(), is_ID_equal);
-    if (it == Lodger_array.end()) throw element_not_found();
     return it;
 }
 
 // булева функция, условие-сравнение при сортировке
-bool Queue::uslovie_for_sort_by_date(const Lodger &a, const Lodger &b)
+bool Queue::uslovie_for_sort_by_date(const_reference a, const_reference b)
 {
     const auto year_a = get_Year(a);
     const auto year_b = get_Year(b);
@@ -282,7 +306,7 @@ void Queue::sort_by_area()
 // находим итератор элемента с датой, до или после которой мы будем искать элементы
 Queue::iterator Queue::find_date_iterator(uint16_t Year, uint8_t Month)
 {
-    auto date_predicate = [this, Year, Month](const Lodger &lodger) -> bool
+    auto date_predicate = [this, Year, Month](Queue::const_reference lodger) -> bool
     {
         if (Year == get_Year(lodger))
         {
@@ -297,15 +321,15 @@ Queue::iterator Queue::find_date_iterator(uint16_t Year, uint8_t Month)
 }
 
 // поиск по дате (до заданной даты), возвращает контейнер с элементами
-std::vector<Queue::Lodger> Queue::find_before_date(uint16_t Year, uint8_t Month)
+std::vector<Queue::value_type> Queue::find_before_date(uint16_t Year, uint8_t Month)
 {
     auto it = find_date_iterator(Year,Month);
     if (it == Lodger_array.begin()) throw element_not_found();
-    return std::vector<Lodger>{Lodger_array.begin(),it};
+    return std::vector<value_type>{Lodger_array.begin(),it};
 }
 
 // поиск по дате (после заданной даты)
-std::vector<Queue::Lodger> Queue::find_after_date(uint16_t Year, uint8_t Month)
+std::vector<Queue::value_type> Queue::find_after_date(uint16_t Year, uint8_t Month)
 {
     auto it = find_date_iterator(Year,Month);
     auto it_end = Lodger_array.end();
@@ -323,7 +347,7 @@ std::vector<Queue::Lodger> Queue::find_after_date(uint16_t Year, uint8_t Month)
 // находим итератор элемента с требуемой площадью, после которой мы будем искать элементы (включая элемент на который указывает итератор)
 Queue::iterator Queue::find_area_iterator(float Area_required)
 {
-    auto area_predicate = [this, Area_required](const Lodger &lodger) -> bool
+    auto area_predicate = [this, Area_required](Queue::const_reference lodger) -> bool
     {
         return get_Area_required(lodger) >= Area_required;
     };
@@ -333,16 +357,88 @@ Queue::iterator Queue::find_area_iterator(float Area_required)
     return it;
 }
 
+Queue::iterator Queue::linearSearch_by_ID_unsorted(uint32_t ID) noexcept
+{
+    // добавляем в конец барьер
+    Lodger_array.push_back(Lodger(ID,0,0,0,0,0,0));
+    // линейный поиск по ID
+    size_type i = 0;
+    while(get_ID(Lodger_array[i]) != ID)
+    {
+        ++i;
+    }
+    // удаляем барьер
+    Lodger_array.pop_back();
+    // возвращаем результат
+    if (i != Lodger_array.size()) return Lodger_array.begin()+i;
+    else return Lodger_array.end();
+}
+
+Queue::iterator Queue::linearSearch_by_ID_sorted(uint32_t ID) noexcept
+{
+    // добавляем в конец барьер
+    Lodger_array.push_back(Lodger(ID,0,0,0,0,0,0));
+    // линейный поиск по ID
+    size_type i = 0;
+    while(get_ID(Lodger_array[i]) < ID)
+    {
+        ++i;
+    }
+    // удаляем барьер
+    Lodger_array.pop_back();
+    // возвращаем результат
+    if ((i != Lodger_array.size()) && (get_ID(Lodger_array[i]) == ID)) return Lodger_array.begin()+i;
+    else return Lodger_array.end();
+}
+
+Queue::iterator Queue::binarySearch_by_ID(uint32_t ID) noexcept
+{
+    size_type left = 0, right = Lodger_array.size()-1, mid;
+    while (left <= right)
+    {
+        mid = (left + right) / 2; // середина
+        if (get_ID(Lodger_array[mid]) == ID) return (Lodger_array.begin() + mid);
+        if (ID < get_ID(Lodger_array[mid])) // если искомое меньше найденной середины
+        {
+            right = mid - 1;    // смещаем правую границу (ищем в левой части)
+        }
+        else
+        {
+            left = mid + 1;    // наоборот (в правой ищем)
+        }
+    }
+    return Lodger_array.end();
+}
+
+Queue::iterator Queue::interpolarSearch_by_ID(uint32_t ID) noexcept
+{
+    size_type left = 0, right = Lodger_array.size()-1, mid;
+    while (get_ID(Lodger_array[left])<=ID && get_ID(Lodger_array[right])>=ID)
+    {
+        mid = left+((ID-get_ID(Lodger_array[left]))*(right-left))/(get_ID(Lodger_array[right])-get_ID(Lodger_array[left]));
+        if (get_ID(Lodger_array[mid]) == ID) return (Lodger_array.begin() + mid);
+        if (ID < get_ID(Lodger_array[mid])) // если искомое меньше найденной середины
+        {
+            right = mid - 1;    // смещаем правую границу (ищем в левой части)
+        }
+        else
+        {
+            left = mid + 1;    // наоборот (в правой ищем)
+        }
+    }
+    return Lodger_array.end();
+}
+
 // поиск по требуемой площади (не меньше заданной)
-std::vector<Queue::Lodger> Queue::find_by_area(float Area_required)
+std::vector<Queue::value_type> Queue::find_by_area(float Area_required)
 {
     auto it = find_area_iterator(Area_required);
     if (it == Lodger_array.end()) throw element_not_found();
-    return std::vector<Lodger>{it, Lodger_array.end()};
+    return std::vector<value_type>{it, Lodger_array.end()};
 }
 
 // примитивный перевод значений lodger в строку
-std::string Queue::lodger_toString(const Lodger &lodger) const noexcept
+std::string Queue::lodger_toString(Queue::const_reference lodger) const noexcept
 {
     std::stringstream ss;
 

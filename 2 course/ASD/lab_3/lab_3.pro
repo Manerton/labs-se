@@ -4,10 +4,12 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        array.cpp \
         main.cpp \
+        queue.cpp \
         testcase.cpp
 
 HEADERS += \
     array.h \
-    doctest.h
+    array.inl \
+    doctest.h \
+    queue.h

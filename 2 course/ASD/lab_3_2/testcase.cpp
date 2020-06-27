@@ -25,7 +25,7 @@ TEST_CASE("Тесты класса Queue в doctest")
         b.add(b_lodger);
         CHECK(b.get_Count_of_people() == 1);
     }
-    SUBCASE("Тест поиска по ID")
+    SUBCASE("Тест поиска по ID std")
     {
         Queue a("Vanya", "17.11.18");
         Lodger lodger_1(12345678,2,2014,2,22.1f,5,71.3f);
@@ -39,10 +39,136 @@ TEST_CASE("Тесты класса Queue в doctest")
         a.add(lodger_4);
         a.add(lodger_5);
         CHECK(a.get_Count_of_people() == 5);
-        auto it = a.find_by_ID(7);
+        auto it = a.find_by_ID_std(7);
         CHECK(a.lodger_toString(*it) == "7 3 2019 4 60.3 3 87.7");
-        it = a.find_by_ID(12452);
+        it = a.find_by_ID_std(12452);
         CHECK(*it == lodger_3);
+    }
+    SUBCASE("Тест поиска по ID - последовательный поиск с барьером по неупорядоченному контейнеру")
+    {
+        Queue a("Vanya", "17.11.18");
+        Lodger lodger_1(12345678,2,2014,2,22.1f,5,71.3f);
+        Lodger lodger_2(17      ,2,2011,5,48.0f,2,55.9f);
+        Lodger lodger_3(12452   ,5,2017,3,54.3f,4,60.5f);
+        Lodger lodger_4(7       ,3,2019,4,60.3f,3,87.7f);
+        Lodger lodger_5(141444  ,1,2010,1,44.8f,3,88.2f);
+        a.add(lodger_1);
+        a.add(lodger_2);
+        a.add(lodger_3);
+        a.add(lodger_4);
+        a.add(lodger_5);
+        CHECK(a.get_Count_of_people() == 5);
+        auto it = a.linearSearch_by_ID_unsorted(7);
+        CHECK(a.lodger_toString(*it) == "7 3 2019 4 60.3 3 87.7");
+        it = a.linearSearch_by_ID_unsorted(12452);
+        CHECK(*it == lodger_3);
+        it = a.linearSearch_by_ID_unsorted(14);
+        CHECK(it == a.end());
+    }
+    SUBCASE("Тест поиска по ID - последовательный поиск с барьером по упорядоченному контейнеру")
+    {
+        Queue a("Vanya", "17.11.18");
+        Lodger lodger_1(12345678,2,2014,2,22.1f,5,71.3f);
+        Lodger lodger_2(17      ,2,2011,5,48.0f,2,55.9f);
+        Lodger lodger_3(12452   ,5,2017,3,54.3f,4,60.5f);
+        Lodger lodger_4(7       ,3,2019,4,60.3f,3,87.7f);
+        Lodger lodger_5(141444  ,1,2010,1,44.8f,3,88.2f);
+        a.add(lodger_1);
+        a.add(lodger_2);
+        a.add(lodger_3);
+        a.add(lodger_4);
+        a.add(lodger_5);
+        // плюс тест сортировки
+        a.sort_by_id();
+        CHECK(a.get_Count_of_people() == 5);
+        CHECK(*(a.begin()) == lodger_4);
+        auto it = a.linearSearch_by_ID_sorted(7);
+        CHECK(a.lodger_toString(*it) == "7 3 2019 4 60.3 3 87.7");
+        it = a.linearSearch_by_ID_sorted(12452);
+        CHECK(*it == lodger_3);
+        it = a.linearSearch_by_ID_sorted(14);
+        CHECK(it == a.end());
+    }
+    SUBCASE("Тест поиска по ID - бинарный поиск")
+    {
+        Queue a("Vanya", "17.11.18");
+        Lodger lodger_1(12345678,2,2014,2,22.1f,5,71.3f);
+        Lodger lodger_2(17      ,2,2011,5,48.0f,2,55.9f);
+        Lodger lodger_3(12452   ,5,2017,3,54.3f,4,60.5f);
+        Lodger lodger_4(7       ,3,2019,4,60.3f,3,87.7f);
+        Lodger lodger_5(141444  ,1,2010,1,44.8f,3,88.2f);
+        a.add(lodger_1);
+        a.add(lodger_2);
+        a.add(lodger_3);
+        a.add(lodger_4);
+        a.add(lodger_5);
+        a.sort_by_id();
+        CHECK(a.get_Count_of_people() == 5);
+        CHECK(*(a.begin()) == lodger_4);
+        auto it = a.binarySearch_by_ID(7);
+        CHECK(a.lodger_toString(*it) == "7 3 2019 4 60.3 3 87.7");
+        it = a.binarySearch_by_ID(12452);
+        CHECK(*it == lodger_3);
+        it = a.binarySearch_by_ID(14);
+        CHECK(it == a.end());
+    }
+    SUBCASE("Тест поиска по ID - интерполяционный поиск")
+    {
+        Queue a("Vanya", "17.11.18");
+        Lodger lodger_1(12345678,2,2014,2,22.1f,5,71.3f);
+        Lodger lodger_2(17      ,2,2011,5,48.0f,2,55.9f);
+        Lodger lodger_3(12452   ,5,2017,3,54.3f,4,60.5f);
+        Lodger lodger_4(7       ,3,2019,4,60.3f,3,87.7f);
+        Lodger lodger_5(141444  ,1,2010,1,44.8f,3,88.2f);
+        a.add(lodger_1);
+        a.add(lodger_2);
+        a.add(lodger_3);
+        a.add(lodger_4);
+        a.add(lodger_5);
+        a.sort_by_id();
+        CHECK(a.get_Count_of_people() == 5);
+        CHECK(*(a.begin()) == lodger_4);
+        auto it = a.interpolarSearch_by_ID(7);
+        CHECK(a.lodger_toString(*it) == "7 3 2019 4 60.3 3 87.7");
+        it = a.interpolarSearch_by_ID(12452);
+        CHECK(*it == lodger_3);
+        it = a.interpolarSearch_by_ID(14);
+        CHECK(it == a.end());
+    }
+    SUBCASE("Тест сортировок")
+    {
+        Queue a("Vanya", "17.11.18");
+        Lodger lodger_1(12345678,2,2014,2,22.1f,5,71.3f);
+        Lodger lodger_2(17      ,2,2011,5,48.0f,2,55.9f);
+        Lodger lodger_3(12452   ,5,2017,3,54.3f,4,60.5f);
+        Lodger lodger_4(7       ,3,2019,4,60.3f,3,87.7f);
+        Lodger lodger_5(141444  ,1,2010,1,44.8f,3,88.2f);
+        Lodger lodger_6(448     ,1,2010,2,41.8f,3,69.2f);
+        a.add(lodger_1);
+        a.add(lodger_2);
+        a.add(lodger_3);
+        a.add(lodger_4);
+        a.add(lodger_5);
+        a.add(lodger_6);
+        a.sort_by_id_std();
+        CHECK(*(a.begin()) == lodger_4);
+        CHECK(*(--a.end()) == lodger_1);
+        a.sort_by_area_std();
+        CHECK(*(a.begin()) == lodger_2);
+        CHECK(*(--a.end()) == lodger_5);
+        a.sort_by_date_std();
+        CHECK(*(a.begin()) == lodger_5);
+        CHECK(*(--a.end()) == lodger_4);
+        // теперь не STD сортировки
+        a.sort_by_id();
+        CHECK(*(a.begin()) == lodger_4);
+        CHECK(*(--a.end()) == lodger_1);
+        a.sort_by_area();
+        CHECK(*(a.begin()) == lodger_2);
+        CHECK(*(--a.end()) == lodger_5);
+        a.sort_by_date();
+        CHECK(*(a.begin()) == lodger_5);
+        CHECK(*(--a.end()) == lodger_4);
     }
     SUBCASE("Тест поиска по дате (до заданной)")
     {
@@ -147,7 +273,7 @@ TEST_CASE("Тесты класса Queue в doctest")
         a.add(lodger_5);
         a.add(lodger_6);
         CHECK(a.get_Count_of_people() == 6);
-        auto it_of_deleted_elem = a.find_by_ID(17);
+        auto it_of_deleted_elem = a.find_by_ID_std(17);
         CHECK(a.get_ID(*it_of_deleted_elem) == 17);
         a.erase(it_of_deleted_elem);
         CHECK(a.get_Count_of_people() == 5);
@@ -155,10 +281,8 @@ TEST_CASE("Тесты класса Queue в doctest")
         // попробуем найти удаленный элемент
         auto try_to_find = [&](uint32_t ID)
         {
-            [[maybe_unused]] auto it = a.find_by_ID(ID);
+            [[maybe_unused]] auto it = a.find_by_ID_std(ID);
         };
-        // выбрасывается исключение
-        CHECK_THROWS_AS(try_to_find(17),Queue::element_not_found);
 
         // теперь удалим все элементы с площадью больше 80
         // это элементы с ID = 7 и 141444
@@ -167,10 +291,6 @@ TEST_CASE("Тесты класса Queue в doctest")
         a.erase(it_of_deleted_elem,a.end());
         CHECK(a.get_Count_of_people() == 3);
 
-        // попробуем найти эти удаленные элементы
-        CHECK_THROWS_AS(try_to_find(7),Queue::element_not_found);
-        CHECK_THROWS_AS(try_to_find(141444),Queue::element_not_found);
-        // выбрасываются исключения
     }
 
     SUBCASE("Тест замены")
@@ -189,26 +309,19 @@ TEST_CASE("Тесты класса Queue в doctest")
         a.add(lodger_5);
         a.add(lodger_6);
         CHECK(a.get_Count_of_people() == 6);
-        auto it = a.find_by_ID(17);
+        auto it = a.find_by_ID_std(17);
         CHECK(a.get_ID(*it) == 17);
         CHECK(a.get_Year(*it) == 2011);
 
         Lodger lodger_7(17,0,2077,0,0,0,0);
         a.replace(it,lodger_7);
         CHECK(a.get_Count_of_people() == 6);
-        it = a.find_by_ID(17);
+        it = a.find_by_ID_std(17);
         CHECK(a.get_Year(*it) == 2077);
     }
 
-    SUBCASE("Тест производительности")
+    SUBCASE("Тест производительности сортировок")
     {
-//        auto somefunc = [](std::vector<int> &v)
-//        {
-//            for (int i = 0; i < 100000000; ++i)
-//            {
-//                v.at(i);
-//            }
-//        };
         Queue a("Vanya", "17.11.18");
         size_t count = 10000;
         a.generate_random_data(count);
@@ -241,6 +354,97 @@ TEST_CASE("Тесты класса Queue в doctest")
         end = std::chrono::steady_clock::now();
         res = duration_cast<sec>(end - start);
         MESSAGE("non-STD sort by date: " + std::to_string(res.count()));
+
+        Queue g("Vasyans", "17.11.19");
+        g.generate_random_data(count);
+        start = std::chrono::steady_clock::now();
+        g.sort_by_id_std();
+        end = std::chrono::steady_clock::now();
+        res = duration_cast<sec>(end - start);
+        MESSAGE("STD sort by id: " + std::to_string(res.count()));
+
+        Queue p("Vasyainch", "17.11.19");
+        p.generate_random_data(count);
+        start = std::chrono::steady_clock::now();
+        p.sort_by_id();
+        end = std::chrono::steady_clock::now();
+        res = duration_cast<sec>(end - start);
+        MESSAGE("non-STD sort by id: " + std::to_string(res.count()));
+    }
+
+    SUBCASE("Тест производительности поисков")
+    {
+        Queue a("Vanya", "17.11.18");
+        size_t count = 100000;
+        a.generate_random_data(count);
+        auto start = std::chrono::steady_clock::now();
+        auto it = a.find_by_ID_std(4129);
+        CHECK(a.get_ID(*it) == 4129);
+        it = a.find_by_ID_std(73214);
+        CHECK(a.get_ID(*it) == 73214);
+        it = a.find_by_ID_std(105000);
+        CHECK(it == a.end());
+        auto end = std::chrono::steady_clock::now();
+        auto res = duration_cast<sec>(end - start);
+        MESSAGE("STD find by id (unsorted): " + std::to_string(res.count()));
+
+        start = std::chrono::steady_clock::now();
+        it = a.linearSearch_by_ID_unsorted(4129);
+        CHECK(a.get_ID(*it) == 4129);
+        it = a.linearSearch_by_ID_unsorted(73214);
+        CHECK(a.get_ID(*it) == 73214);
+        it = a.linearSearch_by_ID_unsorted(105000);
+        CHECK(it == a.end());
+        end = std::chrono::steady_clock::now();
+        res = duration_cast<sec>(end - start);
+        MESSAGE("non-STD linear search (unsorted): " + std::to_string(res.count()));
+
+        // теперь проверяем поиски на отсортированном массиве
+        a.sort_by_id_std();
+
+        start = std::chrono::steady_clock::now();
+        it = a.find_by_ID_std(4129);
+        CHECK(a.get_ID(*it) == 4129);
+        it = a.find_by_ID_std(73214);
+        CHECK(a.get_ID(*it) == 73214);
+        it = a.find_by_ID_std(105000);
+        CHECK(it == a.end());
+        end = std::chrono::steady_clock::now();
+        res = duration_cast<sec>(end - start);
+        MESSAGE("STD find by id (sorted): " + std::to_string(res.count()));
+
+        start = std::chrono::steady_clock::now();
+        it = a.linearSearch_by_ID_sorted(4129);
+        CHECK(a.get_ID(*it) == 4129);
+        it = a.linearSearch_by_ID_sorted(73214);
+        CHECK(a.get_ID(*it) == 73214);
+        it = a.linearSearch_by_ID_sorted(105000);
+        CHECK(it == a.end());
+        end = std::chrono::steady_clock::now();
+        res = duration_cast<sec>(end - start);
+        MESSAGE("non-STD linear search (sorted): " + std::to_string(res.count()));
+
+        start = std::chrono::steady_clock::now();
+        it = a.binarySearch_by_ID(4129);
+        CHECK(a.get_ID(*it) == 4129);
+        it = a.binarySearch_by_ID(73214);
+        CHECK(a.get_ID(*it) == 73214);
+        it = a.binarySearch_by_ID(105000);
+        CHECK(it == a.end());
+        end = std::chrono::steady_clock::now();
+        res = duration_cast<sec>(end - start);
+        MESSAGE("non-STD binary search (sorted): " + std::to_string(res.count()));
+
+        start = std::chrono::steady_clock::now();
+        it = a.interpolarSearch_by_ID(4129);
+        CHECK(a.get_ID(*it) == 4129);
+        it = a.interpolarSearch_by_ID(73214);
+        CHECK(a.get_ID(*it) == 73214);
+        it = a.interpolarSearch_by_ID(105000);
+        CHECK(it == a.end());
+        end = std::chrono::steady_clock::now();
+        res = duration_cast<sec>(end - start);
+        MESSAGE("non-STD interpolar search (sorted): " + std::to_string(res.count()));
     }
 
     SUBCASE("Тест исключений")
@@ -269,13 +473,6 @@ TEST_CASE("Тесты класса Queue в doctest")
             Queue a("id out of bounds", "12.11.19");
             Lodger lodger(123456789,3,2014,4,60.3f,3,87.7f);
             a.add(lodger);
-        }());
-
-        CHECK_THROWS([&](){
-            Queue a("element not found - find by id", "12.11.19");
-            Lodger lodger(12345678,3,2014,4,60.3f,3,87.7f);
-            a.add(lodger);
-            [[maybe_unused]] auto it = a.find_by_ID(12345670);
         }());
 
         CHECK_THROWS([&](){
