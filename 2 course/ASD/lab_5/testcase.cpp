@@ -22,10 +22,10 @@ std::string readFromFile(const std::string &flName)
     return A;
 }
 
-// -- непосредственно тесты -
-TEST_CASE("Тесты Tree")
+// -- РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕ С‚РµСЃС‚С‹ -
+TEST_CASE("РўРµСЃС‚С‹ Tree")
 {
-    SUBCASE("Тест создания дерева и добавления элементов в дерево")
+    SUBCASE("РўРµСЃС‚ СЃРѕР·РґР°РЅРёСЏ РґРµСЂРµРІР° Рё РґРѕР±Р°РІР»РµРЅРёСЏ СЌР»РµРјРµРЅС‚РѕРІ РІ РґРµСЂРµРІРѕ")
     {
         Tree a;
         Tree::value_t lodger{3,2014,4,60.3f,3,87.7f};
@@ -38,9 +38,9 @@ TEST_CASE("Тесты Tree")
         a.insert(16,lodger);
         a.insert(11,lodger);
         CHECK(a.count() == 8);
-        CHECK(a.insert(10,lodger) == false); // ключ повторный
+        CHECK(a.insert(10,lodger) == false); // РєР»СЋС‡ РїРѕРІС‚РѕСЂРЅС‹Р№
     }
-    SUBCASE("Тест конструктора копирования")
+    SUBCASE("РўРµСЃС‚ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° РєРѕРїРёСЂРѕРІР°РЅРёСЏ")
     {
         Tree a;
         Tree::value_t lodger{3,2014,4,60.3f,3,87.7f};
@@ -61,7 +61,7 @@ TEST_CASE("Тесты Tree")
         b.PreOrderRecurse(fileName2);
         CHECK(readFromFile(fileName) == readFromFile(fileName2));
     }
-    SUBCASE("Тест конструктора от data и конструктора перемещения")
+    SUBCASE("РўРµСЃС‚ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° РѕС‚ data Рё РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° РїРµСЂРµРјРµС‰РµРЅРёСЏ")
     {
         Tree::value_t lodger{3,2014,4,60.3f,3,87.7f};
         Tree::value_t lodger2{3,2011,4,65.3f,3,89.7f};
@@ -75,7 +75,7 @@ TEST_CASE("Тесты Tree")
         CHECK(a.count() == 1);
         CHECK(elemToString(a.get_root_data()) == "37 3 2011 4 65.3 3 89.7");
     }
-    SUBCASE("Тест обходов")
+    SUBCASE("РўРµСЃС‚ РѕР±С…РѕРґРѕРІ")
     {
         Tree::value_t lodger_1(2,2014,2,22.1f,5,71.3f);
         Tree::value_t lodger_2(2,2011,5,48.0f,2,55.9f);
@@ -107,7 +107,7 @@ TEST_CASE("Тесты Tree")
         a.PostOrderIterative(post2);
         CHECK(readFromFile(post1) == readFromFile(post2));
     }
-    SUBCASE("Тест поиска в дереве")
+    SUBCASE("РўРµСЃС‚ РїРѕРёСЃРєР° РІ РґРµСЂРµРІРµ")
     {
         Tree a;
         Tree::value_t lodger{3,2014,4,60.3f,3,87.7f};
@@ -121,10 +121,10 @@ TEST_CASE("Тесты Tree")
         a.insert(11,lodger);
         auto res = a.find(13);
         CHECK(a.get_key(res) == 13);
-        res = a.find(15);   // его нет и вернется корень
+        res = a.find(15);   // РµРіРѕ РЅРµС‚ Рё РІРµСЂРЅРµС‚СЃСЏ РєРѕСЂРµРЅСЊ
         CHECK(a.get_key(res) == a.get_root_key());
     }
-    SUBCASE("Тест объединения двух деревьев")
+    SUBCASE("РўРµСЃС‚ РѕР±СЉРµРґРёРЅРµРЅРёСЏ РґРІСѓС… РґРµСЂРµРІСЊРµРІ")
     {
         Tree a;
         Tree::value_t lodger{3,2014,4,60.3f,3,87.7f};
@@ -152,7 +152,7 @@ TEST_CASE("Тесты Tree")
         CHECK(a.get_key(a.find(16)) == 16);
         CHECK(a.get_key(a.find(11)) == 11);
     }
-    SUBCASE("Тест поиска минимума и максимума")
+    SUBCASE("РўРµСЃС‚ РїРѕРёСЃРєР° РјРёРЅРёРјСѓРјР° Рё РјР°РєСЃРёРјСѓРјР°")
     {
         Tree a;
         Tree::value_t lodger{3,2014,4,60.3f,3,87.7f};
@@ -169,7 +169,7 @@ TEST_CASE("Тесты Tree")
         CHECK(a.get_key(max) == 16);
         CHECK(a.get_key(min) == 5);
     }
-    SUBCASE("Тест удаления")
+    SUBCASE("РўРµСЃС‚ СѓРґР°Р»РµРЅРёСЏ")
     {
         Tree a;
         Tree::value_t lodger{3,2014,4,60.3f,3,87.7f};
@@ -185,10 +185,10 @@ TEST_CASE("Тесты Tree")
         CHECK(a.count() == 9);
         CHECK(!a.empty());
         std::string pre1 = "delete.txt";
-        a.erase(8); // удаляем лист
-        a.erase(5); // удаляем узел с одним потомком справа
-        a.erase(13);   // удалим узел с двумя наследниками
-        a.erase(7);   // удалим узел с потомком слева
+        a.erase(8); // СѓРґР°Р»СЏРµРј Р»РёСЃС‚
+        a.erase(5); // СѓРґР°Р»СЏРµРј СѓР·РµР» СЃ РѕРґРЅРёРј РїРѕС‚РѕРјРєРѕРј СЃРїСЂР°РІР°
+        a.erase(13);   // СѓРґР°Р»РёРј СѓР·РµР» СЃ РґРІСѓРјСЏ РЅР°СЃР»РµРґРЅРёРєР°РјРё
+        a.erase(7);   // СѓРґР°Р»РёРј СѓР·РµР» СЃ РїРѕС‚РѕРјРєРѕРј СЃР»РµРІР°
         a.PreOrderRecurse(pre1);
         std::string rightResult = "9 3 2014 4 60.3 3 87.7\n"
                                   "6 3 2014 4 60.3 3 87.7\n"
@@ -200,7 +200,7 @@ TEST_CASE("Тесты Tree")
         CHECK(a.count() == 0);
         CHECK(a.empty());
     }
-    SUBCASE("Тест поиска высоты")
+    SUBCASE("РўРµСЃС‚ РїРѕРёСЃРєР° РІС‹СЃРѕС‚С‹")
     {
         Tree a;
         Tree::value_t lodger{3,2014,4,60.3f,3,87.7f};
@@ -222,7 +222,7 @@ TEST_CASE("Тесты Tree")
         b.insert(1,lodger);
         CHECK(b.height() == 4);
     }
-    SUBCASE("Тест замены")
+    SUBCASE("РўРµСЃС‚ Р·Р°РјРµРЅС‹")
     {
         Tree a;
         Tree::value_t lodger1{1,2017,2,62.3f,4,93.7f};
@@ -241,10 +241,10 @@ TEST_CASE("Тесты Tree")
     }
 }
 
-TEST_CASE("Тесты Queue")
+TEST_CASE("РўРµСЃС‚С‹ Queue")
 {
-    Queue t;         // -- нулевой объект – нужен всем --
-    SUBCASE("Тест создание и присваивание") // -- создание и присваивание --
+    Queue t;         // -- РЅСѓР»РµРІРѕР№ РѕР±СЉРµРєС‚ вЂ“ РЅСѓР¶РµРЅ РІСЃРµРј --
+    SUBCASE("РўРµСЃС‚ СЃРѕР·РґР°РЅРёРµ Рё РїСЂРёСЃРІР°РёРІР°РЅРёРµ") // -- СЃРѕР·РґР°РЅРёРµ Рё РїСЂРёСЃРІР°РёРІР°РЅРёРµ --
     {
         Queue a("Ivan");
         CHECK(a.get_Name() == "Ivan");

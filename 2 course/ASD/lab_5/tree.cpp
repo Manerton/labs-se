@@ -21,12 +21,12 @@ std::string elemToString(const Tree::data_t &element)
 
 void Tree::erase_all(Tree::node_t *&node)
 {
-    if(node != nullptr)				// если узел дерева существует
-    {                               // функция вызовет сама себя
-        erase_all(node->left);	// сначала для левого потомка,
-        erase_all(node->right);  // после для правого потомка
+    if(node != nullptr)				// РµСЃР»Рё СѓР·РµР» РґРµСЂРµРІР° СЃСѓС‰РµСЃС‚РІСѓРµС‚
+    {                               // С„СѓРЅРєС†РёСЏ РІС‹Р·РѕРІРµС‚ СЃР°РјР° СЃРµР±СЏ
+        erase_all(node->left);	// СЃРЅР°С‡Р°Р»Р° РґР»СЏ Р»РµРІРѕРіРѕ РїРѕС‚РѕРјРєР°,
+        erase_all(node->right);  // РїРѕСЃР»Рµ РґР»СЏ РїСЂР°РІРѕРіРѕ РїРѕС‚РѕРјРєР°
 
-        // освобождаем память и обнуляем указатели
+        // РѕСЃРІРѕР±РѕР¶РґР°РµРј РїР°РјСЏС‚СЊ Рё РѕР±РЅСѓР»СЏРµРј СѓРєР°Р·Р°С‚РµР»Рё
         delete node;
         node = nullptr;
     }
@@ -34,19 +34,19 @@ void Tree::erase_all(Tree::node_t *&node)
 
 void Tree::add_node(const Tree::key_t &key, const Tree::value_t &v, node_t *&node)
 {
-    if(node == nullptr)   // если корень или лист
+    if(node == nullptr)   // РµСЃР»Рё РєРѕСЂРµРЅСЊ РёР»Рё Р»РёСЃС‚
     {
         node = new node_t(data_t{key,v});
     }
     else
     {
-        if(key < get_key(node->element))    // если ключ добавляемого элемента меньше данного узла
+        if(key < get_key(node->element))    // РµСЃР»Рё РєР»СЋС‡ РґРѕР±Р°РІР»СЏРµРјРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РјРµРЅСЊС€Рµ РґР°РЅРЅРѕРіРѕ СѓР·Р»Р°
         {
-            add_node(key, v, node->left);     // то идем влево
+            add_node(key, v, node->left);     // С‚Рѕ РёРґРµРј РІР»РµРІРѕ
         }
         else
         {
-            add_node(key, v, node->right);    // иначе вправо
+            add_node(key, v, node->right);    // РёРЅР°С‡Рµ РІРїСЂР°РІРѕ
         }
     }
 }
@@ -140,7 +140,7 @@ Tree::data_t Tree::find(const Tree::key_t &key)
 {
     if (empty())
     {
-        throw std::length_error("Дерево пустое, поиск невозможен.");
+        throw std::length_error("Р”РµСЂРµРІРѕ РїСѓСЃС‚РѕРµ, РїРѕРёСЃРє РЅРµРІРѕР·РјРѕР¶РµРЅ.");
     }
     return findNode(key, root)->element;
 }
@@ -241,13 +241,13 @@ void Tree::PreOrderIterative(const std::string &filename) const noexcept
     if (!empty())
     {
         std::ofstream toWrite(filename);
-        if (toWrite.is_open()) // если удалось начать запись
+        if (toWrite.is_open()) // РµСЃР»Рё СѓРґР°Р»РѕСЃСЊ РЅР°С‡Р°С‚СЊ Р·Р°РїРёСЃСЊ
         {
-            std::stack<node_t*> stack; // для записи элементов
+            std::stack<node_t*> stack; // РґР»СЏ Р·Р°РїРёСЃРё СЌР»РµРјРµРЅС‚РѕРІ
             node_t* current = root;
-            while (current != nullptr || !stack.empty()) // пока не дойдем до последнего элемента или стек не пуст
+            while (current != nullptr || !stack.empty()) // РїРѕРєР° РЅРµ РґРѕР№РґРµРј РґРѕ РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р° РёР»Рё СЃС‚РµРє РЅРµ РїСѓСЃС‚
             {
-                while (current != nullptr) // ищем последний элемент
+                while (current != nullptr) // РёС‰РµРј РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚
                 {
                     stack.push(current);
                     toWrite << elemToString(current->element) << std::endl;
@@ -266,13 +266,13 @@ void Tree::InOrderIterative(const std::string &filename) const noexcept
     if (!empty())
     {
         std::ofstream toWrite(filename);
-        if (toWrite.is_open()) // если удалось начать запись
+        if (toWrite.is_open()) // РµСЃР»Рё СѓРґР°Р»РѕСЃСЊ РЅР°С‡Р°С‚СЊ Р·Р°РїРёСЃСЊ
         {
-            std::stack<node_t*> stack; // для записи элементов
+            std::stack<node_t*> stack; // РґР»СЏ Р·Р°РїРёСЃРё СЌР»РµРјРµРЅС‚РѕРІ
             node_t* current = root;
-            while (current != nullptr || !stack.empty()) // пока не дойдем до последнего элемента или стек не пуст
+            while (current != nullptr || !stack.empty()) // РїРѕРєР° РЅРµ РґРѕР№РґРµРј РґРѕ РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р° РёР»Рё СЃС‚РµРє РЅРµ РїСѓСЃС‚
             {
-                while (current != nullptr) // ищем последний элемент
+                while (current != nullptr) // РёС‰РµРј РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚
                 {
                     stack.push(current);
                     current = current->left;
@@ -293,10 +293,10 @@ void Tree::PostOrderIterative(const std::string &filename) const noexcept
         std::ofstream toWrite(filename);
         if (toWrite.is_open())
         {
-            std::stack<node_t *> stack, stackR; // для записи элементов
+            std::stack<node_t *> stack, stackR; // РґР»СЏ Р·Р°РїРёСЃРё СЌР»РµРјРµРЅС‚РѕРІ
             node_t* current = root;
             stack.push(current);
-            while (!stack.empty()) // пока не дойдем до последнего элемента или стек не пуст
+            while (!stack.empty()) // РїРѕРєР° РЅРµ РґРѕР№РґРµРј РґРѕ РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р° РёР»Рё СЃС‚РµРє РЅРµ РїСѓСЃС‚
             {
                 current = stack.top();
                 stack.pop();
@@ -304,9 +304,9 @@ void Tree::PostOrderIterative(const std::string &filename) const noexcept
                 if (current->left)  stack.push(current->left);
                 if (current->right) stack.push(current->right);
             }
-            while(!stackR.empty()) // стек, который заполнялся с правого элемента
+            while(!stackR.empty()) // СЃС‚РµРє, РєРѕС‚РѕСЂС‹Р№ Р·Р°РїРѕР»РЅСЏР»СЃСЏ СЃ РїСЂР°РІРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
             {
-                toWrite << elemToString(stackR.top()->element) << std::endl; // запись данных в файл
+                toWrite << elemToString(stackR.top()->element) << std::endl; // Р·Р°РїРёСЃСЊ РґР°РЅРЅС‹С… РІ С„Р°Р№Р»
                 stackR.pop();
             }
         }
@@ -321,7 +321,7 @@ void Tree::concat(const Tree &b)
     }
 }
 
-// прямой обход (сверху вниз)
+// РїСЂСЏРјРѕР№ РѕР±С…РѕРґ (СЃРІРµСЂС…Сѓ РІРЅРёР·)
 void Tree::DoPreOrderRecurse(std::ofstream &write, Tree::node_t *node) const
 {
     if (node != nullptr)
@@ -356,7 +356,7 @@ Tree::node_t *Tree::findNode(const Tree::key_t &key, Tree::node_t *node)
 {
     if (node != nullptr)
     {
-        if(key == get_key(node->element))   // если нашли ключ
+        if(key == get_key(node->element))   // РµСЃР»Рё РЅР°С€Р»Рё РєР»СЋС‡
         {
             return node;
         }
@@ -381,14 +381,14 @@ Tree::node_t *Tree::findParentNode(const Tree::key_t &key, Tree::node_t *node)
     {
         auto l = node->left;
         auto r = node->right;
-        if (l || r) // если есть хоть один потомок
+        if (l || r) // РµСЃР»Рё РµСЃС‚СЊ С…РѕС‚СЊ РѕРґРёРЅ РїРѕС‚РѕРјРѕРє
         {
-            // проверим ключ у левого дочернего узла
+            // РїСЂРѕРІРµСЂРёРј РєР»СЋС‡ Сѓ Р»РµРІРѕРіРѕ РґРѕС‡РµСЂРЅРµРіРѕ СѓР·Р»Р°
             if((l) && (key == get_key(l->element)))
             {
-                return node; // если нашли ключ
+                return node; // РµСЃР»Рё РЅР°С€Р»Рё РєР»СЋС‡
             }
-            // проверим ключ у правого дочернего узла
+            // РїСЂРѕРІРµСЂРёРј РєР»СЋС‡ Сѓ РїСЂР°РІРѕРіРѕ РґРѕС‡РµСЂРЅРµРіРѕ СѓР·Р»Р°
             else if ((r) && (key == get_key(r->element)))
             {
                 return node;
@@ -402,18 +402,18 @@ Tree::node_t *Tree::findParentNode(const Tree::key_t &key, Tree::node_t *node)
                 return findParentNode(key, node->right);
             }
         }
-        else return root;   // дошли до листа, он явно не тот узел, что мы искали
+        else return root;   // РґРѕС€Р»Рё РґРѕ Р»РёСЃС‚Р°, РѕРЅ СЏРІРЅРѕ РЅРµ С‚РѕС‚ СѓР·РµР», С‡С‚Рѕ РјС‹ РёСЃРєР°Р»Рё
     }
-    else return root;   // ничего не нашли
+    else return root;   // РЅРёС‡РµРіРѕ РЅРµ РЅР°С€Р»Рё
 }
 
 bool Tree::check_for_unique_key(const Tree::key_t &key)
 {
-    if (!empty()) // если корень не пустой, то ключ надо проверить
+    if (!empty()) // РµСЃР»Рё РєРѕСЂРµРЅСЊ РЅРµ РїСѓСЃС‚РѕР№, С‚Рѕ РєР»СЋС‡ РЅР°РґРѕ РїСЂРѕРІРµСЂРёС‚СЊ
     {
-        // если был найден корень (который не равен ключу), то
-        // значит ключ уникальный и его нет в дереве
-        // иначе ключ неуникальный
+        // РµСЃР»Рё Р±С‹Р» РЅР°Р№РґРµРЅ РєРѕСЂРµРЅСЊ (РєРѕС‚РѕСЂС‹Р№ РЅРµ СЂР°РІРµРЅ РєР»СЋС‡Сѓ), С‚Рѕ
+        // Р·РЅР°С‡РёС‚ РєР»СЋС‡ СѓРЅРёРєР°Р»СЊРЅС‹Р№ Рё РµРіРѕ РЅРµС‚ РІ РґРµСЂРµРІРµ
+        // РёРЅР°С‡Рµ РєР»СЋС‡ РЅРµСѓРЅРёРєР°Р»СЊРЅС‹Р№
         auto res = find(key);
         return ((get_root_key() != key) && (get_key(res) == get_root_key()));
     }
@@ -439,28 +439,28 @@ Tree::node_t *Tree::find_min_node(Tree::node_t *node)
 {
     if (empty())
     {
-        throw std::length_error("Дерево пустое, поиск невозможен.");
+        throw std::length_error("Р”РµСЂРµРІРѕ РїСѓСЃС‚РѕРµ, РїРѕРёСЃРє РЅРµРІРѕР·РјРѕР¶РµРЅ.");
     }
 
-    // минимальный элмент в двоичном дереве поиска в крайне левом узле
+    // РјРёРЅРёРјР°Р»СЊРЅС‹Р№ СЌР»РјРµРЅС‚ РІ РґРІРѕРёС‡РЅРѕРј РґРµСЂРµРІРµ РїРѕРёСЃРєР° РІ РєСЂР°Р№РЅРµ Р»РµРІРѕРј СѓР·Р»Рµ
 
     node_t* current = node;
-    while (current->left)  current = current->left; // сдиваегся влево, пока слева есть элемент
-    return current; // вернем найденный элемент
+    while (current->left)  current = current->left; // СЃРґРёРІР°РµРіСЃСЏ РІР»РµРІРѕ, РїРѕРєР° СЃР»РµРІР° РµСЃС‚СЊ СЌР»РµРјРµРЅС‚
+    return current; // РІРµСЂРЅРµРј РЅР°Р№РґРµРЅРЅС‹Р№ СЌР»РµРјРµРЅС‚
 }
 
 Tree::node_t *Tree::find_max_node(Tree::node_t *node)
 {
     if (empty())
     {
-        throw std::length_error("Дерево пустое, поиск невозможен.");
+        throw std::length_error("Р”РµСЂРµРІРѕ РїСѓСЃС‚РѕРµ, РїРѕРёСЃРє РЅРµРІРѕР·РјРѕР¶РµРЅ.");
     }
 
-    // максимальный элмент в двоичном дереве поиска в крайне правом узле
+    // РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЌР»РјРµРЅС‚ РІ РґРІРѕРёС‡РЅРѕРј РґРµСЂРµРІРµ РїРѕРёСЃРєР° РІ РєСЂР°Р№РЅРµ РїСЂР°РІРѕРј СѓР·Р»Рµ
 
     node_t* current = node;
-    while (current->right)  current = current->right; // сдиваегся влево, пока слева есть элемент
-    return current; // вернем найденный элемент
+    while (current->right)  current = current->right; // СЃРґРёРІР°РµРіСЃСЏ РІР»РµРІРѕ, РїРѕРєР° СЃР»РµРІР° РµСЃС‚СЊ СЌР»РµРјРµРЅС‚
+    return current; // РІРµСЂРЅРµРј РЅР°Р№РґРµРЅРЅС‹Р№ СЌР»РµРјРµРЅС‚
 }
 
 void Tree::removeNode(Tree::node_t *parent, node_t *&target)
@@ -469,16 +469,16 @@ void Tree::removeNode(Tree::node_t *parent, node_t *&target)
     {
         auto l = target->left;
         auto r = target->right;
-        if (l && r) // оба наследника есть, значит заменяем узел на максимум левого поддерева
+        if (l && r) // РѕР±Р° РЅР°СЃР»РµРґРЅРёРєР° РµСЃС‚СЊ, Р·РЅР°С‡РёС‚ Р·Р°РјРµРЅСЏРµРј СѓР·РµР» РЅР° РјР°РєСЃРёРјСѓРј Р»РµРІРѕРіРѕ РїРѕРґРґРµСЂРµРІР°
         {
             auto localMax = find_max_node(l);
             auto localMaxkey = get_key(localMax->element);
             target->element = localMax->element;
-            // и удаляем максимум левого поддерева, только нужно найти его род. узел тоже
+            // Рё СѓРґР°Р»СЏРµРј РјР°РєСЃРёРјСѓРј Р»РµРІРѕРіРѕ РїРѕРґРґРµСЂРµРІР°, С‚РѕР»СЊРєРѕ РЅСѓР¶РЅРѕ РЅР°Р№С‚Рё РµРіРѕ СЂРѕРґ. СѓР·РµР» С‚РѕР¶Рµ
             removeNode(findParentNode(localMaxkey,target),localMax);
             return;
         }
-        else if (l) // есть только левый наследник
+        else if (l) // РµСЃС‚СЊ С‚РѕР»СЊРєРѕ Р»РµРІС‹Р№ РЅР°СЃР»РµРґРЅРёРє
         {
             if (target == parent->left)
             {
@@ -488,7 +488,7 @@ void Tree::removeNode(Tree::node_t *parent, node_t *&target)
                 parent->right = target->left;
             }
         }
-        else if (r) // есть только правый наследник
+        else if (r) // РµСЃС‚СЊ С‚РѕР»СЊРєРѕ РїСЂР°РІС‹Р№ РЅР°СЃР»РµРґРЅРёРє
         {
             if (target == parent->right)
             {
@@ -498,7 +498,7 @@ void Tree::removeNode(Tree::node_t *parent, node_t *&target)
                 parent->left = target->right;
             }
         }
-        else  // нет наследников
+        else  // РЅРµС‚ РЅР°СЃР»РµРґРЅРёРєРѕРІ
         {
             if (target == parent->left) {
                 parent->left = nullptr;
