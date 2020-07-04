@@ -1,0 +1,10 @@
+Для анимаций QPropertyAnimation свыше 60 кадров в секунду надо:
+
+1) В .pro файле прописать пути к include:
+INCLUDEPATH += "C:/Qt/5.13.2/mingw73_64/include/QtCore/5.13.2/QtCore/"
+INCLUDEPATH += "C:/Qt/5.13.2/mingw73_64/include/"
+INCLUDEPATH += "C:/Qt/5.13.2/mingw73_64/include/QtCore/5.13.2/"
+
+2) #include <private/qabstractanimation_p.h>
+
+3) QUnifiedTimer::instance()->setTimingInterval(animationTimingInterval);
