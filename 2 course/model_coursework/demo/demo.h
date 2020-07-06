@@ -16,10 +16,8 @@ public:
     ~Demo();
     void hideInputs();
 
-
 signals:
     void return_to_menu();
-
 
 private slots:
     void on_tabWidget_currentChanged(int index);        // переключились на другую визуализацию

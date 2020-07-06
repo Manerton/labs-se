@@ -47,7 +47,7 @@ public:
     void callHalfBitSum(bool x, bool y);
     void callTwoBitSum(bool a, bool b, bool c, bool d);
     // рисуем знак + или -, или любой другой символ 'c' по коордианте coords и помещаем элемент в указанную группу group
-    static QGraphicsTextItem *drawSign(const char c, const QPointF &coords, QGraphicsItemGroup *group);
+    static QGraphicsTextItem *drawSigns(const std::string &c, const QPointF &coords, QGraphicsItemGroup *group, int FontSize = 28);
     // переадресовываем для p-n перехода, что необходимо изменить полярность
     void changePolarity();
 private slots:

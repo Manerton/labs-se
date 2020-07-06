@@ -28,6 +28,10 @@
   <property name="windowTitle">
    <string>Учебно-демонстрационная программа «Транзистор»</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>favicon.ico</normaloff>favicon.ico</iconset>
+  </property>
   <property name="dockNestingEnabled">
    <bool>false</bool>
   </property>
@@ -220,7 +224,7 @@ color: rgb(255, 255, 255);</string>
   <customwidget>
    <class>Demo</class>
    <extends>QWidget</extends>
-   <header location="global">demo.h</header>
+   <header location="global">demo/demo.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

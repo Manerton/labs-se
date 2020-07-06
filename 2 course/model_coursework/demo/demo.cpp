@@ -2,6 +2,7 @@
 #include "ui_demo.h"
 #include <QDebug>
 #include <QTimer>
+#include <QFile>
 #include <random>
 #include <QIntValidator>
 
@@ -13,11 +14,16 @@ Demo::Demo(QWidget *parent) : QMainWindow(parent), ui(new Ui::Demo)
     graphic = new PictureBox(); // определяю фрейм, в котором рисую
     ui->graphicLayout_pSemi->addWidget(graphic);
     graphic->show_p_semi(); // изначально показываю анимацию p-полупроводника
+    ui->textBrowser->scrollToAnchor("8");
     // запрещаю вводить символы отличные от цифр в поля для ввода
     ui->input1->setValidator(new QIntValidator(0, 20, this));
     ui->input2->setValidator(new QIntValidator(0, 20, this));
     // скрываю эти поля, так как они только для сумматоров
     hideInputs();
+    if (QFile::exists("files\\text.txt"))
+    {
+        ui->textBrowser->setSource(QUrl("files\\text.txt"));
+    }
 }
 
 Demo::~Demo()
@@ -41,23 +47,28 @@ void Demo::on_tabWidget_currentChanged(int)
     if (p == ui->p_semi)
     {
         ui->graphicLayout_pSemi->addWidget(graphic);
+        ui->textBrowser->scrollToAnchor("8");
         graphic->show_p_semi();
     } else if (p == ui->n_semi)
     {
         ui->graphicLayout_nSemi->addWidget(graphic);
+        ui->textBrowser->scrollToAnchor("7");
         graphic->show_n_semi();
     } else if (p == ui->diod)
     {
         ui->graphicLayoutDiod->addWidget(graphic);
+        ui->textBrowser->scrollToAnchor("9");
         graphic->show_diod();
         ui->pushButton_changePolarity->show();
     } else if (p == ui->transistor)
     {
         ui->graphicLayout_transistor->addWidget(graphic);
+        ui->textBrowser->scrollToAnchor("10");
         graphic->show_transistor();
     } else if (p == ui->halfbitsum)
     {
         ui->graphicLayout_halfbitsum->addWidget(graphic);
+        ui->textBrowser->scrollToAnchor("16");
         graphic->show_halfbitsum();
         ui->input1->show();
         ui->input2->show();
@@ -68,6 +79,7 @@ void Demo::on_tabWidget_currentChanged(int)
     } else if (p == ui->twobitsum)
     {
         ui->graphicLayout_twobitsum->addWidget(graphic);
+        ui->textBrowser->scrollToAnchor("17");
         graphic->show_twobitsum();
         ui->input1->show();
         ui->input2->show();

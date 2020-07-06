@@ -2,6 +2,8 @@
 #define TEORIA_H
 
 #include <QWidget>
+#include <QListWidgetItem>
+#include <QTextBrowser>
 
 namespace Ui {
 class Teoria;
@@ -18,11 +20,11 @@ public:
 signals:
     void return_to_menu();
 private slots:
-    void on_textBrowser_anchorClicked(const QUrl &arg1); // -- перехват и обработка нажатия на гиперссылку в теории -- //
-
     void on_pushButton_clicked();
+    void on_listWidget_clicked(const QModelIndex &index);
 private:
     Ui::Teoria *ui;
+    void fillContentTable();
 
 };
 

@@ -38,8 +38,8 @@ void Diod::draw()
     rect->setBrush(Qt::white);
     group->addToGroup(rect);
 
-    PictureBox::drawSign('n',{w/4-20,h-10},group);
-    PictureBox::drawSign('p',{w-w/4-20,h-10},group);
+    PictureBox::drawSigns("n",{w/4-20,h-10},group);
+    PictureBox::drawSigns("p",{w-w/4-20,h-10},group);
     // рисуем электроны
     drawParticles();
     drawIdleParticles();
@@ -85,10 +85,10 @@ void Diod::drawPowerSourceOn()
     minusLine->setPen(pen);
     minusLine->setParentItem(mainLine);
     // знаки + и -
-    PictureBox::drawSign('+',{700+40,halfH-40},powerSourceOn);
-    PictureBox::drawSign('-',{-68,halfH-40},powerSourceOn);
-    PictureBox::drawSign('+',{365,halfH-186},powerSourceOn);
-    PictureBox::drawSign('-',{300,halfH-185},powerSourceOn);
+    PictureBox::drawSigns("+",{700+40,halfH-40},powerSourceOn);
+    PictureBox::drawSigns("-",{-68,halfH-40},powerSourceOn);
+    PictureBox::drawSigns("+",{365,halfH-186},powerSourceOn);
+    PictureBox::drawSigns("-",{300,halfH-185},powerSourceOn);
 }
 
 void Diod::drawPowerSourceOff()
@@ -123,10 +123,10 @@ void Diod::drawPowerSourceOff()
     minusLine->setPen(pen);
     minusLine->setParentItem(mainLine);
     // знаки + и -
-    PictureBox::drawSign('-',{700+40,halfH-40},powerSourceOff);
-    PictureBox::drawSign('+',{-68,halfH-40},powerSourceOff);
-    PictureBox::drawSign('-',{365,halfH-186},powerSourceOff);
-    PictureBox::drawSign('+',{300,halfH-185},powerSourceOff);
+    PictureBox::drawSigns("-",{700+40,halfH-40},powerSourceOff);
+    PictureBox::drawSigns("+",{-68,halfH-40},powerSourceOff);
+    PictureBox::drawSigns("-",{365,halfH-186},powerSourceOff);
+    PictureBox::drawSigns("+",{300,halfH-185},powerSourceOff);
 
     powerSourceOff->hide();
 }

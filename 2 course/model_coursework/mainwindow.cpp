@@ -1,8 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "teoria.h"
+#include "demo/demo.h"
 #include "test.h"
 #include <QDebug>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -61,4 +63,9 @@ void MainWindow::disableMaxButtonOnWindow()
     setMaximumHeight(600);
     setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
     show();
+}
+
+void MainWindow::stopTimer()
+{
+    timer->stop();
 }

@@ -87,8 +87,8 @@ void HalfBitSummator::draw()
     QGraphicsPathItem* mainLine = new QGraphicsPathItem(*path);
     mainLine->setPen(pen);
     group->addToGroup(mainLine);
-    PictureBox::drawSign('u',{605,135},group);
-    PictureBox::drawSign('v',{600,-80},group);
+    PictureBox::drawSigns("u",{605,135},group);
+    PictureBox::drawSigns("v",{600,-80},group);
     PrepareInputs();
     group->moveBy(70,0);
 }
@@ -150,12 +150,12 @@ void HalfBitSummator::drawOr(const QPointF &coords)
 
 void HalfBitSummator::PrepareInputs()
 {
-    textItems_array[0] = PictureBox::drawSign('0',{-70,-130},group); // x
-    textItems_array[1] = PictureBox::drawSign('0',{-70,-90},group);  // y
-    textItems_array[2] = PictureBox::drawSign('0',{188,-111},group); // 1
-    textItems_array[3] = PictureBox::drawSign('0',{188,10},group);   // 2
-    textItems_array[4] = PictureBox::drawSign('0',{188,133},group);  // 3
-    textItems_array[5] = PictureBox::drawSign('0',{420,-80},group);  // 4
+    textItems_array[0] = PictureBox::drawSigns("0",{-70,-130},group); // x
+    textItems_array[1] = PictureBox::drawSigns("0",{-70,-90},group);  // y
+    textItems_array[2] = PictureBox::drawSigns("0",{188,-111},group); // 1
+    textItems_array[3] = PictureBox::drawSigns("0",{188,10},group);   // 2
+    textItems_array[4] = PictureBox::drawSigns("0",{188,133},group);  // 3
+    textItems_array[5] = PictureBox::drawSigns("0",{420,-80},group);  // 4
 }
 
 void HalfBitSummator::calculateAndDraw(bool x, bool y)

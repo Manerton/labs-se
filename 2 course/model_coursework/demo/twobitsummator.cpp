@@ -139,19 +139,19 @@ void TwoBitSummator::PrepareInputs()
     sum3_u.rx() -= 30;
     sum3_u.ry() += 35;
     QPointF sum3_v = {sum3_u.x() + 30, sum3_u.y()};
-    textItems_array[dataSymbols::a] = PictureBox::drawSign('0',normalize_coords_for_symbol(*point_a),group);     // a
-    textItems_array[dataSymbols::b] = PictureBox::drawSign('0',normalize_coords_for_symbol(*point_b),group);     // b
-    textItems_array[dataSymbols::c] = PictureBox::drawSign('0',normalize_coords_for_symbol(*point_c),group);     // c
-    textItems_array[dataSymbols::d] = PictureBox::drawSign('0',normalize_coords_for_symbol(*point_d),group);     // d
-    textItems_array[dataSymbols::e] = PictureBox::drawSign('0',normalize_coords_for_symbol(*point_e),group);     // e
-    textItems_array[dataSymbols::f] = PictureBox::drawSign('0',normalize_coords_for_symbol(*point_f),group);     // f
-    textItems_array[dataSymbols::g] = PictureBox::drawSign('0',normalize_coords_for_symbol(*point_g),group);     // f
-    textItems_array[dataSymbols::sum1_u] = PictureBox::drawSign('0',sum1_u,group);                               // sum1_u
-    textItems_array[dataSymbols::sum1_v] = PictureBox::drawSign('0',sum1_v,group);                               // sum1_v
-    textItems_array[dataSymbols::sum2_u] = PictureBox::drawSign('0',sum2_u,group);                               // sum2_u
-    textItems_array[dataSymbols::sum2_v] = PictureBox::drawSign('0',sum2_v,group);                               // sum2_v
-    textItems_array[dataSymbols::sum3_u] = PictureBox::drawSign('0',sum3_u,group);                               // sum3_u
-    textItems_array[dataSymbols::sum3_v] = PictureBox::drawSign('0',sum3_v,group);                               // sum3_v
+    textItems_array[dataSymbols::a] = PictureBox::drawSigns("0",normalize_coords_for_symbol(*point_a),group);     // a
+    textItems_array[dataSymbols::b] = PictureBox::drawSigns("0",normalize_coords_for_symbol(*point_b),group);     // b
+    textItems_array[dataSymbols::c] = PictureBox::drawSigns("0",normalize_coords_for_symbol(*point_c),group);     // c
+    textItems_array[dataSymbols::d] = PictureBox::drawSigns("0",normalize_coords_for_symbol(*point_d),group);     // d
+    textItems_array[dataSymbols::e] = PictureBox::drawSigns("0",normalize_coords_for_symbol(*point_e),group);     // e
+    textItems_array[dataSymbols::f] = PictureBox::drawSigns("0",normalize_coords_for_symbol(*point_f),group);     // f
+    textItems_array[dataSymbols::g] = PictureBox::drawSigns("0",normalize_coords_for_symbol(*point_g),group);     // f
+    textItems_array[dataSymbols::sum1_u] = PictureBox::drawSigns("0",sum1_u,group);                               // sum1_u
+    textItems_array[dataSymbols::sum1_v] = PictureBox::drawSigns("0",sum1_v,group);                               // sum1_v
+    textItems_array[dataSymbols::sum2_u] = PictureBox::drawSigns("0",sum2_u,group);                               // sum2_u
+    textItems_array[dataSymbols::sum2_v] = PictureBox::drawSigns("0",sum2_v,group);                               // sum2_v
+    textItems_array[dataSymbols::sum3_u] = PictureBox::drawSigns("0",sum3_u,group);                               // sum3_u
+    textItems_array[dataSymbols::sum3_v] = PictureBox::drawSigns("0",sum3_v,group);                               // sum3_v
 }
 
 void TwoBitSummator::calculateAndDraw(bool a, bool b, bool c, bool d)

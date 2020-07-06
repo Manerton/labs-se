@@ -158,12 +158,12 @@ void PictureBox::reset_Animations_for_p_semi()
     p_semi->resetAnimations();
 }
 
-QGraphicsTextItem* PictureBox::drawSign(const char c, const QPointF &coords, QGraphicsItemGroup* group)
+QGraphicsTextItem* PictureBox::drawSigns(const string &c, const QPointF &coords, QGraphicsItemGroup* group, int FontSize)
 {
-    QGraphicsTextItem *sign = new QGraphicsTextItem({c});
-    sign->setFont(QFont("Arial",28));
+    QGraphicsTextItem *sign = new QGraphicsTextItem(c.c_str());
+    sign->setFont(QFont("Arial",FontSize));
     sign->setPos(coords.x(),coords.y());
-    sign->setZValue(5);
+    sign->setZValue(6);
     group->addToGroup(sign);
     return sign;
 }

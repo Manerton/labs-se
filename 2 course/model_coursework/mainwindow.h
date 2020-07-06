@@ -22,8 +22,9 @@ private slots:
     void on_pushButton_demo_clicked();
     void enableMaxButtonOnWindow();
     void disableMaxButtonOnWindow();
-
+    void stopTimer();
 private:
     Ui::MainWindow *ui;
+    QTimer *timer;
 };
 #endif // MAINWINDOW_H

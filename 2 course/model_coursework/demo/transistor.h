@@ -22,6 +22,8 @@ public:
     void drawBounds();
     // подготовка анимаций для электронов
     void prepareAnim();
+    // нарисовать стрелку
+    void drawArrow(const QPointF &coords);
     // поставить на паузу и снять с паузы визуализацию транзистора
     // при переключении на другие демонстрации
     void pause();
@@ -46,7 +48,7 @@ public:
     // группа элементов для источника тока
     QGraphicsItemGroup* powerSource = nullptr;
     // длительность анимации
-    int animDuration = 2500;
+    int animDuration = 3000;
     // индекс текущей выпускаемой частицы
     int i = 0;
     // активна ли сейчас анимация?
@@ -56,6 +58,7 @@ public:
 public slots:
     // это для анимации потока электронов
     void resumeAnim();
+    void doSomething(int i);
 };
 
 #endif // TRANSISTOR_H

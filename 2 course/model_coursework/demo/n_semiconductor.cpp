@@ -73,10 +73,10 @@ void N_semiconductor::drawPowerSource()
     minusLine->setPen(pen);
     minusLine->setParentItem(mainLine);
     // знаки + и -
-    PictureBox::drawSign('+',{700+40,halfH-40},group);
-    PictureBox::drawSign('-',{-68,halfH-40},group);
-    PictureBox::drawSign('+',{365,halfH-186},group);
-    PictureBox::drawSign('-',{300,halfH-185},group);
+    PictureBox::drawSigns("+",{700+40,halfH-40},group);
+    PictureBox::drawSigns("-",{-68,halfH-40},group);
+    PictureBox::drawSigns("+",{365,halfH-186},group);
+    PictureBox::drawSigns("-",{300,halfH-185},group);
 }
 
 void N_semiconductor::drawIon(const QPointF &coords)

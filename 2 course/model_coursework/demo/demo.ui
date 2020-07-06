@@ -50,14 +50,11 @@
    <property name="autoFillBackground">
     <bool>true</bool>
    </property>
-   <layout class="QGridLayout" name="gridLayout" rowstretch="3,0,0,0,0,0,0,0" columnstretch="10,0">
+   <layout class="QGridLayout" name="gridLayout" rowstretch="7,0,0,5,1" columnstretch="10,0">
     <item row="2" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_input">
       <item>
        <widget class="QLineEdit" name="input1">
-        <property name="inputMethodHints">
-         <set>Qt::ImhDigitsOnly|Qt::ImhFormattedNumbersOnly</set>
-        </property>
         <property name="inputMask">
          <string/>
         </property>
@@ -77,9 +74,6 @@
       </item>
       <item>
        <widget class="QLineEdit" name="input2">
-        <property name="inputMethodHints">
-         <set>Qt::ImhDigitsOnly|Qt::ImhFormattedNumbersOnly|Qt::ImhNoTextHandles|Qt::ImhPreferNumbers</set>
-        </property>
         <property name="inputMask">
          <string/>
         </property>
@@ -101,6 +95,15 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="3" column="0">
+     <widget class="QTextBrowser" name="textBrowser">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+     </widget>
     </item>
     <item row="0" column="0" rowspan="2" colspan="2">
      <widget class="QTabWidget" name="tabWidget">
@@ -166,7 +169,7 @@
       </widget>
      </widget>
     </item>
-    <item row="7" column="0">
+    <item row="4" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QPushButton" name="pushButton_changePolarity">
@@ -177,7 +180,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Изменить полярность  подключения</string>
+         <string>Изменить полярность подключения</string>
         </property>
        </widget>
       </item>
