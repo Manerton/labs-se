@@ -11,23 +11,26 @@ class Graph         // граф, представление - матрица и�
     using Row = vector<char>;
     using Matrix = vector<Row>;
 // поля
-    size_type V; // число вершин (кол-во строк)
-    size_type E; // число ребер  (кол-во столбцов)
-    Matrix M;    // матрица инцидентности
+    size_type V = 0;           // число вершин (кол-во строк)
+    size_type E = 0;           // общее число ребер в графе (кол-во столбцов)
+    size_type index_for_E = 0; // число ребер в графе в данный момент (используется как индекс при вставке ребра при генерации матрицы)
+    Matrix M;                  // матрица инцидентности
 public:
     Graph(size_type _V, size_type _E);
     ~Graph();
-    size_t getV() const; // получить число вершин
-    size_t getE() const; // получить число ребер
-    void insert(Edge);
-    void remove(Edge);
-    bool is_edge(size_type v, size_type w);
+    size_type getV() const; // получить число вершин
+    size_type getE() const; // получить число ребер
+    void insert(Edge);      // вставить ребро
+    void remove(Edge);      // удалить ребро
     // итератор
     struct Iterator
     {
-        Iterator(int);
-        int beg();
-        int nxt();
+        const Graph &G;
+        size_type v = 0;
+        size_type i = 0;
+        explicit Iterator(const Graph& _G, size_type _v) : G(_G),v(_v) { }
+        Iterator() = delete;
+        size_type operator++();
         bool end();
     };
 
