@@ -2,6 +2,10 @@
 #define GRAPH_H
 #include <cstdint>
 #include <vector>
+#include <limits>
+#include <iostream>
+#include <iomanip>
+#include <string>
 using std::vector;
 
 class Graph         // граф, представление - матрица инцидентности
@@ -10,6 +14,7 @@ class Graph         // граф, представление - матрица и�
     using Edge = std::pair<size_type, size_type>; // ребро - номера левой и правой вершины
     using Row = vector<char>;
     using Matrix = vector<Row>;
+    static constexpr size_type NOT_FOUND = std::numeric_limits<size_type>::max();
 // поля
     size_type V = 0;           // число вершин (кол-во строк)
     size_type E = 0;           // общее число ребер в графе (кол-во столбцов)
@@ -17,12 +22,14 @@ class Graph         // граф, представление - матрица и�
     Matrix M;                  // матрица инцидентности
 public:
     Graph(size_type _V, size_type _E);
-    ~Graph();
+    ~Graph() = default;
     size_type getV() const; // получить число вершин
     size_type getE() const; // получить число ребер
     void insert(Edge);      // вставить ребро
     void remove(Edge);      // удалить ребро
-    // итератор
+    void display();
+    // итератор, в качестве передаем вершину, должны получить индекс другой вершины, соединенной с первой ребром
+
     struct Iterator
     {
         const Graph &G;
