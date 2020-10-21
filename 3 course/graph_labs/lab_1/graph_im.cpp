@@ -1,34 +1,35 @@
-#include "graph.h"
+#include "graph_im.h"
+#include <iomanip>
 
 using namespace std;
 
-Graph::Graph(Graph::size_type _V, Graph::size_type _E) : V(_V), E(_E)
+Graph_IM::Graph_IM(Graph_IM::size_type _V, Graph_IM::size_type _E) : V(_V), E(_E)
 {
-    // инициализируем пустую матрицу V x E
+    // инициализируем пустую (незаполненную) матрицу V x E
     M.resize(V);
     for (auto &row : M) row.resize(E,0);
 }
 
-Graph::size_type Graph::getV() const
+Graph_IM::size_type Graph_IM::getV() const noexcept
 {
     return V;
 }
 
-Graph::size_type Graph::getE() const
+Graph_IM::size_type Graph_IM::getE() const noexcept
 {
     return E;
 }
 
 // вставка ребер в матрицу V x E
 // по индексу index_for_E, т.е вставка осуществляется до E
-void Graph::insert(Graph::Edge e)
+void Graph_IM::insert(Graph_IM::Edge e) noexcept
 {
-    if (index_for_E < E) // уже некуда вставлять
+    if (index_for_E < E) // иначе некуда вставлять
     {
         const size_type v = e.first;  // левая вершина
         const size_type w = e.second; // правая вершина
         // проверяем, нет ли уже ребра по индексу index_for_E
-        if (!((M[v][index_for_E] == 1) && (M[w][index_for_E] == 1)))
+        if ( !((M[v][index_for_E] == 1) && (M[w][index_for_E] == 1)) )
         {
             M[v][index_for_E] = M[w][index_for_E] = 1;
             ++index_for_E;
@@ -36,7 +37,7 @@ void Graph::insert(Graph::Edge e)
     }
 }
 
-void Graph::remove(Graph::Edge e)
+void Graph_IM::remove(Graph_IM::Edge e) noexcept
 {
     const size_type v = e.first;  // левая вершина
     const size_type w = e.second; // правая вершина
@@ -48,7 +49,7 @@ void Graph::remove(Graph::Edge e)
     }
 }
 
-void Graph::display()
+void Graph_IM::display() const noexcept
 {
     // шапка матрицы (номера столбцов)
     cout << setw(3) << "\\" << setw(4) << "E" << setw(2) << "|" << endl;
@@ -70,54 +71,44 @@ void Graph::display()
     }
 }
 
-Graph::size_type Graph::Iterator::operator++()
+Graph_IM::size_type Graph_IM::Iterator::operator++()
 {
     // проходим по всем столбцам в матрице инцидентности (т.е проверяем все ребра)
-    size_type E = G.getE();
-    while (i < E)
+    const size_type E = G.getE();
+    for (++i; i < E; ++i)
     {
         // если нашли ребро, инцидентное вершине v, значит ищем вторую вершину, инцидентную этому ребру
         if (G.M[v][i] == 1)
         {
             // проходим по всем строкам данного столбца, чтобы найти вторую вершину
-            size_type V = G.getV();
+            const size_type V = G.getV();
             for (size_type j = 0; j < V; ++j)
             {
-                if (G.M[j][i] == 1 && j != i) // когда нашли вторую вершину, и это не петля
+                if (G.M[j][i] == 1 && j != v) // когда нашли вторую вершину, и это не петля
                 {
-                    ++i;
                     return j; // возвращаем индекс строки, т.е вторую вершину
                 }
             }
         }
-        else ++i;
     }
     return NOT_FOUND; // если не нашли ничего, но в связном графе этого не должно происходить
 }
 
-bool Graph::Iterator::end()
+vector<Graph_IM::Edge> Graph_IM::get_List_of_edges() noexcept
 {
-    return i >= G.getE();
+    vector<Edge> a(E);
+
+    size_type i = 0; // индекс ребра
+    for (size_t v = 0; v < V; ++v)
+    {
+        Graph_IM::Iterator it(*this,v);
+        for (size_type w = it.begin(); !it.end(); w = ++it)
+        {
+            if (v < w)
+            {
+                a[i++] = Edge{v,w};
+            }
+        }
+    }
+    return a;
 }
-
-//vector<Graph::Edge> Graph::get_List_of_edges()
-//{
-//    size_t E = 0; // количество рёбер
-
-//    const auto G_E = this->E();
-//    const auto G_V = this->V();
-
-//    vector<Edge> a(G_E);
-
-//    for (size_t v = 0; v < G_V; ++v)
-//    {
-//        Graph::Iterator it(v);
-//        for (size_t w = it.beg(); !it.end(); w = it.nxt())
-//        {
-//            if(v < w)
-//            {
-//                a[E++] = Edge(v,w);
-//            }
-//        }
-//    }
-//}
