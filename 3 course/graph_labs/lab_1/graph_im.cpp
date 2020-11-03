@@ -37,27 +37,36 @@ void Graph_IM::remove(Graph_IM::Edge e) noexcept
     }
 }
 
-// вывод матрицы инцидентности
-void Graph_IM::display() const noexcept
+ostream& operator<<(ostream &t, const Graph_IM &r)
 {
+    string s;
+    s = r.toString();
+    return (t << s);
+}
+
+// вывод матрицы инцидентности
+string Graph_IM::toString() const noexcept
+{
+    stringstream ss;
     // шапка матрицы (номера столбцов)
-    cout << setw(3) << "\\" << setw(4) << "E" << setw(2) << "|" << endl;
-    cout << setw(4) << "\\" << setw(5) << "|" << endl;
-    cout << setw(2) << "V" << setw (3) << "\\" << setw(4) << "|";
-    for (size_type k = 0; k < E; ++k) cout << "\t" << k+1;
-    const string border_str(60,'-');
-    cout << endl << border_str << endl;
+    ss << setw(3) << "\\" << setw(4) << "E" << setw(2) << "|" << endl;
+    ss << setw(4) << "\\" << setw(5) << "|" << endl;
+    ss << setw(2) << "V" << setw (3) << "\\" << setw(4) << "|";
+    for (size_type k = 0; k < E; ++k) ss << "\t" << k+1;
+    const string border_str(17 + 5 * E,'-');
+    ss << endl << border_str << endl;
     // сама матрица и номера строк
     for (size_type i = 0; i < V; ++i)
     {
-        cout << i+1 << "\t" << "|";
+        ss << i+1 << "\t" << "|";
         for (size_type j = 0; j < E; ++j)
         {
-            cout << "\t";
-            cout << int(M[i][j]);
+            ss << "\t";
+            ss << int(M[i][j]);
         }
-        cout << endl << border_str << endl;
+        ss << endl << border_str << endl;
     }
+    return ss.str();
 }
 
 // реализация методов итератора

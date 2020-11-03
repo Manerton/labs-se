@@ -21,7 +21,9 @@ public:
     virtual ~Graph_IM() = default;
     virtual void insert(Edge) noexcept;             // вставить ребро
     virtual void remove(Edge) noexcept;             // удалить ребро
-    virtual void display() const noexcept;          // вывести матрицу инцидентности
+    virtual std::string toString() const noexcept;          // вывести матрицу инцидентности
+
+    friend std::ostream& operator<<(std::ostream& t, const Graph_IM &r);
 
     // итератор: передаем какую-то вершину, и должны получить индекс другой вершины, соединенной с переданной вершиной ребром
     struct Iterator : public Graph::Iterator

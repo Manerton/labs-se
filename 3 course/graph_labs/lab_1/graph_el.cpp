@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <sstream>
 #include "graph_el.h"
 using namespace std;
 
@@ -24,12 +25,21 @@ void Graph_EL::remove(Graph_EL::Edge e) noexcept
 }
 
 // вывести список ребер
-void Graph_EL::display() const noexcept
+string Graph_EL::toString() const noexcept
 {
+    stringstream ss;
     for (auto &val : L)
     {
-        cout << "(" << val.first+1 << "; " << val.second+1 << ")" << " ";
+        ss << "(" << val.first+1 << "; " << val.second+1 << ")" << endl;
     }
+    return ss.str();
+}
+
+ostream& operator<<(ostream &t, const Graph_EL &r)
+{
+    string s;
+    s = r.toString();
+    return (t << s);
 }
 
 Graph_EL::size_type Graph_EL::Iterator::operator++()

@@ -35,26 +35,35 @@ void Graph_AM::remove(Graph::Edge e) noexcept
     }
 }
 
-void Graph_AM::display() const noexcept
+string Graph_AM::toString() const noexcept
 {
+    stringstream ss;
     // шапка матрицы (номера столбцов)
-    cout << setw(3) << "\\" << setw(4) << "E" << setw(2) << "|" << endl;
-    cout << setw(4) << "\\" << setw(5) << "|" << endl;
-    cout << setw(2) << "V" << setw (3) << "\\" << setw(4) << "|";
-    for (size_type k = 0; k < V; ++k) cout << "\t" << k+1;
-    const string border_str(60,'-');
-    cout << endl << border_str << endl;
+    ss << setw(3) << "\\" << setw(4) << "E" << setw(2) << "|" << endl;
+    ss << setw(4) << "\\" << setw(5) << "|" << endl;
+    ss << setw(2) << "V" << setw (3) << "\\" << setw(4) << "|";
+    for (size_type k = 0; k < V; ++k) ss << "\t" << k+1;
+    const string border_str(10 * V,'-');
+    ss << endl << border_str << endl;
     // сама матрица и номера строк
     for (size_type i = 0; i < V; ++i)
     {
-        cout << i+1 << "\t" << "|";
+        ss << i+1 << "\t" << "|";
         for (size_type j = 0; j < V; ++j)
         {
-            cout << "\t";
-            cout << int(M[i][j]);
+            ss << "\t";
+            ss << int(M[i][j]);
         }
-        cout << endl << border_str << endl;
+        ss << endl << border_str << endl;
     }
+    return ss.str();
+}
+
+ostream& operator<<(ostream &t, const Graph_AM &r)
+{
+    string s;
+    s = r.toString();
+    return (t << s);
 }
 
 Graph::size_type Graph_AM::Iterator::operator++()

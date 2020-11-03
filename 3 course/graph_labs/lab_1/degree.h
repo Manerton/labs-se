@@ -3,6 +3,8 @@
 #include <vector>
 #include <numeric>
 #include <cassert>
+#include <iostream>
+#include <sstream>
 #include <algorithm>
 using std::vector;
 
@@ -37,6 +39,21 @@ public:
     }
     size_type operator[](int v) const { return degree[v]; }
 
+    std::string toString() const noexcept
+    {
+        std::stringstream ss;
+        for (auto val : degree)
+        {
+            ss << val << " ";
+        }
+        return ss.str();
+    }
+    friend std::ostream& operator<<(std::ostream& t, const Degree &r)
+    {
+        std::string s;
+        s = r.toString();
+        return (t << s);
+    }
 };
 
 #endif // DEGREE_H

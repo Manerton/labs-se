@@ -1,6 +1,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 #include <cstdint>
+#include <string>
 #include <limits>
 #include <vector>
 using std::vector;
@@ -25,7 +26,7 @@ public:
     size_type getE() const noexcept {return E;}     // получить число ребер
     virtual void insert(Edge) noexcept = 0;         // вставить ребро
     virtual void remove(Edge) noexcept = 0;         // удалить ребро
-    virtual void display() const noexcept = 0;      // вывести граф
+    virtual std::string toString() const noexcept = 0;      // вывести граф
 
     // итератор: передаем какую-то вершину, и должны получить индекс другой вершины, соединенной с переданной вершиной ребром
     struct Iterator

@@ -29,7 +29,9 @@ public:
     virtual ~Graph_EL() = default;
     virtual void insert(Edge) noexcept;         // вставить ребро
     virtual void remove(Edge) noexcept;         // удалить ребро
-    virtual void display() const noexcept;      // вывести список ребер
+    virtual std::string toString() const noexcept;      // вывести список ребер
+
+    friend std::ostream& operator<<(std::ostream& t, const Graph_EL &r);
 
     // итератор: передаем какую-то вершину, и должны получить индекс другой вершины, соединенной с переданной вершиной ребром
     struct Iterator : public Graph::Iterator
