@@ -1,10 +1,6 @@
 #ifndef GRAPH_H
 #define GRAPH_H
-#include <cstdint>
 #include <string>
-#include <limits>
-#include <vector>
-using std::vector;
 
 class Graph     // абстрактный класс графа
 {

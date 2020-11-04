@@ -1,15 +1,13 @@
 #ifndef GRAPH_IM_H
 #define GRAPH_IM_H
 #include <vector>
-#include <iostream>
 #include "graph.h"
-using std::vector;
 
 class Graph_IM : public Graph   // граф, представление - матрица инцидентности (IM - Incidence matrix)
                                 // генерируется изначально
 {
-    using Row = vector<char>;   // в неор. графе если вершина инцидентна ребру, то 1, иначе 0
-    using Matrix = vector<Row>;
+    using Row = std::vector<char>;   // в неор. графе если вершина инцидентна ребру, то 1, иначе 0
+    using Matrix = std::vector<Row>;
 // поля
     Matrix M; // матрица инцидентности V x E, V - число вершин (кол-во строк), E - число ребер (кол-во столбцов)
 public:

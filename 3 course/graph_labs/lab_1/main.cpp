@@ -127,7 +127,7 @@ int main()
     }
 
     // Преобразование 2
-    Graph_AM G_AM(G_IM);
+    Graph_AM G_AM(list);
     ofstream graph2_out("Graph2.txt");
     if (graph2_out)
     {

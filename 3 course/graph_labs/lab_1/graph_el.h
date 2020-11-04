@@ -1,16 +1,14 @@
 #ifndef GRAPH_EL_H
 #define GRAPH_EL_H
+
 #include <vector>
-#include <iostream>
 #include "graph.h"
 #include "graph_im.h"
-
-using std::vector;
 
 class Graph_EL : public Graph  // граф, представление - список ребер (вектор пар вершин) (EL - Edge list)
                                // получается в ходе преобразования 1 из матрицы инцидентности (Graph_IM)
 {
-    using List = vector<Edge>;
+    using List = std::vector<Edge>;
 // поля
     List L;                             // список ребер (вектор пар вершин)
 public:

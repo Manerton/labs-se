@@ -3,10 +3,8 @@
 #include <vector>
 #include <numeric>
 #include <cassert>
-#include <iostream>
 #include <sstream>
 #include <algorithm>
-using std::vector;
 
 template <class Graph>
 class Degree    // класс, определяющий степени вершин
@@ -14,7 +12,7 @@ class Degree    // класс, определяющий степени верш�
     using size_type = typename Graph::size_type; // тип для степени
 
     const Graph &G;
-    vector<size_type> degree;
+    std::vector<size_type> degree;
 public:
     Degree(const Graph &_G) : G(_G), degree(G.getV(), 0)
     {

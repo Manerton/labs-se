@@ -2,17 +2,14 @@
 #define GRAPH_AM_H
 
 #include <vector>
-#include <iostream>
 #include "graph.h"
 #include "graph_el.h"
-
-using std::vector;
 
 class Graph_AM : public Graph  // граф, представление - матрица смежности (Adjacency matrix)
                                // получается в ходе преобразования 2 из списка ребер (Graph_EL)
 {
-    using Row = vector<char>;   // в неор. графе если вершина смежна с другой вершиной, то 1, иначе 0
-    using Matrix = vector<Row>;
+    using Row = std::vector<char>;   // в неор. графе если вершина смежна с другой вершиной, то 1, иначе 0
+    using Matrix = std::vector<Row>;
 // поля
     Matrix M; // матрица смежности V x V, V - число вершин, E - число ребер
 public:
