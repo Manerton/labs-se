@@ -11,6 +11,7 @@ SOURCES += \
 
 HEADERS += \
     degree.h \
+    dfs.h \
     graph.h \
     graph_im.h \
     graph_al.h

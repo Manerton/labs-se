@@ -3,10 +3,11 @@
 #include <random>
 #include <ctime>
 #include <fstream>
+#include <algorithm>
 #include "graph.h"
 #include "graph_im.h"
 #include "graph_al.h"
-#include "degree.h"
+#include "dfs.h"
 
 using namespace std;
 
@@ -78,12 +79,21 @@ int main()
     Graph::size_type E = r_e(mt);
     cout << V << " " << E << endl;
     // Создаем граф
-    Graph_AL G_AL{5,8};
-
+    Graph_AL G_AL{8,10};
+    G_AL.insert({1,7});
+    G_AL.insert({0,7});
+    G_AL.insert({4,6});
+    G_AL.insert({0,5});
+    G_AL.insert({4,5});
+    G_AL.insert({4,7});
+    G_AL.insert({0,2});
+    G_AL.insert({2,6});
+    G_AL.insert({3,5});
+    G_AL.insert({3,4});
     // Генерируем
-    randG(G_AL);
+    //randG(G_AL);
 
-    // Выводим в файл
+    // Выводим в файл представление графа
     ofstream graph_out("Graph.txt");
     if (graph_out)
     {
@@ -91,14 +101,14 @@ int main()
         graph_out.close();
     } else cout << "Can't create Graph.txt" << endl;
 
-    // Вычисляем степени вершин графа и выводим в файл
-    Degree D1(G_AL);
-    ofstream degree_out("Degree.txt");
-    if (degree_out)
+    // Выводим последовательности посещаемых вершин в тот же файл
+    DFS dfs(G_AL);
+    ofstream dfs_out("Graph.txt", ios_base::app);
+    if (dfs_out)
     {
-        degree_out << D1;
-        degree_out.close();
-    } else cout << "Can't create Degree.txt" << endl;
+        dfs_out << endl << dfs;
+        dfs_out.close();
+    } else cout << "Can't create Graph.txt" << endl;
 
  /*   // Преобразование 1
     Graph_EL list(G_IM);

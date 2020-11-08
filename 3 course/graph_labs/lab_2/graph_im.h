@@ -31,7 +31,7 @@ public:
         explicit Iterator(const Graph_IM& _G, size_type _v) : Graph::Iterator(_G,_v), G(_G) { }
         Iterator() = delete;
         virtual size_type operator++();
-        size_type begin() { i = NOT_FOUND; return operator++(); }
+        virtual size_type begin() { i = NOT_FOUND; return operator++(); }
         virtual bool end() { return i >= G.getE(); }
     };
 };

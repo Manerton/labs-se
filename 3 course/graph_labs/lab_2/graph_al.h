@@ -26,10 +26,10 @@ public:
     {
         const Graph_AL &G;
         List::const_iterator i;
-        explicit Iterator(const Graph_AL& _G, size_type _v) : Graph::Iterator(_G,_v), G(_G) { i = begin(); }
+        explicit Iterator(const Graph_AL& _G, size_type _v) : Graph::Iterator(_G,_v), G(_G) { begin(); }
         Iterator() = delete;
         virtual size_type operator++();
-        List::const_iterator begin() { return i = G.L[v].begin(); }
+        virtual size_type begin() { i = G.L[v].begin(); return *i; }
         virtual bool end() { return i == G.L[v].end(); }
     };
 };

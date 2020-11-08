@@ -31,8 +31,11 @@ public:
         const size_type v;     // в эту переменную помещаем номер переданной вершины
         explicit Iterator(const Graph& _G, size_type _v) : G(_G),v(_v) { }
         Iterator() = delete;
-
+        // begin должен вернуть первую смежную вершину с вершиной v
+        virtual size_type begin() = 0;
+        // переход к следующей смежной вершине с вершиной v
         virtual size_type operator++() = 0;
+        // конец поиска
         virtual bool end() = 0;
     };
 };

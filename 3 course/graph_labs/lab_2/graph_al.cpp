@@ -37,13 +37,11 @@ string Graph_AL::toString() const noexcept
     stringstream ss;
     for (size_type i = 0; i < V; ++i)
     {
-        ss << i+1 << " -> ";
+        ss << i+1 << ": ";
         for (auto it = L[i].cbegin(); it != L[i].end(); ++it)
         {
             ss << (*it)+1;
-            if (auto iter = it; ++iter != L[i].end()){
-                ss << " -> ";
-            }
+            if (*it != L[i].back()) ss << ", ";
         }
         ss << endl;
     }
@@ -61,8 +59,8 @@ Graph::size_type Graph_AL::Iterator::operator++()
 {
     if (!end())
     {
-        auto res = *i;
         i++;
+        size_type res = *i;
         return res;
     }
     return NOT_FOUND;

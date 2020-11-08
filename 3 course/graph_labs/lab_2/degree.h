@@ -13,6 +13,16 @@ class Degree    // класс, определяющий степени верш�
 
     const Graph &G;
     std::vector<size_type> degree;
+
+    std::string toString() const noexcept
+    {
+        std::stringstream ss;
+        for (auto val : degree)
+        {
+            ss << val << " ";
+        }
+        return ss.str();
+    }
 public:
     Degree(const Graph &_G) : G(_G), degree(G.getV(), 0)
     {
@@ -37,15 +47,6 @@ public:
     }
     size_type operator[](int v) const { return degree[v]; }
 
-    std::string toString() const noexcept
-    {
-        std::stringstream ss;
-        for (auto val : degree)
-        {
-            ss << val << " ";
-        }
-        return ss.str();
-    }
     friend std::ostream& operator<<(std::ostream& t, const Degree &r)
     {
         std::string s;
