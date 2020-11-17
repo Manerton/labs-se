@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <set>
 #include <string>
+#include "model.h"
 
 using namespace std;
 
@@ -12,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    //ui->entropy_formula->setVisible(false);
 }
 
 MainWindow::~MainWindow()
@@ -58,4 +60,14 @@ void MainWindow::on_pushButton_finishText_clicked()
     {
         ui->tableWidget_single->setItem(i,nomer_column,new QTableWidgetItem(QString::number(i+1)));
     }
+    ui->tableWidget_single->insertRow(row_index);
+    ui->tableWidget_single->setItem(row_index,nomer_column,new QTableWidgetItem("∑"));
+    ui->tableWidget_single->setItem(row_index,n_column,new QTableWidgetItem(QString::number(A.size())));
+    ui->tableWidget_single->setItem(row_index,W_column,new QTableWidgetItem("1"));
+
+    Model m(ui->tableWidget_single);
+    ui->lineEdit_singleEntropy->setText(QString::number(m.calculate_singleEntropy()));
+
+    // очищаем старую таблицу (если была)
+    ui->tableWidget_double->setRowCount(0);
 }
