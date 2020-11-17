@@ -2,6 +2,7 @@
 #define GRAPH_IM_H
 #include <vector>
 #include "graph.h"
+#include "graph_al.h"
 
 class Graph_IM : public Graph   // граф, представление - матрица инцидентности (IM - Incidence matrix)
                                 // генерируется изначально
@@ -16,10 +17,24 @@ public:
         // инициализируем пустую (заполненную нулями) матрицу V x E
         for (auto &row : M) row.resize(E,0);
     }
+
+    // преобразование
+    Graph_IM(const Graph_AL &_G) : Graph_IM(_G.getV(),_G.getE())
+    {
+        for (size_type v = 0; v < V; ++v)
+        {
+            Graph_AL::Iterator it(_G,v);
+            for (size_type w = it.begin(); !it.end(); w = ++it)
+            {
+                if (v < w) insert({v,w});
+            }
+        }
+    }
+
     virtual ~Graph_IM() = default;
     virtual void insert(Edge) noexcept;             // вставить ребро
     virtual void remove(Edge) noexcept;             // удалить ребро
-    virtual std::string toString() const noexcept;          // вывести матрицу инцидентности
+    virtual std::string toString() const noexcept;  // вывести матрицу инцидентности
 
     friend std::ostream& operator<<(std::ostream& t, const Graph_IM &r);
 

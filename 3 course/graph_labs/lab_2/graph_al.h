@@ -4,7 +4,6 @@
 #include <vector>
 #include <list>
 #include "graph.h"
-#include "graph_im.h"
 
 class Graph_AL : public Graph  // граф, представление - список смежных вершин (вектор списков) (AL - Adjacency list)
 {

@@ -6,7 +6,7 @@
 #include <iostream>
 
 template <class Graph>
-class DFS
+class DFS   // обход в глубину
 {
     using size_type = typename Graph::size_type;
     static constexpr size_type NOT_VISITED = Graph::NOT_FOUND;
@@ -20,7 +20,6 @@ class DFS
         typename Graph::Iterator it(G,v);
         for (size_type i = it.begin(); !it.end(); i = ++it)
         {
-            std::cout << std::endl << v << "-" << i << " ";
             if (visited[i] == NOT_VISITED) search(i);
         }
     }
@@ -30,7 +29,7 @@ class DFS
         std::stringstream ss;
         for (auto val : visited)
         {
-            ss << val << " ";
+            ss << val+1 << " ";
         }
         return ss.str();
     }

@@ -7,11 +7,12 @@ CONFIG -= qt
 SOURCES += \
         graph_im.cpp \
         main.cpp \
-    graph_al.cpp
+        graph_al.cpp
 
 HEADERS += \
-    degree.h \
+    bfs.h \
     dfs.h \
+    distancematrix.h \
     graph.h \
     graph_im.h \
     graph_al.h

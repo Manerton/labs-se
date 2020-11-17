@@ -4,12 +4,18 @@
 #include <ctime>
 #include <fstream>
 #include <algorithm>
+#include <chrono>
 #include "graph.h"
 #include "graph_im.h"
 #include "graph_al.h"
 #include "dfs.h"
+#include "bfs.h"
+#include "distancematrix.h"
 
 using namespace std;
+using namespace std::chrono;
+using sec = duration<double>;
+using microsec = duration<double,std::micro>;
 
 static mt19937 mt(time(0));
 
@@ -78,20 +84,25 @@ int main()
     uniform_int_distribution<int> r_e(V-1, (V*(V-1)/2));
     Graph::size_type E = r_e(mt);
     cout << V << " " << E << endl;
+
+    /* Тестовые данные
+        Graph_AL G_AL{8,10};
+        G_AL.insert({1,7});
+        G_AL.insert({0,7});
+        G_AL.insert({4,6});
+        G_AL.insert({0,5});
+        G_AL.insert({4,5});
+        G_AL.insert({4,7});
+        G_AL.insert({0,2});
+        G_AL.insert({2,6});
+        G_AL.insert({3,5});
+        G_AL.insert({3,4});
+    */
+
     // Создаем граф
-    Graph_AL G_AL{8,10};
-    G_AL.insert({1,7});
-    G_AL.insert({0,7});
-    G_AL.insert({4,6});
-    G_AL.insert({0,5});
-    G_AL.insert({4,5});
-    G_AL.insert({4,7});
-    G_AL.insert({0,2});
-    G_AL.insert({2,6});
-    G_AL.insert({3,5});
-    G_AL.insert({3,4});
+    Graph_AL G_AL{V,E};
     // Генерируем
-    //randG(G_AL);
+    randG(G_AL);
 
     // Выводим в файл представление графа
     ofstream graph_out("Graph.txt");
@@ -101,65 +112,46 @@ int main()
         graph_out.close();
     } else cout << "Can't create Graph.txt" << endl;
 
-    // Выводим последовательности посещаемых вершин в тот же файл
+    // Поиск в глубину: выводим последовательности посещаемых вершин в тот же файл
+    auto start = std::chrono::steady_clock::now();
     DFS dfs(G_AL);
+    auto end = std::chrono::steady_clock::now();
+    auto res = duration_cast<microsec>(end - start);
+    cout << "DFS run time: " << res.count() << " microseconds" << endl;
     ofstream dfs_out("Graph.txt", ios_base::app);
     if (dfs_out)
     {
         dfs_out << endl << dfs;
         dfs_out.close();
-    } else cout << "Can't create Graph.txt" << endl;
+    } else cout << "Can't open Graph.txt" << endl;
 
- /*   // Преобразование 1
-    Graph_EL list(G_IM);
+    // Преобразование из списка смежных вершин в матрицу инцидентности
+    Graph_IM G_IM(G_AL);
     // Вывод преобразования в файл
     ofstream graph1_out("Graph1.txt");
     if (graph1_out)
     {
-        graph1_out << list;
+        graph1_out << G_IM;
         graph1_out.close();
     } else cout << "Can't create Graph1.txt" << endl;
 
-    // Вычисляем степени вершин преобразования 1 и сравниваем с файлом Degree.txt
-    Degree D2(list);
-    ifstream input("Degree.txt");
-    if (input)
+    // Поиск в ширину: выводим последовательности посещаемых вершин в тот же файл
+    start = std::chrono::steady_clock::now();
+    BFS bfs(G_IM);
+    end = std::chrono::steady_clock::now();
+    res = duration_cast<microsec>(end - start);
+    cout << "BFS run time: " << res.count() << " microseconds" << endl;
+    ofstream bfs_out("Graph1.txt", ios_base::app);
+    if (bfs_out)
     {
-        int V = list.getV();
-        Graph::size_type fromFile = 0;
-        for (int i = 0; i < V; ++i)
-        {
-            input >> fromFile;
-            assert(fromFile == D2[i]);
-        }
-        input.close();
-    }
+        bfs_out << endl << bfs;
+        bfs_out.close();
+    } else cout << "Can't open Graph1.txt" << endl;
 
-    // Преобразование 2
-    Graph_AM G_AM(list);
-    ofstream graph2_out("Graph2.txt");
-    if (graph2_out)
-    {
-        graph2_out << G_AM;
-        graph2_out.close();
-    } else cout << "Can't create Graph2.txt" << endl;
-
-    // Вычисляем степени вершин преобразования 2 и сравниваем с файлом Degree.txt
-    Degree D3(G_AM);
-    input.clear();
-    input.seekg(0, ios::beg);
-    input.open("Degree.txt");
-    if (input)
-    {
-        int V = G_AM.getV();
-        Graph::size_type fromFile = 0;
-        for (int i = 0; i < V; ++i)
-        {
-            input >> fromFile;
-            assert(fromFile == D3[i]);
-        }
-        input.close();
-    }*/
+    // Высчитываем диаметр графа
+    DistanceMatrix DM(G_IM);
+    cout << DM;
+    cout << "Diameter: " << DM.getDiameter() << endl;
     cout << "End";
     return 0;
 }
