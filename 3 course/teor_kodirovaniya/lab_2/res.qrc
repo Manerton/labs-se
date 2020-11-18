@@ -1,5 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>1.gif</file>
+        <file>2.gif</file>
+        <file>3.gif</file>
+        <file>4.gif</file>
+        <file>5.gif</file>
+        <file>6.gif</file>
+        <file>7.gif</file>
+        <file>8.gif</file>
     </qresource>
 </RCC>
