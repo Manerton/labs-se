@@ -13,7 +13,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     model.cpp \
-    shenonfano.cpp
+    shenonfano.cpp \
+    svgview.cpp
 
 HEADERS += \
     haffman.h \
@@ -32,11 +33,3 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     res.qrc
-
-unix|win32: LIBS += -L$$PWD/lib/ -lQtSvgView
-
-INCLUDEPATH += $$PWD/.
-DEPENDPATH += $$PWD/.
-
-win32:!win32-g++: PRE_TARGETDEPS += $$PWD/lib/QtSvgView.lib
-else:unix|win32-g++: PRE_TARGETDEPS += $$PWD/lib/libQtSvgView.a
