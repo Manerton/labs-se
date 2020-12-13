@@ -26,6 +26,7 @@ private:
     int shift_count = 0;
     // образующий многочлен
     BigBinary gen_polynom;
+    int gen_polynom_num = 1;
     // этапы процедуры кодирования
     BigBinary kodirovanie1;
     BigBinary kodirovanie2;
@@ -36,16 +37,21 @@ private:
     // методы
     void calculate_r(); // вычислить r и n
     void add_error_to_B();
-    void find_gen_polynom();
+    void find_gen_polynom(int start_num);
     void kodirovanie();
-    void find_error();
+    bool find_error();
 public:
     Model(const BigBinary &_a) : A(_a), k(_a.size()), d0(2*t+1) {
-        calculate_r();  
-        find_gen_polynom();
-        kodirovanie();
-        add_error_to_B();
-        find_error();
+        bool ERROR_FOUND = false;
+        calculate_r();
+        while (!ERROR_FOUND)
+        {
+            gen_polynom_num += 2;
+            find_gen_polynom(gen_polynom_num);
+            kodirovanie();
+            add_error_to_B();
+            ERROR_FOUND = find_error();
+        }
     }
 
     int getR() const;

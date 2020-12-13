@@ -75,10 +75,9 @@ void Model::add_error_to_B()
     B_with_err[error_i] ^= 1;
 }
 
-void Model::find_gen_polynom()
+void Model::find_gen_polynom(int start_num)
 {
-    int num = 3;
-    BigBinary polynom(num);
+    BigBinary polynom(start_num);
     // третье условие, чтобы двучлен x^n+1 делился на образующий многочлен без остатка
     string binomial_str(n+1,'0');
     binomial_str.front() = '1';
@@ -89,10 +88,11 @@ void Model::find_gen_polynom()
              || !(polynom.get_W() >= size_t(d0))        // число единич. разрядов должно быть не менее кодового расстояния d0
              || !(((binomial % polynom).get_W() == 0))) // g(x) должен делить x^n + 1 без остатка
     {
-        num += 2;
-        polynom = BigBinary(num);
+        start_num += 2;
+        polynom = BigBinary(start_num);
     }
     gen_polynom = polynom;
+    gen_polynom_num = start_num;
 }
 
 void Model::kodirovanie()
@@ -107,7 +107,7 @@ void Model::kodirovanie()
     B = kodirovanie1 + kodirovanie2;
 }
 
-void Model::find_error()
+bool Model::find_error()
 {
     B_fixed = B_with_err;
     BigBinary ostatok = B_fixed % gen_polynom;
@@ -120,5 +120,5 @@ void Model::find_error()
     }
     B_fixed += ostatok;
     B_fixed >>= shift_count;
-    if (B_fixed != B) B_fixed = 0;
+    return (B_fixed == B);
 }
