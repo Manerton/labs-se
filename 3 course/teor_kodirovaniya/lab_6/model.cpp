@@ -140,7 +140,10 @@ void Model::find_gen_polynom()
     int current_i = 3;
     while (current_i != i+2)
     {
-        gen_polynom *= table3[current_i][h];
+        if (table3[current_i][h].size() > 0)
+        {
+            gen_polynom *= table3[current_i][h];
+        }
         current_i += 2;
     }
 }
