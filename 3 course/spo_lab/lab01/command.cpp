@@ -1,13 +1,14 @@
-#include <iostream>
-#include <cmath>
-#include <limits> // для numeric_limits<float>::epsilon(), чтобы сравнивать результат дробных вычислений с 0
 #include "cpu.h"
 #include "command.h"
+#include <cmath>
+#include <iostream>
+#include <limits> // для numeric_limits<float>::epsilon(), чтобы сравнивать результат дробных вычислений с 0
 
 using VM_types::cmd_t;
 using VM_types::data_t;
 using VM_types::data_length;
 using VM_types::cmd_length;
+using std::cin, std::cout;
 
 // -- КОМАНДЫ ПЕРЕСЫЛКИ ДАННЫХ -- //
 void exchange::operator()(CPU &cpu) noexcept // -- обмен значений ST[SP] и ST[SP-i] -- //
@@ -28,7 +29,7 @@ void move::operator()(CPU &cpu) noexcept // -- пересылка ST[SP] -> ST[S
 
 void sign_value_load::operator()(CPU &cpu) noexcept // -- пересылка память - стек -- //
 {
-    const int16_t value = int16_t(cpu.get_cmd_address());
+    const auto value = static_cast<int16_t>(cpu.get_cmd_address());
     const size_t SP = ++cpu.PSW.SP;
     cpu.ST[SP].i = value;  // -- беру целочисленное значение из команды и помещаю его в стек -- //
 }
@@ -64,7 +65,7 @@ void save_pop::operator()(CPU &cpu) noexcept // -- пересылка стек -
 
 void dereference_ptr::operator()(CPU &cpu) noexcept // -- получить значение по адресу, лежащему в стеке -- //
 {
-    const uint16_t ptr = uint16_t(cpu.ST[cpu.PSW.SP].u);
+    const auto ptr = static_cast<uint16_t>(cpu.ST[cpu.PSW.SP].u);
     const data_t data = cpu.ram.get_data(ptr);
     const uint16_t address = cpu.get_cmd_address();
     cpu.ram.push(data,address);
@@ -121,24 +122,24 @@ void IO::st_io(CPU &cpu, IO::io_mode mode) noexcept
     switch (mode)
     {
     case io_mode::in_int:
-        std::cout << std::endl << "input int: ";
-        std::cin >> cpu.ST[++cpu.PSW.SP].u;
+        cout << std::endl << "input int: ";
+        cin >> cpu.ST[++cpu.PSW.SP].u;
         break;
     case io_mode::in_float:
-        std::cout << std::endl << "input float: ";
-        std::cin >> cpu.ST[++cpu.PSW.SP].f;
+        cout << std::endl << "input float: ";
+        cin >> cpu.ST[++cpu.PSW.SP].f;
         break;
     case io_mode::out_int:
-        std::cout << std::endl << "int: ";
-        std::cout << cpu.ST[SP].i << std::endl;
+        cout << std::endl << "int: ";
+        cout << cpu.ST[SP].i << std::endl;
         break;
     case io_mode::out_uint:
-        std::cout << std::endl << "unsigned int: ";
-        std::cout << cpu.ST[SP].u << std::endl;
+        cout << std::endl << "unsigned int: ";
+        cout << cpu.ST[SP].u << std::endl;
         break;
     case io_mode::out_float:
-        std::cout << std::endl << "float: ";
-        std::cout << cpu.ST[SP].f << std::endl;
+        cout << std::endl << "float: ";
+        cout << cpu.ST[SP].f << std::endl;
         break;
     }
 }
@@ -150,29 +151,29 @@ void IO::mem_io(CPU &cpu, IO::io_mode mode) noexcept
     switch (mode)
     {
     case io_mode::in_int:
-        std::cout << std::endl << "input int: ";
-        std::cin >> tmp.u;
+        cout << std::endl << "input int: ";
+        cin >> tmp.u;
         cpu.ram.push(tmp, address);
         break;
     case io_mode::in_float:
-        std::cout << std::endl << "input float: ";
-        std::cin >> tmp.f;
+        cout << std::endl << "input float: ";
+        cin >> tmp.f;
         cpu.ram.push(tmp, address);
         break;
     case io_mode::out_int:
-        std::cout << std::endl << "int: ";
+        cout << std::endl << "int: ";
         tmp = cpu.ram.get_data(address);
-        std::cout << tmp.i << std::endl;
+        cout << tmp.i << std::endl;
         break;
     case io_mode::out_uint:
-        std::cout << std::endl << "unsigned int: ";
+        cout << std::endl << "unsigned int: ";
         tmp = cpu.ram.get_data(address);
-        std::cout << tmp.u << std::endl;
+        cout << tmp.u << std::endl;
         break;
     case io_mode::out_float:
-        std::cout << std::endl << "float: ";
+        cout << std::endl << "float: ";
         tmp = cpu.ram.get_data(address);
-        std::cout << tmp.f << std::endl;
+        cout << tmp.f << std::endl;
         break;
     }
 }

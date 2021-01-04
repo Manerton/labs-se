@@ -1,8 +1,8 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
-#include <memory>
 #include "types.h"
+#include <memory>
 
 class Memory
 {
@@ -30,7 +30,7 @@ public:
         size_t size = VM_types::cmd_length;
         for (size_t i = 0; i < size; ++i)
         {
-            push(cmd.b[i],address+i);
+            push(cmd.b[i],uint16_t(address+i));
         }
     }
 
@@ -39,7 +39,7 @@ public:
         size_t size = VM_types::data_length;
         for (size_t i = 0; i < size; ++i)
         {
-            push(data.b[i],address+i);
+            push(data.b[i],uint16_t(address+i));
         }
     }
 
@@ -54,7 +54,7 @@ public:
         size_t size = VM_types::cmd_length;
         for (size_t i = 0; i < size; ++i)
         {
-            tmp.b[i] = get_byte(address+i);
+            tmp.b[i] = get_byte(uint16_t(address+i));
         }
         return tmp;
     }
@@ -65,7 +65,7 @@ public:
         size_t size = VM_types::data_length;
         for (size_t i = 0; i < size; ++i)
         {
-            tmp.b[i] = get_byte(address+i);
+            tmp.b[i] = get_byte(uint16_t(address+i));
         }
         return tmp;
     }

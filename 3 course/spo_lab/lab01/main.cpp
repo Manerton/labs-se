@@ -1,8 +1,8 @@
+#include "cpu.h"
 #include <iostream>
 #include <string>
-#include <fstream>
 #include <sstream>
-#include "cpu.h"
+#include <fstream>
 
 using namespace std;
 
@@ -51,7 +51,7 @@ bool Uploader(CPU &cpu, const string &filename)
             case 'c':   // -- загрузка команды -- //
             {
                 cmd_t command; // -- пример: c cop address (для 24-битной команды) -- //
-                uint16_t temp;
+                uint16_t temp = 0;
                 ss >> temp; // -- читаем cop (код операции) -- //
                 command.c.cop = uint8_t(temp);
                 ss >> temp; // -- читаем address -- //
@@ -65,9 +65,13 @@ bool Uploader(CPU &cpu, const string &filename)
                 cmd_t command;
                 command.c.cop = CPU::COP::stop;
                 cpu.ram.push(command,address);
-                uint16_t IP;
+                uint16_t IP = 0;
                 ss >> IP;
                 cpu.PSW.IP = IP;
+                break;
+            }
+            default:
+            {
                 break;
             }
         }

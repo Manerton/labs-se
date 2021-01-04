@@ -1,5 +1,5 @@
-#include <iostream>
 #include "cpu.h"
+#include <iostream>
 
 using std::make_unique;
 CPU::CPU()

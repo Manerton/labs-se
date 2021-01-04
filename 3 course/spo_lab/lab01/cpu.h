@@ -1,11 +1,11 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include <cinttypes>
-#include <memory>
 #include "types.h"
 #include "memory.h"
 #include "command.h"
+#include <cinttypes>
+#include <memory>
 
 class CPU
 {
@@ -70,12 +70,12 @@ private:
         // SP изначально 31, чтобы при загрузке в стек первый элемент попал на 0
         PSW() : IP(0), SP(stack_size-1) {}
     };
-    VM_types::cmd_t cmd; // -- текущая выполняемая длинная команда или две коротких -- //
+    VM_types::cmd_t cmd{}; // -- текущая выполняемая длинная команда или две коротких -- //
     std::unique_ptr<Command> command[cmd_count];    // -- массив из 256 указателей на команды -- //
 public:
     PSW PSW;                            // -- PSW = IP + SP + Flags -- //
     Memory ram;                         // -- память, байтовая, размер адреса 16 бит -- //
-    VM_types::data_t ST[stack_size] = {0};        // -- стек -- //
+    VM_types::data_t ST[stack_size] = {{0}};        // -- стек -- //
 
     CPU();
     ~CPU();
