@@ -1,5 +1,5 @@
 *.exe
-*.text.user
+*.txt.user
 # C++ objects and libs
 *.o
 
