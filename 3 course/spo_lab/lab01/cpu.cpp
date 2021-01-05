@@ -47,17 +47,25 @@ CPU::CPU()
     command[jnsf]   = make_unique<class jnsf>();
     command[call]   = make_unique<class call>();
     command[ret]    = make_unique<class ret>();
+    command[indirect_jmp]   = make_unique<class indirect_jmp>();
 }
 
 CPU::~CPU() = default;
 
-void CPU::run() noexcept
+void CPU::run()
 {
     loadCommand(); // -- загружаем из памяти команду -- //
     while (cmd.c.cop != stop) // -- если еще не встретили операцию "стоп" -- //
     {
         PSW.IP += VM_types::cmd_length;
-        command[cmd.c.cop]->operator()(*this); // -- выполняем команду -- //
+        if (command[cmd.c.cop])
+        {
+            command[cmd.c.cop]->operator()(*this); // -- выполняем команду -- //
+        }
+        else
+        {
+            throw std::invalid_argument("Wrong opcode in command: " + std::to_string(cmd.c.cop) + " " + std::to_string(cmd.c.address));
+        }
         loadCommand(); // -- загрузка следующей команды из памяти -- //
     }
 }

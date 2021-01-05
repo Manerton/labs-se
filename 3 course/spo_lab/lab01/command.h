@@ -210,7 +210,8 @@ protected:
     enum class jmp_mode : uint8_t {
         direct_mode = 0,            // -- прямой переход -- //
         offset_plus_mode = 1,       // -- относительный переход вперед -- //
-        offset_minus_mode = 2       // -- относительный переход назад -- //
+        offset_minus_mode = 2,      // -- относительный переход назад -- //
+        indirect_mode = 3           // -- косвенный прямой переход -- //
     };
     void go_to (CPU& cpu, jmp_mode mode = jmp_mode::direct_mode) noexcept;
 public:
@@ -218,6 +219,10 @@ public:
 };
 
 class direct_jmp : public Jump
+{
+    virtual void call_go_to (CPU& cpu) noexcept override;
+};
+class indirect_jmp : public Jump
 {
     virtual void call_go_to (CPU& cpu) noexcept override;
 };

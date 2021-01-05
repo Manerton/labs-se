@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "command.h"
 #include <cinttypes>
+#include <array>
 #include <memory>
 
 class CPU
@@ -54,11 +55,13 @@ public:
         jsf = 45,   // -- jump if SF = 1 -- //
         jnsf = 46,  // -- jump if SF = 0 -- //
         call = 47,  // -- вызов подпрограммы и сохранение в стеке адреса возврата -- //
-        ret = 48  // -- возврат из подпрограммы и удаление вершины из стека -- //
+        ret = 48,  // -- возврат из подпрограммы и удаление вершины из стека -- //
+        indirect_jmp = 49   // -- косвенный прямой безусловный переход -- //
     };
     static constexpr uint8_t stack_size = 32;   // -- 32 элемента по 4 байта в стеке -- //
     static constexpr uint16_t cmd_count = 256;  // -- так как КОП - 8 бит, 2^8 = 256 -- //
 private:
+    using command_ptr = std::unique_ptr<Command>;
     struct PSW
     {
         uint32_t IP : 16;
@@ -70,12 +73,13 @@ private:
         // SP изначально 31, чтобы при загрузке в стек первый элемент попал на 0
         PSW() : IP(0), SP(stack_size-1) {}
     };
-    VM_types::cmd_t cmd{}; // -- текущая выполняемая длинная команда или две коротких -- //
-    std::unique_ptr<Command> command[cmd_count];    // -- массив из 256 указателей на команды -- //
+
+    VM_types::cmd_t cmd = {}; // -- текущая выполняемая длинная команда или две коротких -- //
+    std::array<command_ptr,cmd_count> command = {nullptr}; // -- массив из 256 указателей на команды -- //
 public:
     PSW PSW;                            // -- PSW = IP + SP + Flags -- //
     Memory ram;                         // -- память, байтовая, размер адреса 16 бит -- //
-    VM_types::data_t ST[stack_size] = {{0}};        // -- стек -- //
+    std::array<VM_types::data_t,stack_size> ST = {}; // -- стек -- //
 
     CPU();
     ~CPU();
@@ -85,11 +89,11 @@ public:
     CPU& operator=(const CPU &)  = delete;
     CPU& operator=(const CPU &&) = delete;
 
-    uint16_t get_cmd_address() const noexcept { return cmd.c.address; }   // -- получить адрес-константу -- //
+    VM_types::address_t get_cmd_address() const noexcept { return cmd.c.address; }   // -- получить адрес-константу -- //
 
     void loadCommand() noexcept { cmd = ram.get_cmd(PSW.IP); } // -- загрузить команду: получаю из памяти по адресу IP команду (3 байта) -- //
     void reset() noexcept { PSW.IP = PSW.SF = PSW.ZF = 0; }
-    void run () noexcept;
+    void run ();
 };
 
 #endif // CPU_H

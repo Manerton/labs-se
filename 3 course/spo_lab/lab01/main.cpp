@@ -1,3 +1,4 @@
+#include "types.h"
 #include "cpu.h"
 #include <iostream>
 #include <string>
@@ -8,6 +9,7 @@ using namespace std;
 
 using VM_types::cmd_t;
 using VM_types::data_t;
+using VM_types::address_t;
 using VM_types::data_length;
 using VM_types::cmd_length;
 
@@ -17,7 +19,7 @@ bool Uploader(CPU &cpu, const string &filename)
 
     if (!file.is_open()) return false;
 
-    uint16_t address = 0;   // -- адрес памяти, по которому загружаются данные или команды -- //
+    address_t address = 0;   // -- адрес памяти, по которому загружаются данные или команды -- //
     char symbol = ' ';      // -- текущий читаемый символ -- //
     while (symbol != 'e')   // -- пока не встретили символ 'e' -- //
     {
@@ -65,7 +67,7 @@ bool Uploader(CPU &cpu, const string &filename)
                 cmd_t command;
                 command.c.cop = CPU::COP::stop;
                 cpu.ram.push(command,address);
-                uint16_t IP = 0;
+                address_t IP = 0;
                 ss >> IP;
                 cpu.PSW.IP = IP;
                 break;
@@ -97,4 +99,3 @@ int main (int argc, char* argv[])
 
     return 0;
 }
-
