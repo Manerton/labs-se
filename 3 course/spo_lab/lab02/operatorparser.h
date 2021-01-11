@@ -39,47 +39,50 @@ class OperatorParser
     // матрица переходов: строки определяют состояния, столбцы - классы символов
     static constexpr auto statesCount       = State::StateELEMCOUNT-1; // (без End)
     static constexpr auto symbolTypeCount   = SymbolType::SymbolTypeELEMCOUNT;
-
+    using string_view = std::string_view;
+    using string = std::string;
     using Operator = ASM_types::Operator;
-    using Handler = std::function<State(const std::string_view, const size_t, Operator&, std::string&)>;
+    using Handler = std::function<State(const string_view, const size_t, Operator&, string&)>;
     using matrixRow = std::array<Handler,symbolTypeCount>;
     using Matrix = std::array<matrixRow,statesCount>;
 
     Matrix statesMatrix = {};
 
 // методы
+
     SymbolType getSymbolType(char c) const;
     // действия при переходах
     // переход без действия
-    static State ToStart(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
-    static State ToWaitOper(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
-    static State BlankToArg(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
+    static State ToStart(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
+    static State ToWaitOper(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
+    static State BlankToArg(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
     // ошибки
-    static State ErrToEnd(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
-    static State NoColon(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
-    // переход в конец из-за комментария в событиях Wait
-    static State ToEnd(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
+    static State ErrToEnd(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
+    static State NoColon(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
+    // переход в конец из-за комментария в самом начале
+    static State StartToEnd(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
     // переходы с добавлением символа во временную строку
-    static State ToLabelOrOper(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
-    static State ToLabel(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
-    static State ToOper(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
-    static State ToArg(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
+    static State ToLabelOrOper(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
+    static State ToLabel(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
+    static State ToOper(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
+    static State ToArg(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
     // переходы с сохранением строки в оператор
-    static State OperToArg(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
-    static State OperToEnd(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
-    static State LabelToWaitOper(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
-    static State LabelToEnd(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
-    static State ArgToEnd(std::string_view str, size_t i, Operator &oper, std::string &tempStr) noexcept;
+    static State OperToArg(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
+    static State OperToEnd(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
+    static State LabelToWaitOper(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
+    static State LabelToEnd(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
+    static State ArgToEnd(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
+    static State ToEnd(string_view str, size_t i, Operator &oper, string &tempStr) noexcept;
     void initStatesMatrix() {
         statesMatrix =
         {{
              /*                 Пробел      Двоеточие        Коммент     Цифра      Идентификатор   Подчеркивание   Любой     */
-             /* Start */       {ToStart,    ErrToEnd,        ToEnd,      ErrToEnd,  ToLabelOrOper,  ToLabel,        ErrToEnd},
+             /* Start */       {ToStart,    ErrToEnd,        StartToEnd, ErrToEnd,  ToLabelOrOper,  ToLabel,        ErrToEnd},
              /* LabelOrOper */ {OperToArg,  LabelToWaitOper, OperToEnd,  ToLabel,   ToLabelOrOper,  ToLabel,        ErrToEnd},
              /* Label */       {NoColon,    LabelToWaitOper, NoColon,    ToLabel,   ToLabel,        ToLabel,        ErrToEnd},
              /* WaitOper */    {ToWaitOper, ErrToEnd,        ToEnd,      ErrToEnd,  ToOper,         ErrToEnd,       ErrToEnd},
              /* Oper */        {OperToArg,  ErrToEnd,        OperToEnd,  ErrToEnd,  ToOper,         ErrToEnd,       ErrToEnd},
-             /* Arg */         {BlankToArg, ErrToEnd,        ArgToEnd,   ToArg,     ToArg,          ErrToEnd,       ToArg}
+             /* Arg */         {BlankToArg, ErrToEnd,        ArgToEnd,   ToArg,     ToArg,          ToArg,          ToArg}
          }};
     }
 public:
@@ -88,7 +91,15 @@ public:
         initStatesMatrix();
     }
 
-    ASM_types::Operator parseOperator(std::string_view str);
+    // к нижнему регистру все символы строки
+    static inline void strToLower(std::string& s)
+    {
+        std::transform(s.begin(), s.end(), s.begin(),
+                       [](unsigned char c){ return std::tolower(c); }
+        );
+    }
+
+    ASM_types::Operator parseOperator(string_view str);
 };
 
 #endif // OPERATORPARSER_H

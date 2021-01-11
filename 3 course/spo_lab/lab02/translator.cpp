@@ -1,6 +1,11 @@
 #include "translator.h"
+#include <fstream>
+#include <string_view>
 
 using VM_types::COP;
+using VM_types::address_t;
+using ASM_types::Error;
+using namespace std;
 
 void Translator::initTables() noexcept
 {
@@ -66,13 +71,107 @@ void Translator::initTables() noexcept
     TableOperations["ret"]          = {HandleFunc,COP::ret};
 }
 
+void Translator::LabelDo(Operator &oper)
+{
+    const auto label = oper.label;
+    if (!label.empty())
+    {
+        if (TableNames.find(label) == TableNames.end()) // метки в таблице нет
+        {
+            auto lowerLabel = label;
+            OperatorParser::strToLower(lowerLabel);
+            // если метка не является зарезервированным словом (операцией)
+            if (TableOperations.find(lowerLabel) == TableOperations.end())
+            {
+                TableNames[label] = TableNames[LC_Symbol];
+            }
+            else
+            {
+                oper.nError = Error::illLabel;
+                oper.work = false;
+            }
+        }
+        else    // повторное определение
+        {
+            oper.nError = Error::reuseLabel;
+            oper.work = false;
+        }
+    }
+}
+
+void Translator::firstPass_handleOper(Operator &oper)
+{
+    oper.LC = static_cast<address_t>(TableNames[LC_Symbol]);
+    if (!oper.code.empty()) // если есть операция
+    {
+        // если такая операция существует
+        const auto cmd_it = TableOperations.find(oper.code);
+        if (cmd_it != TableOperations.end())
+        {
+            const Operation t = cmd_it->second;
+            if (t.wLabel)   // стандартная обработка метки
+            {
+                LabelDo(oper);
+            }
+            // если директива
+            if (t.COP == COP::nop)
+            {
+                oper.work = false;  // не транслируем
+                t.function(oper);   // вызываем обработчик директивы
+            }
+            else // если команда
+            {
+                // увеличиваем LC и ограничиваем его по памяти приводя к address_t
+                TableNames[LC_Symbol] = static_cast<address_t>(TableNames[LC_Symbol] + VM_types::cmd_length);
+            }
+        }
+        else  // такой операции не существует
+        {
+            oper.nError = Error::illOperation;
+            oper.work = false;
+        }
+    }
+    else if (!oper.label.empty()) LabelDo(oper); // если операции нет, должна быть метка
+}
+
+void Translator::firstPass(std::ifstream &source)
+{
+    string str;     // читаемая строка программы
+    Operator oper;  // разобранный оператор
+    uint32_t n = 0; // номер оператора
+
+    // читаем пока есть строки в файле до директивы end
+    while (getline(source, str) && oper.code != "end")
+    {
+        if (!str.empty())   // если строка не пустая
+        {
+            oper = OperParser.parseOperator(str);
+            oper.number = ++n;
+            firstPass_handleOper(oper);
+            program.push_back(oper);
+        }
+    }
+
+    // файл прочитан полностью, а директиву end не встретили
+    if (oper.code != "end")
+    {
+        oper = {};  // очищаем оператор
+        oper.work = false;
+        oper.nError = Error::noEnd;
+        oper.number = ++n;
+        program.push_back(oper);
+    }
+}
+
 void Translator::HandleFunc(Operator& oper)
 {
 
 }
 
-Translator::Translator()
+Translator::Translator(const std::string_view filename)
 {
-    Operator oper = OperParser.parseOperator("org 1000");
+    initTables();
+    std::ifstream source(filename.cbegin());
+    firstPass(source);
     int a = 5;
 }

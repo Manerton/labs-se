@@ -110,12 +110,12 @@ namespace ASM_types {
         undefLabel,					// неизвестное имя в выражении
         // общие ошибки оператора
         reuseLabel,					// повторно определенная метка
+        illLabel,                   // использование зарезервированного слова (операции) в качестве метки
         illCountArgument,		    // неправильное количество аргументов
         illOperation,               // недопустимый код операции
         noLabel,					// нет метки в equ, proc
         noEnd						// нет директивы end
     };
-
     struct Operator
     {
         bool work = true;                       // подлежит ли обработке

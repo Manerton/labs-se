@@ -1,4 +1,5 @@
 #include "operatorparser.h"
+#include "translator.h"
 #include <vector>
 
 using ASM_types::Operator;
@@ -31,22 +32,22 @@ OperatorParser::State OperatorParser::BlankToArg(string_view, size_t, Operator&,
     return State::Arg;
 }
 // ошибки
-OperatorParser::State OperatorParser::ErrToEnd(string_view str, size_t, Operator& oper, string&) noexcept
+OperatorParser::State OperatorParser::ErrToEnd(string_view str, size_t i, Operator& oper, string&) noexcept
 {
     oper.nError = Error::illSymbol;
     oper.work = false;
-    oper.comment = str;
+    oper.comment = str.substr(i);
     return State::End;
 }
-OperatorParser::State OperatorParser::NoColon(string_view str, size_t, Operator& oper, string&) noexcept
+OperatorParser::State OperatorParser::NoColon(string_view str, size_t i, Operator& oper, string&) noexcept
 {
     oper.nError = ASM_types::Error::noColon;
     oper.work = false;
-    oper.comment = str;
+    oper.comment = str.substr(i);
     return State::End;
 }
-// переход в конец из-за комментария в событиях Wait
-OperatorParser::State OperatorParser::ToEnd(string_view str, size_t i, Operator& oper, string&) noexcept
+// переход в конец из-за комментария в самом начале
+OperatorParser::State OperatorParser::StartToEnd(string_view str, size_t i, Operator& oper, string&) noexcept
 {
     oper.work = false;
     oper.comment = str.substr(i);
@@ -84,9 +85,10 @@ OperatorParser::State OperatorParser::OperToArg(string_view, size_t, Operator& o
     return State::Arg;
 }
 
-OperatorParser::State OperatorParser::OperToEnd(string_view, size_t, Operator& oper, string &tempStr) noexcept
+OperatorParser::State OperatorParser::OperToEnd(string_view str, size_t i, Operator& oper, string &tempStr) noexcept
 {
     oper.code = tempStr;
+    oper.comment = str.substr(i);
     tempStr.clear();
     return State::End;
 }
@@ -98,17 +100,25 @@ OperatorParser::State OperatorParser::LabelToWaitOper(string_view, size_t, Opera
     return State::WaitOper;
 }
 
-OperatorParser::State OperatorParser::LabelToEnd(string_view, size_t, Operator& oper, string &tempStr) noexcept
+OperatorParser::State OperatorParser::LabelToEnd(string_view str, size_t i, Operator& oper, string &tempStr) noexcept
 {
     oper.label = tempStr;
+    oper.comment = str.substr(i);
     tempStr.clear();
     return State::End;
 }
 
-OperatorParser::State OperatorParser::ArgToEnd(string_view, size_t, Operator& oper, string &tempStr) noexcept
+OperatorParser::State OperatorParser::ArgToEnd(string_view str, size_t i, Operator& oper, string &tempStr) noexcept
 {
     oper.argument = tempStr;
+    oper.comment = str.substr(i);
     tempStr.clear();
+    return State::End;
+}
+
+OperatorParser::State OperatorParser::ToEnd(string_view str, size_t i, Operator& oper, string &) noexcept
+{
+    oper.comment = str.substr(i);
     return State::End;
 }
 
@@ -139,5 +149,6 @@ Operator OperatorParser::parseOperator(string_view str)
             oper.comment = str;	// вся строка в коммент
         }
     }
+    if (!oper.code.empty()) strToLower(oper.code);
     return oper;
 }
