@@ -1,6 +1,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 #include <cinttypes>
+#include <array>
 
 // характеристики архитектуры, типы и их размеры
 namespace VM_types
@@ -19,14 +20,14 @@ namespace VM_types
         };
         #pragma pack(pop)
         cmd24_struct c{0,0};
-        byte_t b[3];  // -- 3 байта -- //
+        std::array<byte_t,3> b;  // -- 3 байта -- //
     };
 
     union data_t {  // -- тип данных (размер 4 байта, 32-бита) -- //
         uint32_t u = 0; // -- беззнаковое число -- //
         int32_t i;  // -- знаковое число -- //
         float f;    // -- дробное число -- //
-        byte_t b[4];     // -- слово, 4 байта -- //
+        std::array<byte_t,4> b;     // -- слово, 4 байта -- //
     };
 }
 #endif // TYPES_H

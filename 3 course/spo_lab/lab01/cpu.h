@@ -74,7 +74,7 @@ private:
         PSW() : IP(0), SP(stack_size-1) {}
     };
 
-    VM_types::cmd_t cmd = {}; // -- текущая выполняемая длинная команда или две коротких -- //
+    VM_types::cmd_t cmd = {}; // -- текущая выполняемая команда -- //
     std::array<command_ptr,cmd_count> command = {nullptr}; // -- массив из 256 указателей на команды -- //
 public:
     PSW PSW;                            // -- PSW = IP + SP + Flags -- //
