@@ -4,13 +4,12 @@
 #include <array>
 #include <vector>
 #include <functional>
+#include <map>
+#include <string>
 
 // характеристики архитектуры, типы и их размеры
 namespace VM_types
 {
-    static constexpr uint8_t cmd_length = 3;    // -- длина команды - 3 байта, увеличиваем IP на эту величину -- //
-    static constexpr uint8_t data_length = 4;   // -- 4 байта для данных (целые, дробные) -- //
-
     using byte_t = uint8_t;
     using address_t = uint16_t;
 
@@ -32,6 +31,9 @@ namespace VM_types
         float f;    // -- дробное число -- //
         std::array<byte_t,4> b;     // -- слово, 4 байта -- //
     };
+
+    static constexpr uint8_t cmd_length = sizeof(cmd_t);    // -- длина команды - 3 байта, увеличиваем IP на эту величину -- //
+    static constexpr uint8_t data_length = sizeof(data_t);   // -- 4 байта для данных (целые, дробные) -- //
 
     // коды операций
     enum COP : uint8_t // -- uint8_t ограничивает размер enum -- //
@@ -129,13 +131,19 @@ namespace ASM_types {
         Error nError = Error::noError;		    // номер ошибки
     };
 
+    using LabelValue = decltype(VM_types::data_t::u);
+    using TableNames_t = std::map<std::string, LabelValue>;
+
     struct Operation
     {
-        using Handler = std::function<void(Operator&)>;
+        using Handler = std::function<void(Operator&,TableNames_t&)>;
 
         Handler function;                           // транслирующая функция
         VM_types::byte_t COP = VM_types::COP::nop;  // у директив nop (код 0)
         bool wLabel = true;                         // использовать общий механизм обработки меток
     };
+
+    using TableOperations_t = std::map<std::string_view, Operation>;
+
 }
 #endif // TYPES_H
