@@ -15,8 +15,6 @@ class Translator
     using TableOperations_t = ASM_types::TableOperations_t;
 private:
 // поля
-    // символ счетчика размещения, он будет в таблице имен
-    static constexpr char LC_Symbol[] = "$";
     // операторы ассемблерной программы: [метка:] операция [аргументы]
     std::vector<Operator> program;
     // таблица имен (меток)
@@ -59,6 +57,8 @@ private:
     static void cmdHandle(Operator &oper, TableNames_t &TNames);
 public:
     explicit Translator(const std::string_view filename);
+    // создать бинарный файл
+    void createBinFile(const std::string_view filename);
 };
 
 #endif // TRANSLATOR_H

@@ -99,6 +99,8 @@ namespace VM_types
 
 // различные типы, относящиеся к ассемблеру
 namespace ASM_types {
+    // символ счетчика размещения, он будет в таблице имен
+    static constexpr char LC_Symbol[] = "$";
 
     enum class Error: uint8_t {
         noError = 0,                // ошибки нет
@@ -108,6 +110,7 @@ namespace ASM_types {
         // ошибки выражений
         illInteger,					// ошибка в записи целого числа
         illFloatValue,              // ошибка в записи дробного числа
+        divideByZero,               // деление на ноль
         illExpression,				// неверный синтаксис математического выражения
         undefLabel,					// неизвестное имя в выражении
         // общие ошибки оператора

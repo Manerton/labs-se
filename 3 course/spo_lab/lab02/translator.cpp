@@ -1,4 +1,5 @@
 #include "translator.h"
+#include "mathparser.h"
 #include <fstream>
 #include <string_view>
 
@@ -9,6 +10,7 @@ using VM_types::data_t;
 using VM_types::address_t;
 using ASM_types::Error;
 using ASM_types::LabelValue;
+using ASM_types::LC_Symbol;
 
 using namespace std;
 // заполнение таблиц транслятора
@@ -197,7 +199,8 @@ LabelValue Translator::compute(Operator &oper, TableNames_t &TNames)
 {
     Error err = Error::noError;
     // вычисляем число из аргумента операции с помощью MathParser
-    const LabelValue res = 150; // вместо 150
+    MathParser MParser(TNames,oper.argument,err);
+    const LabelValue res = MParser.eval();
     // если при вычислении произошла ошибка
     if (err != Error::noError)
     {
@@ -232,7 +235,7 @@ void Translator::defineFloatData(Operator &oper, TableNames_t &TNames)
     {
         Error err = Error::noError;
         // переводим в дробное число с помощью MathParser
-        const float res = 34.3F;
+        const float res = MathParser::StrToFloat(oper.argument,err);
         // если не было ошибки при вычислении
         if (err == Error::noError)
         {
@@ -377,6 +380,32 @@ Translator::Translator(const std::string_view filename)
 {
     initTables();
     std::ifstream source(filename.cbegin());
-    firstPass(source);
-    int a = 5;
+    if (source)
+    {
+        firstPass(source);
+        source.close();
+        secondPass();
+    }
+
+    //auto pr = program;
+    //int a = 0;
+}
+
+void Translator::createBinFile(const string_view filename)
+{
+    ofstream output(filename.cbegin(), ios::binary);
+    if (output) {
+        for (const auto &oper: program)
+        {
+            if (!oper.binary.empty())
+            {
+                for (const byte_t byte: oper.binary)
+                {
+                    output << byte;
+                    //execute.write((char *) &byte, sizeof(char));
+                }
+            }
+        }
+    }
+    output.close();
 }
