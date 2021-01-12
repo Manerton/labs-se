@@ -2,6 +2,8 @@
 #include "mathparser.h"
 #include <fstream>
 #include <string_view>
+#include <iostream>
+#include <iomanip>
 
 using VM_types::COP;
 using VM_types::Prefix;
@@ -76,7 +78,8 @@ void Translator::initTables() noexcept
     TableOperations["jmpofm"]       = {cmdHandle<Arg>,COP::offset_minus_jmp};
     TableOperations["jmpind"]       = {cmdHandle<Arg>,COP::indirect_jmp};
     TableOperations["jzf"]          = {cmdHandle<Arg>,COP::jzf};
-    TableOperations["jnzf"]         = {cmdHandle<Arg>,COP::jsf};
+    TableOperations["jnzf"]         = {cmdHandle<Arg>,COP::jnzf};
+    TableOperations["jsf"]          = {cmdHandle<Arg>,COP::jsf};
     TableOperations["jnsf"]         = {cmdHandle<Arg>,COP::jnsf};
     TableOperations["call"]         = {cmdHandle<Arg>,COP::call};
     TableOperations["ret"]          = {cmdHandle<noArg>,COP::ret};
@@ -142,7 +145,11 @@ void Translator::firstPass_handleOper(Operator &oper)
             oper.work = false;
         }
     }
-    else if (!oper.label.empty()) LabelDo(oper); // если операции нет, должна быть метка
+    else if (!oper.label.empty())
+    {
+        LabelDo(oper); // если операции нет, должна быть метка
+        oper.work = false;
+    }
 }
 
 // первый проход - чтение строк и разбор операторов из строк
@@ -159,8 +166,10 @@ void Translator::firstPass(std::ifstream &source)
         {
             oper = OperParser.parseOperator(str);
             oper.number = ++n;
-            firstPass_handleOper(oper);
-            program.push_back(oper);
+            // если при парсе не было ошибок
+            if (oper.work) firstPass_handleOper(oper);
+            // нет смысла заносить полностью пустой оператор
+            if (oper.nError != Error::emptyStr) program.push_back(oper);
         }
     }
 
@@ -182,6 +191,7 @@ void Translator::secondPass()
         // если коммент, директива или была ошибка при первом проходе, то не обрабатываем
         if (oper.work)
         {
+            TableNames[LC_Symbol] = oper.LC;
             // при первом проходе убедились, что такая команда существует
             // поэтому сразу берем из таблицы
             Operation cmd = TableOperations[oper.code];
@@ -385,10 +395,98 @@ Translator::Translator(const std::string_view filename)
         firstPass(source);
         source.close();
         secondPass();
+    } else cout << "Can't open source file" << endl;
+}
+
+std::string Translator::getErrorDesc(Error error) const noexcept {
+    switch(error)
+    {
+        case Error::illSymbol:
+            return "Недопустимый символ в одном из полей";
+        case Error::noColon:
+            return "Нет двоеточия после метки";
+        case Error::illOperation:
+            return "Недопустимый код операции";
+        case Error::illInteger:
+            return "Ошибка в целом числе";
+        case Error::illFloatValue:
+            return "Ошибка в формате вещественного числа";
+        case Error::illExpression:
+            return "Неверный синтаксис выражения";
+        case Error::divideByZero:
+            return "Деление на ноль";
+        case Error::illLabel:
+            return "Использование зарезервированного слова";
+        case Error::undefLabel:
+            return "Неизвестное имя в выражении";
+        case Error::reuseLabel:
+            return "Повторно определенная метка";
+        case Error::illCountArgument:
+            return "Неправильное количество аргументов";
+        case Error::noLabel:
+            return "Нет метки в equ, proc, data";
+        case Error::noEnd:
+            return "Нет директивы end";
+        default:
+            return "";
+    }
+}
+
+bool Translator::createListingFile(const string_view filename)
+{
+    bool noError = true;
+    // прототип листинга
+    ofstream output(filename.cbegin());
+    if (output)
+    {
+        auto getStrFromBin = [] (const Operator& oper) -> string
+        {
+            stringstream ss;
+            if (oper.code == "memint" || oper.code == "memfloat")
+            {
+
+                for (size_t i = 0; i < VM_types::data_length+1; ++i)
+                {
+                    ss << hex << int(oper.binary[i]);
+                }
+                ss << dec << " " << oper.argument << " times";
+            }
+            else
+            {
+                for (const byte_t byte : oper.binary)
+                {
+                    ss << hex << int(byte);
+                }
+            }
+
+            return ss.str();
+        };
+
+        // заголовок
+        output << setw(8) << "#" << setw(9) << "LC" << setw(16) << "Binary"
+             << setw(12) << "Label" << setw(30) << "Code" << setw(30) << "Args" << setw(70)
+             << "Errors" << " " << "Comments" << endl;
+
+        for (const auto &oper: program)
+        {
+            if (oper.nError != Error::noError) noError = false;
+            output  << setw(8) << oper.number << ":" << setw(8) << oper.LC << setw(16) << getStrFromBin(oper)
+                    << setw(12) << oper.label << setw(30) << oper.code << setw(30) << oper.argument << setw(70)
+                    << getErrorDesc(oper.nError) << " " << oper.comment << endl;
+        }
+        // Таблица имен
+        output << "Таблица имен: " << endl;
+        for (const auto &label: TableNames)
+        {
+            output << label.first << " " << label.second << endl;
+        }
+
+        output.close();
+        return noError;
     }
 
-    //auto pr = program;
-    //int a = 0;
+    cout << "Can't create listing file" << endl;
+    return false;
 }
 
 void Translator::createBinFile(const string_view filename)
@@ -402,10 +500,9 @@ void Translator::createBinFile(const string_view filename)
                 for (const byte_t byte: oper.binary)
                 {
                     output << byte;
-                    //execute.write((char *) &byte, sizeof(char));
                 }
             }
         }
-    }
-    output.close();
+        output.close();
+    } else cout << "Can't create binary file" << endl;
 }

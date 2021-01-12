@@ -5,8 +5,17 @@ using namespace std;
 
 int main (int argc, char* argv[])
 {
-    string filename = R"(C:\GIT\cpp_workspace\_qt_workspace\3 course\spo_lab\lab02\tests\test_perecilki_asm)";
-    Translator ASM(filename + ".txt");
-    ASM.createBinFile(filename + ".bin");
+    if (argc > 1)
+    {
+        string_view filename = argv[1];
+        cout << "File " << filename << endl;
+        size_t pointIndex = filename.rfind('.');
+        std::string filename_without_type{filename.substr(0,pointIndex)};
+        Translator ASM(filename);
+        if (ASM.createListingFile(filename_without_type + ".log"))
+        { ASM.createBinFile(filename_without_type + ".bin"); }
+    } else cout << "Program has been started without arguments." << endl;
+    system("pause");
+
     return 0;
 }

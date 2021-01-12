@@ -1,6 +1,8 @@
 org 2000
-result: memint 4		; 2000-2015
-result2: memint 2		; 2016-2019
+result: 
+	memint 4		; 2000-2015
+result2: 
+	memint 2		; 2016-2019
 org 1000				; устанавливаю адрес на 1000
 DataSize: equ 4
 value1: int 158 			; 1000-1003 (так как 4 байта)

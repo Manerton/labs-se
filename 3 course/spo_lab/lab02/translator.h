@@ -55,9 +55,11 @@ private:
     // для команд ВМ
     template <bool hasArg>
     static void cmdHandle(Operator &oper, TableNames_t &TNames);
+    std::string getErrorDesc(ASM_types::Error error) const noexcept;
 public:
     explicit Translator(const std::string_view filename);
     // создать бинарный файл
+    bool createListingFile(const std::string_view filename);
     void createBinFile(const std::string_view filename);
 };
 

@@ -167,7 +167,7 @@ shared_ptr<MathExpression> MathParser::buildExpressionTree(const Tokens &rpnToke
                 else throw WrongBuildExpTree();
             }
         }
-        else if (isalpha(token[0]) || token == LC_Symbol) // если метка
+        else if (isalpha(token[0]) || isUnderLine(token[0]) || token == LC_Symbol) // если метка
         {
             // если метка существует
             if (context.find(token) != context.end())

@@ -142,9 +142,15 @@ Operator OperatorParser::parseOperator(string_view str)
         // проверка состояния при выходе (если закончилась строка до End)
         if (s == State::Oper || s == State::LabelOrOper)  oper.code = tempStr;
         else if (s == State::Arg) oper.argument = tempStr;
+        else if (s == State::Start)
+        {
+            // оператор пуст, в нем были только символы табуляции, пробелы и так далее
+            oper.nError = Error::emptyStr;
+            oper.work = false;
+        }
         else if (s == State::Label)
         {
-            oper.nError = ASM_types::Error::noColon;
+            oper.nError = Error::noColon;
             oper.work = false;  // обрабатывать не требуется
             oper.comment = str;	// вся строка в коммент
         }
