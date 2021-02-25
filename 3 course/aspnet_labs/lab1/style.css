@@ -1,0 +1,77 @@
+body
+{
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif
+}
+header
+{
+    background-color: lightblue;
+}
+.main
+{
+    width: 60%;
+    margin: auto;
+    padding: 10px;
+}
+.text-align-center
+{
+    text-align: center;
+}
+header h1
+{
+    color: green;
+    text-shadow: 1px 1px 1px black, 0 0 1em yellow;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+header h2
+{
+    margin-bottom: 5px;
+}
+#bio
+{
+    display: flex;
+}
+#bio img
+{
+    border-radius: 50%;
+    height: 150px;
+}
+#bio-text
+{
+    display: flex;
+    flex-direction: column;
+    padding-left: 25px;
+    justify-content: center;
+}
+/* courseworks */
+.courseworks-boxes
+{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+/*  Для трех блоков с курсовыми в ширину на странице:
+    flex-basic = 33% - 60px = padding * 2 + margin
+*/
+.courseworks-boxes-item
+{
+    text-decoration: none;
+    color: black;
+    background-color: lightblue;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    padding: 25px;
+    flex-basis: calc(33% - 55px);
+    border: 1px solid grey;
+}
+.courseworks-links
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.courseworks-links-table
+{
+    width: 100%;
+}
