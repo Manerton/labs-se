@@ -70,6 +70,11 @@ public:
         }
         return tmp;
     }
+
+    byte_t* get_memory() const noexcept
+    {
+        return memory.get();
+    }
 };
 
 #endif // MEMORY_H
