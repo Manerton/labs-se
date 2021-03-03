@@ -13,6 +13,8 @@ HEADERS += \
         ../../spo_lab/lab01/cpu.h \
         ../../spo_lab/lab01/memory.h \
         ../../spo_lab/lab01/types.h \
+        tst_testCPU.h \
+        tst_testCommand.h \
         tst_testMemory.h
 
 SOURCES += \

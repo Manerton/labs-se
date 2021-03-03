@@ -11,64 +11,64 @@ using namespace testing;
 
 TEST(testMemory, creating)
 {
-    Memory mem;
+    Memory sut;
     // проверяем, чтобы указатель на динамический массив был ненулевым
-    EXPECT_TRUE(mem.get_memory());
+    EXPECT_TRUE(sut.get_memory());
 }
 
 TEST(testMemory, pushByte)
 {
     // Подготовка
-    Memory mem;
+    Memory sut;
     const VM_types::byte_t byte = 0b11111110;
     const VM_types::address_t address = 1000;
     // Действие
-    mem.push(byte,address);
+    sut.push(byte,address);
     // Проверка
-    EXPECT_EQ(mem.get_memory()[address], byte);
+    EXPECT_EQ(sut.get_memory()[address], byte);
 }
 
 TEST(testMemory, pushCmd)
 {
     // Подготовка
-    Memory mem;
+    Memory sut;
     const VM_types::cmd_t cmd = {{10, 1000}};
     const VM_types::address_t address = 1000;
     const size_t size = sizeof(cmd);
     // Действие
-    mem.push(cmd,address);
+    sut.push(cmd,address);
     // Проверка
     for (size_t i = 0; i < size; ++i)
     {
-        EXPECT_EQ(mem.get_memory()[address+i], cmd.b[i]);
+        EXPECT_EQ(sut.get_memory()[address+i], cmd.b[i]);
     }
 }
 
 TEST(testMemory, pushData)
 {
     // Подготовка
-    Memory mem;
+    Memory sut;
     const VM_types::data_t data = {4'000'000'000};
     const VM_types::address_t address = 1000;
     const size_t size = sizeof(data);
     // Действие
-    mem.push(data,address);
+    sut.push(data,address);
     // Проверка
     for (size_t i = 0; i < size; ++i)
     {
-        EXPECT_EQ(mem.get_memory()[address+i], data.b[i]);
+        EXPECT_EQ(sut.get_memory()[address+i], data.b[i]);
     }
 }
 
 TEST(testMemory, getByte)
 {
     // Подготовка
-    Memory mem;
+    Memory sut;
     const VM_types::byte_t byte = 0b11111110;
     const VM_types::address_t address = 1000;
-    mem.push(byte,address);
+    sut.push(byte,address);
     // Действие
-    const auto Actual = mem.get_byte(address);
+    const auto Actual = sut.get_byte(address);
     // Проверка
     EXPECT_EQ(byte, Actual);
 }
@@ -76,12 +76,12 @@ TEST(testMemory, getByte)
 TEST(testMemory, getCmd)
 {
     // Подготовка
-    Memory mem;
+    Memory sut;
     const VM_types::cmd_t cmd = {{10, 1000}};
     const VM_types::address_t address = 1000;
-    mem.push(cmd,address);
+    sut.push(cmd,address);
     // Действие
-    const auto Actual = mem.get_cmd(address);
+    const auto Actual = sut.get_cmd(address);
     // Проверка
     EXPECT_EQ(cmd.b, Actual.b);
 }
@@ -89,12 +89,12 @@ TEST(testMemory, getCmd)
 TEST(testMemory, getData)
 {
     // Подготовка
-    Memory mem;
+    Memory sut;
     const VM_types::data_t data = {4'000'000'000};
     const VM_types::address_t address = 1000;
-    mem.push(data,address);
+    sut.push(data,address);
     // Действие
-    const auto Actual = mem.get_data(address);
+    const auto Actual = sut.get_data(address);
     // Проверка
     EXPECT_EQ(data.b, Actual.b);
 }
