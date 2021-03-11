@@ -86,7 +86,7 @@ void iMath::set_flags(CPU &cpu) noexcept
     else cpu.PSW.SF = 0;  // -- иначе SF = 0 -- //
 }
 
-void iMath::operator()(CPU &cpu) noexcept
+void iMath::operator()(CPU &cpu)
 {
     const size_t SP = cpu.PSW.SP;
     const address_t address = cpu.get_cmd_address();
@@ -94,6 +94,35 @@ void iMath::operator()(CPU &cpu) noexcept
     cpu.ST[SP].i = calculate(cpu.ST[SP].i, data.i);
     set_flags(cpu); // -- устанавливаю флаги -- //
 }
+
+int32_t iAdd::calculate(int32_t left, int32_t right)
+{
+    int64_t res = int64_t(left) + int64_t(right);
+    if (res > std::numeric_limits<int32_t>::max() || res < std::numeric_limits<int32_t>::min()) throw std::overflow_error("integer add overflow");
+    return static_cast<int32_t>(res);
+}
+
+int32_t iSub::calculate(int32_t left, int32_t right)
+{
+    int64_t res = int64_t(left) - int64_t(right);
+    if (res > std::numeric_limits<int32_t>::max() || res < std::numeric_limits<int32_t>::min()) throw std::overflow_error("integer sub overflow");
+    return static_cast<int32_t>(res);
+}
+
+int32_t iMul::calculate(int32_t left, int32_t right)
+{
+    int64_t res = int64_t(left) * int64_t(right);
+    if (res > std::numeric_limits<int32_t>::max() || res < std::numeric_limits<int32_t>::min()) throw std::overflow_error("integer mul overflow");
+    return static_cast<int32_t>(res);
+}
+
+int32_t iDiv::calculate(int32_t left, int32_t right)
+{
+    if ( (left == std::numeric_limits<int32_t>::min()) && (right == -1) ) throw std::overflow_error("integer div overflow");
+    if (right == 0) throw std::invalid_argument("divide by zero");
+    return left / right;
+}
+
 // -- КОНЕЦ КОМАНДЫ ЦЕЛОЙ АРИФМЕТИКИ -- //
 
 // -- КОМАНДЫ ДРОБНОЙ АРИФМЕТИКИ -- //
@@ -123,26 +152,26 @@ void IO::st_io(CPU &cpu, IO::io_mode mode) noexcept
     const size_t SP = cpu.PSW.SP; // -- получаю индекс вершины стека -- //
     switch (mode)
     {
-    case io_mode::in_int:
-        cout << std::endl << "input int: ";
-        cin >> cpu.ST[++cpu.PSW.SP].u;
-        break;
-    case io_mode::in_float:
-        cout << std::endl << "input float: ";
-        cin >> cpu.ST[++cpu.PSW.SP].f;
-        break;
-    case io_mode::out_int:
-        cout << std::endl << "int: ";
-        cout << cpu.ST[SP].i << std::endl;
-        break;
-    case io_mode::out_uint:
-        cout << std::endl << "unsigned int: ";
-        cout << cpu.ST[SP].u << std::endl;
-        break;
-    case io_mode::out_float:
-        cout << std::endl << "float: ";
-        cout << cpu.ST[SP].f << std::endl;
-        break;
+        case io_mode::in_int:
+            cout << std::endl << "input int: ";
+            cin >> cpu.ST[++cpu.PSW.SP].u;
+            break;
+        case io_mode::in_float:
+            cout << std::endl << "input float: ";
+            cin >> cpu.ST[++cpu.PSW.SP].f;
+            break;
+        case io_mode::out_int:
+            cout << std::endl << "int: ";
+            cout << cpu.ST[SP].i << std::endl;
+            break;
+        case io_mode::out_uint:
+            cout << std::endl << "unsigned int: ";
+            cout << cpu.ST[SP].u << std::endl;
+            break;
+        case io_mode::out_float:
+            cout << std::endl << "float: ";
+            cout << cpu.ST[SP].f << std::endl;
+            break;
     }
 }
 
@@ -152,31 +181,31 @@ void IO::mem_io(CPU &cpu, IO::io_mode mode) noexcept
     data_t tmp;
     switch (mode)
     {
-    case io_mode::in_int:
-        cout << std::endl << "input int: ";
-        cin >> tmp.u;
-        cpu.ram.push(tmp, address);
-        break;
-    case io_mode::in_float:
-        cout << std::endl << "input float: ";
-        cin >> tmp.f;
-        cpu.ram.push(tmp, address);
-        break;
-    case io_mode::out_int:
-        cout << std::endl << "int: ";
-        tmp = cpu.ram.get_data(address);
-        cout << tmp.i << std::endl;
-        break;
-    case io_mode::out_uint:
-        cout << std::endl << "unsigned int: ";
-        tmp = cpu.ram.get_data(address);
-        cout << tmp.u << std::endl;
-        break;
-    case io_mode::out_float:
-        cout << std::endl << "float: ";
-        tmp = cpu.ram.get_data(address);
-        cout << tmp.f << std::endl;
-        break;
+        case io_mode::in_int:
+            cout << std::endl << "input int: ";
+            cin >> tmp.u;
+            cpu.ram.push(tmp, address);
+            break;
+        case io_mode::in_float:
+            cout << std::endl << "input float: ";
+            cin >> tmp.f;
+            cpu.ram.push(tmp, address);
+            break;
+        case io_mode::out_int:
+            cout << std::endl << "int: ";
+            tmp = cpu.ram.get_data(address);
+            cout << tmp.i << std::endl;
+            break;
+        case io_mode::out_uint:
+            cout << std::endl << "unsigned int: ";
+            tmp = cpu.ram.get_data(address);
+            cout << tmp.u << std::endl;
+            break;
+        case io_mode::out_float:
+            cout << std::endl << "float: ";
+            tmp = cpu.ram.get_data(address);
+            cout << tmp.f << std::endl;
+            break;
     }
 }
 
@@ -244,19 +273,19 @@ void Jump::go_to(CPU &cpu, Jump::jmp_mode mode) noexcept
     const address_t cmd_address = cpu.get_cmd_address(); // -- получаю адрес из команды -- //
     switch (mode)
     {
-    case jmp_mode::direct_mode:
-        newIP = cmd_address;
-        break;
-    case jmp_mode::offset_plus_mode:
-        newIP += cmd_address;
-        break;
-    case jmp_mode::offset_minus_mode:
-        newIP -= cmd_address;
-        break;
-    case jmp_mode::indirect_mode:
-        const auto valueByAddress = static_cast<address_t>(cpu.ram.get_data(cmd_address).u);
-        newIP = valueByAddress;
-        break;
+        case jmp_mode::direct_mode:
+            newIP = cmd_address;
+            break;
+        case jmp_mode::offset_plus_mode:
+            newIP += cmd_address;
+            break;
+        case jmp_mode::offset_minus_mode:
+            newIP -= cmd_address;
+            break;
+        case jmp_mode::indirect_mode:
+            const auto valueByAddress = static_cast<address_t>(cpu.ram.get_data(cmd_address).u);
+            newIP = valueByAddress;
+            break;
     }
     cpu.PSW.IP = newIP;
 }
@@ -307,4 +336,3 @@ void ret::call_go_to(CPU &cpu) noexcept
     --cpu.PSW.SP;
 }
 // -- КОНЕЦ КОМАНДЫ ПЕРЕХОДОВ -- //
-

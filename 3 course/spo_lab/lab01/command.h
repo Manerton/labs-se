@@ -8,7 +8,7 @@ class CPU;
 class Command   // -- абстрактный класс команд -- //
 {
 public:
-    virtual void operator() (CPU& cpu) noexcept = 0;    // -- чистая виртуальная функция - функтор -- //
+    virtual void operator() (CPU& cpu) = 0;    // -- чистая виртуальная функция - функтор -- //
     virtual ~Command() {}
 };
 
@@ -59,37 +59,33 @@ public:
 class iMath : public Command
 {
     void set_flags (CPU& cpu) noexcept; // -- устанавливаем флаги в соответствии с результатом вычисления -- //
-    virtual int32_t calculate (int32_t left, int32_t right) noexcept = 0; // -- соответствующее вычисление -- //
+    virtual int32_t calculate (int32_t left, int32_t right) = 0; // -- соответствующее вычисление -- //
 public:
-    virtual void operator() (CPU& cpu) noexcept override;   // -- переопределяем функтор в cpp файле -- //
+    virtual void operator() (CPU& cpu) override;   // -- переопределяем функтор в cpp файле -- //
 };
 
 // --- сложение --- //
 class iAdd : public iMath
 {
-    virtual int32_t calculate (int32_t left, int32_t right) noexcept override
-    { return left + right; }
+    virtual int32_t calculate (int32_t left, int32_t right) override;
 };
 
 // --- вычитание --- //
 class iSub : public iMath
 {
-    virtual int32_t calculate (int32_t left, int32_t right) noexcept override
-    { return left - right; }
+    virtual int32_t calculate (int32_t left, int32_t right) override;
 };
 
 // --- умножение --- //
 class iMul : public iMath
 {
-    virtual int32_t calculate (int32_t left, int32_t right) noexcept override
-    { return left * right; }
+    virtual int32_t calculate (int32_t left, int32_t right) override;
 };
 
 // --- деление --- //
 class iDiv : public iMath
 {
-    virtual int32_t calculate (int32_t left, int32_t right) noexcept override
-    { return left / right; }
+    virtual int32_t calculate (int32_t left, int32_t right) override;
 };
 // -- КОНЕЦ КОМАНДЫ ЦЕЛОЙ АРИФМЕТИКИ -- //
 
