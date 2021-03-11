@@ -1,6 +1,7 @@
 #include "tst_testMemory.h"
 #include "tst_testCPU.h"
 #include "tst_testCommand.h"
+#include "tst_testCommand_Math.h"
 
 #include <gtest/gtest.h>
 

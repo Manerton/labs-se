@@ -1,5 +1,5 @@
-#ifndef TST_TESTCOMMAND_H
-#define TST_TESTCOMMAND_H
+#ifndef TST_testCommandDataTransfer_H
+#define TST_testCommandDataTransfer_H
 
 #include <gtest/gtest.h>
 #include <gmock/gmock-matchers.h>
@@ -13,7 +13,7 @@ using VM_types::cmd_t;
 using VM_types::address_t;
 using VM_types::data_t;
 
-TEST(testCommand, exchange)
+TEST(testCommandDataTransfer, exchange)
 {
     // Подготовка
     CPU cpu;
@@ -31,14 +31,16 @@ TEST(testCommand, exchange)
     cpu.loadCommand();
     // -- подготавливаем тестируемую команду -- //
     const std::unique_ptr<Command> sut = std::make_unique<class exchange>();
+
     // Действие
     sut->operator()(cpu);
+
     // Проверка
     EXPECT_EQ(cpu.ST[cpu.PSW.SP].b, first_elem.b);
     EXPECT_EQ(cpu.ST[cpu.PSW.SP-diff].b, second_elem.b);
 }
 
-TEST(testCommand, move)
+TEST(testCommandDataTransfer, move)
 {
     // Подготовка
     CPU cpu;
@@ -58,13 +60,15 @@ TEST(testCommand, move)
     cpu.loadCommand();
     // -- подготавливаем тестируемую команду -- //
     const std::unique_ptr<Command> sut = std::make_unique<class move>();
+
     // Действие
     sut->operator()(cpu);
+
     // Проверка
     EXPECT_EQ(cpu.ST[cpu.PSW.SP].b, cpu.ST[cpu.PSW.SP-diff].b);
 }
 
-TEST(testCommand, sign_value_load)
+TEST(testCommandDataTransfer, sign_value_load)
 {
     // Подготовка
     CPU cpu;
@@ -77,13 +81,15 @@ TEST(testCommand, sign_value_load)
     cpu.loadCommand();
     // -- подготавливаем тестируемую команду -- //
     const std::unique_ptr<Command> sut = std::make_unique<class sign_value_load>();
+
     // Действие
     sut->operator()(cpu);
+
     // Проверка
     EXPECT_EQ(cpu.ST[cpu.PSW.SP].i, elem);
 }
 
-TEST(testCommand, unsign_value_load)
+TEST(testCommandDataTransfer, unsign_value_load)
 {
     // Подготовка
     CPU cpu;
@@ -96,13 +102,15 @@ TEST(testCommand, unsign_value_load)
     cpu.loadCommand();
     // -- подготавливаем тестируемую команду -- //
     const std::unique_ptr<Command> sut = std::make_unique<class unsign_value_load>();
+
     // Действие
     sut->operator()(cpu);
+
     // Проверка
     EXPECT_EQ(cpu.ST[cpu.PSW.SP].u, elem);
 }
 
-TEST(testCommand, direct_load)
+TEST(testCommandDataTransfer, direct_load)
 {
     // Подготовка
     CPU cpu;
@@ -119,13 +127,15 @@ TEST(testCommand, direct_load)
     cpu.loadCommand();
     // -- подготавливаем тестируемую команду -- //
     const std::unique_ptr<Command> sut = std::make_unique<class direct_load>();
+
     // Действие
     sut->operator()(cpu);
+
     // Проверка
     EXPECT_EQ(cpu.ST[cpu.PSW.SP].b, elem.b);
 }
 
-TEST(testCommand, save)
+TEST(testCommandDataTransfer, save)
 {
     // Подготовка
     CPU cpu;
@@ -142,14 +152,16 @@ TEST(testCommand, save)
     cpu.loadCommand();
     // -- подготавливаем тестируемую команду -- //
     const std::unique_ptr<Command> sut = std::make_unique<class save>();
+
     // Действие
     sut->operator()(cpu);
+
     // Проверка
     EXPECT_EQ(cpu.ram.get_data(toSave).b, elem.b);
     EXPECT_EQ(cpu.PSW.SP, oldSP);
 }
 
-TEST(testCommand, save_pop)
+TEST(testCommandDataTransfer, save_pop)
 {
     // Подготовка
     CPU cpu;
@@ -167,15 +179,17 @@ TEST(testCommand, save_pop)
     cpu.loadCommand();
     // -- подготавливаем тестируемую команду -- //
     const std::unique_ptr<Command> sut = std::make_unique<class save_pop>();
+
     // Действие
     sut->operator()(cpu);
+
     // Проверка
     EXPECT_EQ(cpu.ram.get_data(toSave).b, elem.b);
     EXPECT_NE(cpu.PSW.SP, oldSP);
     EXPECT_EQ(cpu.PSW.SP, startSP);
 }
 
-TEST(testCommand, dereference_ptr)
+TEST(testCommandDataTransfer, dereference_ptr)
 {
     // Подготовка
     CPU cpu;
@@ -196,12 +210,239 @@ TEST(testCommand, dereference_ptr)
     cpu.loadCommand();
     // -- подготавливаем тестируемую команду -- //
     const std::unique_ptr<Command> sut = std::make_unique<class dereference_ptr>();
+
     // Действие
     sut->operator()(cpu);
+
     // Проверка
     EXPECT_EQ(cpu.ram.get_data(toSave).b, elem.b);
     EXPECT_NE(cpu.PSW.SP, oldSP);
     EXPECT_EQ(cpu.PSW.SP, startSP);
 }
 
-#endif // TST_TESTCOMMAND_H
+TEST(testCommandJump, direct_jmp)
+{
+    // Подготовка
+    CPU cpu;
+    // -- инициализируем команду в cpu -- //
+    const address_t oldIP = 0;
+    cpu.PSW.IP = oldIP;
+    const address_t expectedIP = 777;
+    const cmd_t cmd = {{CPU::COP::direct_jmp, expectedIP}};
+    cpu.ram.push(cmd, oldIP);
+    cpu.loadCommand();
+    // -- подготавливаем тестируемую команду -- //
+    const std::unique_ptr<Command> sut = std::make_unique<class direct_jmp>();
+
+    // Действие
+    sut->operator()(cpu);
+
+    // Проверка
+    EXPECT_EQ(cpu.PSW.IP, expectedIP);
+}
+
+TEST(testCommandJump, offset_plus_jmp)
+{
+    // Подготовка
+    CPU cpu;
+    // -- инициализируем команду в cpu -- //
+    const address_t oldIP = 100;
+    cpu.PSW.IP = oldIP;
+    const address_t offsetIP = 437;
+    const cmd_t cmd = {{CPU::COP::offset_plus_jmp, offsetIP}};
+    cpu.ram.push(cmd, oldIP);
+    // -- будем запускать команду через метод run у cpu, так как cpu тоже взаимодействует IP -- //
+    const address_t expectedIP = oldIP + offsetIP;
+    const cmd_t stop = {{CPU::COP::stop, expectedIP}};
+    cpu.ram.push(stop, expectedIP);
+
+    // Действие
+    cpu.run();
+
+    // Проверка
+    EXPECT_EQ(cpu.PSW.IP, expectedIP);
+}
+
+TEST(testCommandJump, offset_minus_jmp)
+{
+    // Подготовка
+    CPU cpu;
+    // -- инициализируем команду в cpu -- //
+    const address_t oldIP = 1000;
+    cpu.PSW.IP = oldIP;
+    const address_t offsetIP = 437;
+    const cmd_t cmd = {{CPU::COP::offset_minus_jmp, offsetIP}};
+    cpu.ram.push(cmd, oldIP);
+    // -- будем запускать команду через метод run у cpu, так как cpu тоже взаимодействует IP -- //
+    const address_t expectedIP = oldIP - offsetIP;
+    const cmd_t stop = {{CPU::COP::stop, expectedIP}};
+    cpu.ram.push(stop, expectedIP);
+
+    // Действие
+    cpu.run();
+
+    // Проверка
+    EXPECT_EQ(cpu.PSW.IP, expectedIP);
+}
+
+TEST(testCommandJump, jzf)
+{
+    // Подготовка
+    CPU cpu;
+    // -- инициализируем команду в cpu -- //
+    const address_t oldIP = 0;
+    cpu.PSW.IP = oldIP;
+    const address_t expectedIP = 777;
+    const cmd_t cmd = {{CPU::COP::jzf, expectedIP}};
+    cpu.ram.push(cmd, oldIP);
+    cpu.loadCommand();
+    // -- подготавливаем тестируемую команду -- //
+    const std::unique_ptr<Command> sut = std::make_unique<class jzf>();
+    // -- устанавливаем флаг -- //
+    cpu.PSW.ZF = 1;
+    // Действие
+    sut->operator()(cpu);
+
+    // Проверка
+    EXPECT_EQ(cpu.PSW.IP, expectedIP);
+}
+
+TEST(testCommandJump, jnzf)
+{
+    // Подготовка
+    CPU cpu;
+    // -- инициализируем команду в cpu -- //
+    const address_t oldIP = 0;
+    cpu.PSW.IP = oldIP;
+    const address_t expectedIP = 777;
+    const cmd_t cmd = {{CPU::COP::jnzf, expectedIP}};
+    cpu.ram.push(cmd, oldIP);
+    cpu.loadCommand();
+    // -- подготавливаем тестируемую команду -- //
+    const std::unique_ptr<Command> sut = std::make_unique<class jnzf>();
+    // -- устанавливаем флаг -- //
+    cpu.PSW.ZF = 0;
+    // Действие
+    sut->operator()(cpu);
+
+    // Проверка
+    EXPECT_EQ(cpu.PSW.IP, expectedIP);
+}
+
+TEST(testCommandJump, jsf)
+{
+    // Подготовка
+    CPU cpu;
+    // -- инициализируем команду в cpu -- //
+    const address_t oldIP = 0;
+    cpu.PSW.IP = oldIP;
+    const address_t expectedIP = 777;
+    const cmd_t cmd = {{CPU::COP::jsf, expectedIP}};
+    cpu.ram.push(cmd, oldIP);
+    cpu.loadCommand();
+    // -- подготавливаем тестируемую команду -- //
+    const std::unique_ptr<Command> sut = std::make_unique<class jsf>();
+    // -- устанавливаем флаг -- //
+    cpu.PSW.SF = 1;
+    // Действие
+    sut->operator()(cpu);
+
+    // Проверка
+    EXPECT_EQ(cpu.PSW.IP, expectedIP);
+}
+
+TEST(testCommandJump, jnsf)
+{
+    // Подготовка
+    CPU cpu;
+    // -- инициализируем команду в cpu -- //
+    const address_t oldIP = 0;
+    cpu.PSW.IP = oldIP;
+    const address_t expectedIP = 777;
+    const cmd_t cmd = {{CPU::COP::jnsf, expectedIP}};
+    cpu.ram.push(cmd, oldIP);
+    cpu.loadCommand();
+    // -- подготавливаем тестируемую команду -- //
+    const std::unique_ptr<Command> sut = std::make_unique<class jnsf>();
+    // -- устанавливаем флаг -- //
+    cpu.PSW.SF = 0;
+    // Действие
+    sut->operator()(cpu);
+
+    // Проверка
+    EXPECT_EQ(cpu.PSW.IP, expectedIP);
+}
+
+TEST(testCommandJump, call)
+{
+    // Подготовка
+    CPU cpu;
+    // -- инициализируем команду в cpu -- //
+    const address_t oldIP = 105;
+    cpu.PSW.IP = oldIP;
+    const address_t expectedIP = 777;
+    const cmd_t cmd = {{CPU::COP::call, expectedIP}};
+    cpu.ram.push(cmd, oldIP);
+    cpu.loadCommand();
+    // -- подготавливаем тестируемую команду -- //
+    const std::unique_ptr<Command> sut = std::make_unique<class call>();
+    // Действие
+    sut->operator()(cpu);
+
+    // Проверка
+    EXPECT_EQ(cpu.PSW.IP, expectedIP);
+    EXPECT_EQ(cpu.ST[cpu.PSW.SP].u, oldIP);
+}
+
+TEST(testCommandJump, ret)
+{
+    // Подготовка
+    CPU cpu;
+    // -- инициализируем команду в cpu -- //
+    const address_t oldIP = 777;
+    cpu.PSW.IP = oldIP;
+    const address_t expectedIP = 100;
+    const cmd_t cmd = {{CPU::COP::ret, 0}};
+    cpu.ram.push(cmd, oldIP);
+    cpu.loadCommand();
+    // -- подготавливаем тестируемую команду -- //
+    const std::unique_ptr<Command> sut = std::make_unique<class ret>();
+    // -- подготавливаем адрес возврата в стеке -- //
+    const auto expectedSP = cpu.PSW.SP;
+    const auto newSP = ++cpu.PSW.SP;
+    cpu.ST[newSP].u = expectedIP;
+    // Действие
+    sut->operator()(cpu);
+
+    // Проверка
+    EXPECT_EQ(cpu.PSW.IP, expectedIP);
+    EXPECT_EQ(cpu.PSW.SP, expectedSP);
+}
+
+
+TEST(testCommandJump, indirect_jmp)
+{
+    // Подготовка
+    CPU cpu;
+    // -- инициализируем команду в cpu -- //
+    const address_t oldIP = 0;
+    cpu.PSW.IP = oldIP;
+
+    const address_t address = 1000;
+    const data_t expectedIP = {777};
+    cpu.ram.push(expectedIP, address);
+
+    const cmd_t cmd = {{CPU::COP::indirect_jmp, address}};
+    cpu.ram.push(cmd, oldIP);
+    cpu.loadCommand();
+    // -- подготавливаем тестируемую команду -- //
+    const std::unique_ptr<Command> sut = std::make_unique<class indirect_jmp>();
+
+    // Действие
+    sut->operator()(cpu);
+
+    // Проверка
+    EXPECT_EQ(cpu.PSW.IP, expectedIP.u);
+}
+
+#endif // TST_testCommandDataTransfer_H
