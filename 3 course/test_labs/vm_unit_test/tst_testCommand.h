@@ -1,5 +1,5 @@
-#ifndef TST_testCommandDataTransfer_H
-#define TST_testCommandDataTransfer_H
+#ifndef TST_testCommand_H
+#define TST_testCommand_H
 
 #include <gtest/gtest.h>
 #include <gmock/gmock-matchers.h>
@@ -445,4 +445,4 @@ TEST(testCommandJump, indirect_jmp)
     EXPECT_EQ(cpu.PSW.IP, expectedIP.u);
 }
 
-#endif // TST_testCommandDataTransfer_H
+#endif // TST_testCommand_H
