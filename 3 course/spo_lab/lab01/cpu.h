@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "command.h"
 #include <cinttypes>
+#include <iostream>
 #include <array>
 #include <memory>
 
@@ -76,12 +77,17 @@ private:
 
     VM_types::cmd_t cmd = {}; // -- текущая выполняемая команда -- //
     std::array<command_ptr,cmd_count> command = {nullptr}; // -- массив из 256 указателей на команды -- //
+
 public:
     PSW PSW;                            // -- PSW = IP + SP + Flags -- //
     Memory ram;                         // -- память, байтовая, размер адреса 16 бит -- //
     std::array<VM_types::data_t,stack_size> ST = {}; // -- стек -- //
 
-    CPU();
+    // для операций ввода-вывода
+    std::istream& inputStream;  // по умолчанию cin
+    std::ostream& outputStream; // по умолчанию cout
+
+    CPU(std::istream& _inputStream = std::cin, std::ostream& _outputStream = std::cout);
     ~CPU();
 
     CPU(const CPU &) = delete;

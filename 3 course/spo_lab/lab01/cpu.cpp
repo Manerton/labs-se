@@ -2,7 +2,7 @@
 #include <iostream>
 
 using std::make_unique;
-CPU::CPU()
+CPU::CPU(std::istream& _inputStream, std::ostream& _outputStream) : inputStream(_inputStream), outputStream(_outputStream)
 {
 // -- команды пересылки данных -- //
     command[exchange] = make_unique<class exchange>();

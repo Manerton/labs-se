@@ -93,9 +93,9 @@ class iDiv : public iMath
 class fMath : public Command
 {
     void set_flags (CPU& cpu) noexcept; // -- устанавливаем флаги в соответствии с результатом вычисления -- //
-    virtual float calculate (float left, float right) noexcept = 0; // -- соответствующее вычисление -- //
+    virtual float calculate (float left, float right) = 0; // -- соответствующее вычисление -- //
 public:
-    virtual void operator() (CPU& cpu) noexcept override;   // -- переопределяем функтор в cpp файле -- //
+    virtual void operator() (CPU& cpu) override;   // -- переопределяем функтор в cpp файле -- //
 };
 
 // --- сложение --- //
@@ -122,8 +122,7 @@ class fMul : public fMath
 // --- деление --- //
 class fDiv : public fMath
 {
-    virtual float calculate (float left, float right) noexcept override
-    { return left / right; }
+    virtual float calculate (float left, float right) override;
 };
 // -- КОНЕЦ КОМАНДЫ ЦЕЛОЙ АРИФМЕТИКИ -- //
 

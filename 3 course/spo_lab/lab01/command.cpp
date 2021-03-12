@@ -9,7 +9,6 @@ using VM_types::data_t;
 using VM_types::address_t;
 using VM_types::data_length;
 using VM_types::cmd_length;
-using std::cin, std::cout;
 
 // -- КОМАНДЫ ПЕРЕСЫЛКИ ДАННЫХ -- //
 void exchange::operator()(CPU &cpu) noexcept // -- обмен значений ST[SP] и ST[SP-i] -- //
@@ -136,7 +135,7 @@ void fMath::set_flags(CPU &cpu) noexcept
     else cpu.PSW.SF = 0;  // -- иначе SF = 0 -- //
 }
 
-void fMath::operator()(CPU &cpu) noexcept
+void fMath::operator()(CPU &cpu)
 {
     const size_t SP = cpu.PSW.SP;
     const address_t address = cpu.get_cmd_address();
@@ -144,67 +143,77 @@ void fMath::operator()(CPU &cpu) noexcept
     cpu.ST[SP].f = calculate(cpu.ST[SP].f, data.f);
     set_flags(cpu); // -- устанавливаю флаги -- //
 }
+
+float fDiv::calculate(float left, float right)
+{
+    if (fabsf(right) <= std::numeric_limits<float>::epsilon()) throw std::invalid_argument("divide by zero");
+    return left / right;
+}
 // -- КОНЕЦ КОМАНДЫ ДРОБНОЙ АРИФМЕТИКИ -- //
 
 // -- КОМАНДЫ ВВОДА И ВЫВОДА -- //
 void IO::st_io(CPU &cpu, IO::io_mode mode) noexcept
 {
+    std::istream& input = cpu.inputStream;
+    std::ostream& output = cpu.outputStream;
     const size_t SP = cpu.PSW.SP; // -- получаю индекс вершины стека -- //
     switch (mode)
     {
         case io_mode::in_int:
-            cout << std::endl << "input int: ";
-            cin >> cpu.ST[++cpu.PSW.SP].u;
+            output << std::endl << "input int: ";
+            input >> cpu.ST[++cpu.PSW.SP].u;
             break;
         case io_mode::in_float:
-            cout << std::endl << "input float: ";
-            cin >> cpu.ST[++cpu.PSW.SP].f;
+            output << std::endl << "input float: ";
+            input >> cpu.ST[++cpu.PSW.SP].f;
             break;
         case io_mode::out_int:
-            cout << std::endl << "int: ";
-            cout << cpu.ST[SP].i << std::endl;
+            output << std::endl << "int: ";
+            output << cpu.ST[SP].i << std::endl;
             break;
         case io_mode::out_uint:
-            cout << std::endl << "unsigned int: ";
-            cout << cpu.ST[SP].u << std::endl;
+            output << std::endl << "unsigned int: ";
+            output << cpu.ST[SP].u << std::endl;
             break;
         case io_mode::out_float:
-            cout << std::endl << "float: ";
-            cout << cpu.ST[SP].f << std::endl;
+            output << std::endl << "float: ";
+            output << cpu.ST[SP].f << std::endl;
             break;
     }
 }
 
 void IO::mem_io(CPU &cpu, IO::io_mode mode) noexcept
 {
+    std::istream& input = cpu.inputStream;
+    std::ostream& output = cpu.outputStream;
     const address_t address = cpu.get_cmd_address(); // -- получаю адрес, находящийся в команде -- //
     data_t tmp;
     switch (mode)
     {
         case io_mode::in_int:
-            cout << std::endl << "input int: ";
-            cin >> tmp.u;
+            output << std::endl << "input int: ";
+            input >> tmp.u;
             cpu.ram.push(tmp, address);
             break;
         case io_mode::in_float:
-            cout << std::endl << "input float: ";
-            cin >> tmp.f;
+            output << std::endl << "input float: ";
+            input >> tmp.f;
             cpu.ram.push(tmp, address);
             break;
         case io_mode::out_int:
-            cout << std::endl << "int: ";
+            output << std::endl << "int: ";
             tmp = cpu.ram.get_data(address);
-            cout << tmp.i << std::endl;
+            output << tmp.i << std::endl;
             break;
         case io_mode::out_uint:
-            cout << std::endl << "unsigned int: ";
+            output << std::endl << "unsigned int: ";
             tmp = cpu.ram.get_data(address);
-            cout << tmp.u << std::endl;
+            output << tmp.u << std::endl;
             break;
         case io_mode::out_float:
-            cout << std::endl << "float: ";
+            output << std::endl << "float: ";
             tmp = cpu.ram.get_data(address);
-            cout << tmp.f << std::endl;
+            output << tmp.f << std::endl;
             break;
     }
 }
