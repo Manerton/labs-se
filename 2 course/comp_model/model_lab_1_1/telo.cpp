@@ -1,32 +1,40 @@
 #include "telo.h"
 #include <QString>
+#include <limits>
 #include <cmath>
 
 QString telo::getTime()
 {
+    // начинаем полет с земли (координата Y = 1)
     Y.push_back(1);
     double time = 0;
-    for (int i = 0; Y[i] >= 0; i++)
+    const double time_inc = 0.01;
+    while (Y.back() >= 0)
     {
-        time += 0.01;
+        time += time_inc;
         Y.push_back( V0*time - ((g*time*time)/2) );
     }
+
+    // чтобы в конце пути точка как бы "лежала" на земле
     Y.push_back(1);
-    if (fabs(V0 * V0 - 2*g*h) < 0.001)
+    const double eps = std::numeric_limits<double>::epsilon();
+    if (fabs(V0 * V0 - 2*g*h) < eps)
     {
         double t = V0/g;
         QString tt = QString::number(t);
         return "Высота достигается 1 раз через " + tt + " секунд.";
-    } else {
-        if (V0*V0 < 2*g*h) return "Высота недостижима при такой скорости.";
-        else {
-            double t1, t2;
-            t1 = (V0 - sqrt(V0*V0 - 2*g*h))/g;
-            t2 = (V0 + sqrt(V0*V0 - 2*g*h))/g;
-            QString tt1 = QString::number(t1);
-            QString tt2 = QString::number(t2);
-            return "Высота достигается 2 раза через " + tt1 + " и " + tt2 + " секунд.";
-        }
     }
+
+    if (V0*V0 < 2*g*h)
+    {
+        return "Высота недостижима при такой скорости.";
+    }
+
+    const double t1 = (V0 - sqrt(V0*V0 - 2*g*h))/g;
+    const double t2 = (V0 + sqrt(V0*V0 - 2*g*h))/g;
+    const QString tt1 = QString::number(t1);
+    const QString tt2 = QString::number(t2);
+    return "Высота достигается 2 раза через " + tt1 + " и " + tt2 + " секунд.";
+
 }
 

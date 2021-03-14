@@ -11,7 +11,6 @@ public:
     QVector<double> Y;
     telo(const double &inV0, const double &inh) : V0(inV0),  h(inh){ }
     QString getTime ();
-    void work();
 };
 
 #endif // TELO_H

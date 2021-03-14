@@ -6,10 +6,10 @@
 #include <QPainter>
 #include "telo.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), V0(40), h(20), object{V0,h}
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), V0(40), h(20), object{V0,h}, paintTimer(this)
 {
     ui->setupUi(this);
-    paintTimer = new QTimer(this); // создаю таймер
+    connect(&paintTimer, SIGNAL(timeout()), this, SLOT(get_new_ycoord()));
 }
 
 MainWindow::~MainWindow()
@@ -19,16 +19,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::paintEvent(QPaintEvent *)
 {
+    const int telo_size = 5;
     QPainter painter(this);
-
     painter.setPen(Qt::red);
     painter.setBrush(Qt::red);
     int hh = this->height();
     painter.drawLine(0,int(hh-h*4),width(),int(hh-h*4));
-    painter.setRenderHint(QPainter::HighQualityAntialiasing);
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::black);
     painter.setBrush(Qt::red);
-    painter.drawEllipse(int(width())/2,int(hh-ycoord),5,5);
+    painter.drawEllipse(int(width())/2,int(hh-ycoord),telo_size,telo_size);
 }
 
 void MainWindow::get_new_ycoord()
@@ -39,14 +39,17 @@ void MainWindow::get_new_ycoord()
         ycoord = object.Y[i]*4;
         i++;
     }
+    else
+    {
+        paintTimer.stop();
+    }
     repaint();
 }
 
 void MainWindow::on_pushButton_clicked()
 {
-    disconnect(paintTimer, SIGNAL(timeout()), this, SLOT(get_new_ycoord()));
-    connect(paintTimer, SIGNAL(timeout()), this, SLOT(get_new_ycoord()));
-    paintTimer->start(5);
+    const int tick_in_ms = 5;
+    paintTimer.start(tick_in_ms);
     object = {V0, h};
     i = 0;
     QString result = object.getTime();

@@ -33,7 +33,7 @@ private:
     double ycoord = 0;
     int i = 0;
     telo object;
-    QTimer *paintTimer; // таймер
+    QTimer paintTimer; // таймер
 };
 
 #endif // MAINWINDOW_H
