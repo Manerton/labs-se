@@ -1,0 +1,129 @@
+/// 1.1
+CREATE TABLE test_numeric
+(	measurement numeric(5,2),
+	description text
+);
+
+/// 1.2 - 1.3 ошибка в измерение 1
+/// так как 999.999 округляется до 1000.00, но точность у нас 5, а не 6
+INSERT INTO test_numeric VALUES (999.9999, 'Измерение 1');
+INSERT INTO test_numeric VALUES (999.9909, 'Измерение 2');
+INSERT INTO test_numeric VALUES (999.1111, 'Измерение 3');
+INSERT INTO test_numeric VALUES (998.9999, 'Измерение 4');
+
+// 2.1
+
+CREATE TABLE test_numeric2
+(	measurement numeric,
+	description text
+);
+
+// 2.2
+
+INSERT INTO  test_numeric2 
+      VALUES (1234567890.0987654321, 'Точность 20 знаков, масштаб 10 знаков');
+INSERT INTO  test_numeric2 
+      VALUES (1.5, 'Точность 2 знака, масштаб 1 знак');
+INSERT INTO  test_numeric2 
+      VALUES (0.12345678901234567890, 'Точность 21 знак, масштаб 20 знаков');
+INSERT INTO  test_numeric2 
+      VALUES (1234567890, 'Точность 10 знаков, масштаб 0 знаков (целое число)');
+	  
+// 2.3
+
+SELECT * FROM test_numeric2
+
+// 3
+
+SELECT 'NaN'::numeric > 10000 as first, 
+'NaN'::numeric = 'NaN'::numeric as second;
+
+// 4.1
+
+SELECT '5e-324'::double precision > '4e-324'::double precision;
+
+// 4.2
+
+SELECT '5e-324'::double precision as first,
+'4e-324'::double precision as second;
+
+// 4.3
+
+select '1797693134e+299'::double precision as first, 
+'1797693133e+299'::double precision as second,
+'1797693134e+299'::double precision > '1797693133e+299'::double precision as compare
+
+
+select '3402823e+32'::real as first, 
+'3402822e+32'::real as second,
+'3402823e+32'::real > '3402822e+32'::real as compare
+
+// 5
+
+SELECT  'Inf'::double precision > '1E+308'::double precision;
+SELECT '-Inf'::double precision < '5E-324'::double precision;
+
+// 6.1
+
+SELECT 0.0 * 'Inf'::real;
+
+// 6.2
+
+SELECT 'NaN'::real > 'Inf'::real as nan_bigger_than_inf,
+'NaN'::real = 'NaN'::real as nan_equal_nan,
+'NaN'::real > '3402823e+32'::real as nan_bigger_than_normal
+
+// 7.1
+CREATE TABLE test_serial
+(	id serial,
+	name text
+);
+
+// 7.2
+INSERT INTO test_serial (name) VALUES ('Вишневая');
+INSERT INTO test_serial (name) VALUES ('Грушевая');
+INSERT INTO test_serial (name) VALUES ('Абрикосовая');
+
+// 7.3 
+SELECT * FROM test_serial
+
+// 7.4
+INSERT INTO test_serial (id, name) VALUES (4, 'Прохладная');
+
+// 7.5
+INSERT INTO test_serial (name) VALUES ('Тенистая');
+
+// 8.1
+CREATE TABLE test_serial2
+(	id serial PRIMARY KEY,
+	name text
+);
+
+// 8.2
+INSERT INTO test_serial2 (name) VALUES ('Вишневая');
+
+INSERT INTO test_serial2 (id, name) VALUES (2, 'Прохладная');
+
+INSERT INTO test_serial2 (id, name) VALUES (2, 'Прохладная');
+
+INSERT INTO test_serial2 (name) VALUES ('Грушевая');
+
+INSERT INTO test_serial2 (name) VALUES ('Грушевая');
+
+INSERT INTO test_serial2 (name) VALUES ('Грушевая');
+
+DELETE FROM test_serial2 WHERE id = 4;
+
+INSERT INTO test_serial2 (name) VALUES ('Абрикосовая');
+
+INSERT INTO test_serial2 (name) VALUES ('Тенистая');
+
+SELECT * FROM test_serial2
+
+// 9
+INSERT INTO test_serial2 (name) VALUES ('Студенческая');
+INSERT INTO test_serial2 (name) VALUES ('Ленинская');
+
+
+
+

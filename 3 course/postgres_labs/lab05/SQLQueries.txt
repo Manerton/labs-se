@@ -1,0 +1,193 @@
+//1
+SELECT current_time as "без точности",
+current_time::time(0) as "точность 0",
+current_time::time(3) as "точность 3";
+
+SELECT current_timestamp as "без точности",
+current_timestamp::timestamp(0) as "точность 0",
+current_timestamp::timestamp(3) as "точность 3";
+
+SELECT (current_timestamp - timestamp '2001-09-27 12:00') as "без точности",
+(current_timestamp - timestamp '2001-09-27 12:00')::interval(0) as "точность 0",
+(current_timestamp - timestamp '2001-09-27 12:00')::interval(3) as "точность 3";
+
+В дате нет секунд, поэтому и нет точности.
+
+//2
+SHOW datestyle;
+
+//3
+SELECT '28-02-2017'::date;
+
+//4
+SELECT '02-28-2019'::date;
+
+//5
+SELECT '2019-02-28'::date;
+
+//6
+SET datestyle TO 'MDY';
+
+SELECT '28-02-2019'::date;
+
+SELECT '02-28-2019'::date;
+
+SET datestyle TO DEFAULT;
+
+//7
+SELECT '28-02-2017'::timestamp as "1", '2019-02-28'::timestamp as "2";
+
+//8
+SET datestyle TO 'Postgres, DMY';
+SHOW datestyle;
+
+//9 
+SELECT '28-02-2017'::date as "date1", '2019-02-28'::date as "date2",
+'28-02-2017'::timestamp as "timestamp1", '2019-02-28'::timestamp as "timestamp2";
+
+//10
+SET datestyle TO 'SQL, DMY';
+SELECT current_timestamp;
+SET datestyle TO 'German, DMY';
+SELECT current_timestamp;
+
+//11
+PGDATESTYLE="Postgres" psql -U postgres
+show datestyle;
+
+//12
+SELECT '28-02-2019'::timestamp;
+show datestyle;
+
+//13
+SELECT to_char(current_timestamp, 'mi:ss') as min_sec,
+to_char(current_timestamp, 'dd') as days,
+to_char(current_timestamp, 'yyy-mm-dd') as ymd;
+
+//14
+SELECT 'Feb 29, 2019'::date;
+
+//15
+SELECT '21:15:16:22'::time;
+
+//16
+SELECT ('2019-02-28'::date - '2019-01-01'::date);
+
+//17
+SELECT ('20:34:35'::time - '19:44:45'::time);
+SELECT ('20:34:35'::time + '19:44:45'::time);
+
+//18
+SELECT (current_timestamp - '2019-01-01'::timestamp) AS кол_дней;
+Без AS кол_дней столбец принимает название: "?column?"
+
+//19
+SELECT (current_timestamp + '1 mon'::interval) AS новая_дата;
+
+//20
+SELECT ('2016-01-31'::date + '1 mon'::interval) AS новая_дата_1,
+('2016-02-29'::date + '1 mon'::interval) AS новая_дата_2;
+
+//21
+SET intervalstyle TO DEFAULT;
+
+//22
+SELECT ('2019-03-08'::date -  '2015-03-08'::date) as first, 
+('2019-03-08'::timestamp -  '2015-03-08'::timestamp) as second;
+
+Между датами интервал только в днях, между timestamp - в днях и часах, но в данном примере timestampы отличаются только днями.
+
+//23
+SELECT ('20:34:35'::time - '1 hour'::interval) as first,
+('2019-03-08'::date - 1) as second;
+
+Потому-что нет операции "-" между time и integer. Можно уточнить необходимую операцию, указав например, что требуется вычесть из времени 1 час.
+
+//24
+SELECT (date_trunc('microsecond', timestamp '1999-11-27 12:34:56.987654'));
+SELECT (date_trunc('millisecond', timestamp '1999-11-27 12:34:56.987654'));
+SELECT (date_trunc('second', timestamp '1999-11-27 12:34:56.987654'));
+SELECT (date_trunc('minute', timestamp '1999-11-27 12:34:56.987654'));
+SELECT (date_trunc('hour', timestamp '1999-11-27 12:34:56.987654'));
+SELECT (date_trunc('day', timestamp '1999-11-27 12:34:56.987654'));
+SELECT (date_trunc('week', timestamp '1999-11-27 12:34:56.987654'));
+SELECT (date_trunc('month', timestamp '1999-11-27 12:34:56.987654'));
+SELECT (date_trunc('year', timestamp '1999-11-27 12:34:56.987654'));
+SELECT (date_trunc('decade', timestamp '1999-11-27 12:34:56.987654'));
+SELECT (date_trunc('century', timestamp '1999-11-27 12:34:56.987654'));
+SELECT (date_trunc('millennium', timestamp '1999-11-27 12:34:56.987654'));
+
+//25
+SELECT extract('microsecond' from timestamp '1999-11-27 12:34:56.987654');
+SELECT extract('millisecond' from timestamp '1999-11-27 12:34:56.987654');
+SELECT extract('second' from timestamp '1999-11-27 12:34:56.987654');
+SELECT extract('minute' from timestamp '1999-11-27 12:34:56.987654');
+SELECT extract('hour' from timestamp '1999-11-27 12:34:56.987654');
+SELECT extract('day' from timestamp '1999-11-27 12:34:56.987654');
+SELECT extract('week' from timestamp '1999-11-27 12:34:56.987654');
+SELECT extract('month' from timestamp '1999-11-27 12:34:56.987654');
+SELECT extract('year' from timestamp '1999-11-27 12:34:56.987654');
+SELECT extract('decade' from timestamp '1999-11-27 12:34:56.987654');
+SELECT extract('century' from timestamp '1999-11-27 12:34:56.987654');
+SELECT extract('millennium' from timestamp '1999-11-27 12:34:56.987654');
+
+//26
+CREATE TABLE databases
+( 	is_open_source boolean,
+	dbms_name text
+);
+
+INSERT INTO  databases  VALUES 
+(TRUE, 'PostrgeSQL'), (FALSE, 'Oracle'), (TRUE, 'MySQL'), (FALSE, 'MS SQL Server');
+
+SELECT  * FROM  databases WHERE  NOT is_open_source;  -> false
+SELECT  * FROM  databases WHERE  is_open_source <>  'yes'; -> false
+SELECT  * FROM  databases WHERE  NOT is_open_source <> 't'; -> true
+SELECT  * FROM  databases WHERE  NOT is_open_source <> '1'; -> true
+SELECT  * FROM  databases WHERE  NOT is_open_source <> 1; -> error
+
+//27
+CREATE TABLE test_bool
+(	a boolean,
+	b text
+);
+
+INSERT INTO test_bool VALUES (TRUE, 'yes');
+INSERT INTO test_bool VALUES (yes, 'yes');  // -
+INSERT INTO test_bool VALUES ('yes', true);
+INSERT INTO test_bool VALUES ('yes', TRUE); 
+INSERT INTO test_bool VALUES ('1', 'true');
+INSERT INTO test_bool VALUES ('t', 'true');
+INSERT INTO test_bool VALUES ('t', 'truth');
+INSERT INTO test_bool VALUES (true, true);
+INSERT INTO test_bool VALUES (1::boolean, 'true');
+INSERT INTO test_bool VALUES (111:: boolean, 'true');
+
+//28
+CREATE TABLE birthdays
+(	person text NOT NULL,
+	Birthday date NOT NULL
+);
+
+INSERT INTO birthdays VALUES ('Ivan Ivanov', '1955-03-23');
+INSERT INTO birthdays VALUES ('Petr Petrov', '1971-03-19');
+INSERT INTO birthdays VALUES ('Andrey Sidorov', '1987-08-12');
+INSERT INTO birthdays VALUES ('Sergey Sergeyev', '1974-05-15');
+INSERT INTO birthdays VALUES ('Viktor Antonov', '1972-11-16');
+
+SELECT * FROM birthdays  WHERE  extract('mon' from birthday) = 3;
+
+//29
+SELECT *, birthday +  '40 years'::interval as "age40"
+     FROM birthdays
+     WHERE birthday + '40 years'::interval < current_timestamp;
+	 
+//30
+SELECT *, birthday +  '40 years'::interval as "age40"
+     FROM birthdays
+     WHERE birthday + '40 years'::interval < current_date;
+	 
+//31	 
+SELECT *, (current_date::timestamp - birthday::timestamp)::interval
+    FROM  birthdays;
+	 
