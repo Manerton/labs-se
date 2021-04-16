@@ -1,0 +1,42 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Список дел";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Список дел</h1>
+    <form method="post">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Тема</th>
+                    <th scope="col">Выполнено?</th>
+                    <th scope="col">Приоритет</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 1;
+                }
+                @foreach (var item in Model.repositary.List())
+                {
+                    <tr>
+                        <th scope="row">@(i++)</th>
+                        <td>@item.name</td>
+                        <td>@item.done</td>
+                        <td>@item.priority</td>
+                        <td>
+                            <a class="btn btn-outline-primary" asp-page="Update" asp-route-id="@item.Id">Изменить</a> |
+                            <input class="btn btn-danger" type="submit" value="X" asp-page-handler="remove"
+                                asp-route-id="@item.Id">
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+    <a asp-page="Create" class="btn btn-outline-primary">Добавить новое дело</a>
+</div>

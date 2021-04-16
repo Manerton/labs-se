@@ -1,0 +1,24 @@
+﻿@page
+@model CreateModel
+@{
+    ViewData["Title"] = "Добавление дела в список";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Добавление дела в список</h1>
+    <form method="post" class="text-left">
+        <p>
+            <label for="name"><b>Тема:</b></label><br>
+            <input type="text" name="name" id="name" class="w-100" required>
+        </p>
+        <p>
+            <label for="done"><b>Выполнено?</b></label>
+            <input type="checkbox" name="done" id="done" value="true">
+        </p>
+        <p>
+            <label for="priority"><b>Приоритет:</b></label><br>
+            <input type="number" name="priority" id="priority" value="0">
+        </p>
+        <input type="submit" value="Добавить">
+    </form>
+</div>

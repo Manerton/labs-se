@@ -1,0 +1,26 @@
+[
+  {
+    "Id": "68cc115d-a3f5-41e0-aa83-4b06e7af0a7e",
+    "name": "Сделать лабораторную работу",
+    "done": true,
+    "priority": 100
+  },
+  {
+    "Id": "29cb7cbc-a2c3-462c-a900-1ed132512dbf",
+    "name": "Прибраться в комнате",
+    "done": true,
+    "priority": 15
+  },
+  {
+    "Id": "dd750e5e-081b-4133-a0db-a83de9d36a51",
+    "name": "Сходить в поликлинику",
+    "done": true,
+    "priority": 150
+  },
+  {
+    "Id": "134d0555-08c9-4667-8dbf-3493f27b10e1",
+    "name": "Купить продукты",
+    "done": false,
+    "priority": 30
+  }
+]
