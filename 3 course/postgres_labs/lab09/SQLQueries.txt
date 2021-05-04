@@ -1,0 +1,464 @@
+Загрузим данные по полётам за один месяц из файла demo_small.sql с помощью утилиты psql. Для этого запустим утилиту, авторизуемся как пользователь postgres и введем команду \i '*абсолютный путь до demo_small.sql*', например, \i 'D:/Загрузки/demo_small.sql'.
+
+\\1
+SELECT count( * ) FROM tickets; // 366733
+SELECT count( * ) FROM tickets WHERE passenger_name LIKE '% %'; // 366733
+SELECT count( * ) FROM tickets WHERE passenger_name LIKE '% % %'; // 0
+SELECT count( * ) FROM tickets WHERE passenger_name LIKE '% %%'; // 366733
+
+Пробел, указанный в шаблоне LIKE, учитывается при запросе. Поэтому шаблоны '% %' и '% %%' выдают весь список имен, так как это соответствует шаблону 'ИМЯ пробел ФАМИЛИЯ', в то время как шаблон '% % %' не возвращает ничего, поскольку в столбце passenger_name нет записи с двумя пробелами.
+
+\\2
+SELECT passenger_name
+FROM tickets
+WHERE passenger_name LIKE '___ %';
+
+SELECT passenger_name
+FROM tickets
+WHERE passenger_name LIKE '% _____';
+
+\\3
+SELECT count(*)
+FROM routes
+WHERE departure_city = 'Москва' AND arrival_city   = 'Санкт-Петербург';
+
+SELECT departure_city, arrival_city, count(*)
+FROM routes
+WHERE departure_city = 'Москва' AND arrival_city = 'Санкт-Петербург'
+GROUP BY departure_city, arrival_city;
+
+\\4
+SELECT departure_city, count( * )
+FROM routes
+GROUP BY departure_city
+ORDER BY count DESC;
+
+SELECT departure_city, count( distinct arrival_city )
+FROM routes
+GROUP BY departure_city
+ORDER BY count DESC;
+
+\\5
+SELECT departure_city, arrival_city, count (*)
+FROM routes
+WHERE departure_city = 'Москва' AND array_length(days_of_week, 1) = 7
+GROUP BY departure_city, arrival_city
+ORDER BY count DESC LIMIT 5;
+
+\\6
+SELECT 'Понедельник' AS day_of_week, count(*) AS num_flights
+   FROM routes
+   WHERE departure_city = 'Москва' AND days_of_week @> '{ 1 }'::integer[];
+   
+\\6.1
+SELECT unnest( days_of_week ) AS day_of_week, count( * ) AS num_flights
+   FROM routes
+   WHERE departure_city = 'Москва' 
+   GROUP BY day_of_week
+   ORDER BY day_of_week; 
+   
+\\6.2
+SELECT flight_no, unnest( days_of_week ) AS day_of_week
+   FROM routes
+   WHERE departure_city = 'Москва' 
+   ORDER BY flight_no;
+   
+Функция unnest превращает массив в набор строк.
+
+\\6.3
+SELECT dw.name_of_day, count( * ) AS num_flights
+FROM (
+      SELECT unnest( days_of_week ) AS num_of_day
+      FROM routes
+      WHERE departure_city = 'Москва'
+     ) AS r,
+     unnest(
+            '{ 1, 2, 3, 4, 5, 6, 7 }'::integer[],
+            '{ "Пн.", "Вт.", "Ср.", "Чт.", "Пт.", "Сб.", "Вс."}'::text[]
+           ) AS dw( num_of_day, name_of_day )
+WHERE r.num_of_day = dw.num_of_day
+GROUP BY r.num_of_day, dw.name_of_day
+ORDER BY r.num_of_day;
+
+\\6.4
+SELECT dw.name_of_day, count( * ) AS num_flights
+FROM (
+      SELECT unnest( days_of_week ) AS num_of_day
+      FROM routes
+      WHERE departure_city = 'Москва'
+     ) AS r,
+     unnest(
+            '{ "Пн.", "Вт.", "Ср.", "Чт.", "Пт.", "Сб.", "Вс."}'::text[]
+           ) WITH ORDINALITY dw( name_of_day, num_of_day )
+WHERE r.num_of_day = dw.num_of_day
+GROUP BY r.num_of_day, dw.name_of_day
+ORDER BY r.num_of_day;
+
+\\7
+SELECT f.departure_city, f.arrival_city,
+max( tf.amount ), min( tf.amount )
+FROM flights_v f
+JOIN ticket_flights tf ON f.flight_id = tf.flight_id
+GROUP BY 1, 2
+ORDER BY 1, 2;
+
+SELECT f.departure_city, f.arrival_city,
+max( tf.amount ), min( tf.amount )
+FROM flights_v f
+LEFT JOIN ticket_flights tf ON f.flight_id = tf.flight_id
+GROUP BY 1, 2
+ORDER BY 1, 2;
+
+\\8
+SELECT left( passenger_name, strpos( passenger_name, ' ') - 1 )
+   AS firstname, count( * )
+FROM tickets
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT right( passenger_name, -strpos( passenger_name, ' '))
+   AS secondname, count( * )
+FROM tickets
+GROUP BY 1
+ORDER BY 2 DESC;
+
+\\9
+WITH RECURSIVE ranges ( min_sum, max_sum ) AS
+   ( VALUES( 0, 100000 )
+     UNION ALL
+     SELECT min_sum + 100000, max_sum + 100000
+     FROM ranges
+     WHERE max_sum < ( SELECT max( total_amount ) FROM bookings )
+   )
+SELECT * FROM ranges;
+
+\\10
+WITH RECURSIVE ranges2 ( min_sum, max_sum )
+AS (
+     VALUES( 0,      100000 ),
+           ( 100000, 200000 ),
+           ( 200000, 300000 )
+     UNION ALL
+     SELECT min_sum + 100000, max_sum + 100000
+        FROM ranges2
+        WHERE max_sum < ( SELECT max( total_amount ) FROM bookings )
+   )
+SELECT * FROM ranges2;
+
+\\11
+WITH RECURSIVE ranges3 ( min_sum, max_sum, level )
+AS (
+     VALUES( 0,      100000, 0 ),
+           ( 100000, 200000, 0 ),
+           ( 200000, 300000, 0 )
+     UNION ALL
+     SELECT min_sum + 100000, max_sum + 100000, level + 1
+        FROM ranges3
+        WHERE max_sum < ( SELECT max( total_amount ) FROM bookings )
+   )
+SELECT * FROM ranges3;
+
+\\12
+Ничего не изменилось, а если убрать столбец level (т.е взять запрос из 10 задания) и применить там UNION вместо UNION ALL, то выдает только уникальные строки.
+
+WITH RECURSIVE ranges2 ( min_sum, max_sum )
+AS (
+     VALUES( 0,      100000 ),
+           ( 100000, 200000 ),
+           ( 200000, 300000 )
+     UNION
+     SELECT min_sum + 100000, max_sum + 100000
+        FROM ranges2
+        WHERE max_sum < ( SELECT max( total_amount ) FROM bookings )
+   )
+SELECT * FROM ranges2;
+
+\\13
+WITH RECURSIVE ranges ( min_sum, max_sum )
+AS (
+    VALUES( 0, 100000 )
+    UNION ALL
+    SELECT min_sum + 100000, max_sum + 100000
+      FROM ranges
+      WHERE max_sum < ( SELECT max( total_amount ) FROM bookings )
+   )
+SELECT r.min_sum,
+       r.max_sum,
+       count( b.* )
+FROM bookings b
+RIGHT OUTER JOIN ranges r
+   ON  b.total_amount >= r.min_sum
+   AND b.total_amount <  r.max_sum
+GROUP BY r.min_sum, r.max_sum
+ORDER BY r.min_sum;
+
+В диапазоне 1100000 по 1200000 нет бронирований, и если указать count (*) вместо count (b.*), то в этой строке count будет равен 1 вместо 0, так как в объедененной таблице (RIGHT OUTER JOIN) включаются все диапазоны из ranges, а не только те, что соответствуют таблице bookings (а именно столбцу b.total_amount) как если бы это было INNER JOIN. Для диапазона 1100000 по 1200000 в объедененной таблице в столбце b.total_amount проставляется NULL, в чем можно убедиться, выполнив запрос:
+
+WITH RECURSIVE ranges ( min_sum, max_sum )
+AS (
+    VALUES( 0, 100000 )
+    UNION ALL
+    SELECT min_sum + 100000, max_sum + 100000
+      FROM ranges
+      WHERE max_sum < ( SELECT max( total_amount ) FROM bookings )
+   )
+SELECT * 
+FROM bookings b
+RIGHT OUTER JOIN ranges r
+   ON  b.total_amount >= r.min_sum
+   AND b.total_amount <  r.max_sum
+WHERE r.min_sum = 1100000 AND r.max_sum = 1200000
+
+Соответственно, указывая * вместо b.*, функция count учитывает строку в объедененной таблице, где b.total_amount равен NULL, а если указываем b.*, то функция count данную строку не учитывает (где b.total_amount = NULL).
+
+\\14
+SELECT DISTINCT a.city
+   FROM airports a
+     WHERE NOT EXISTS 
+     (
+        SELECT * FROM routes r
+          WHERE r.departure_city ='Москва'
+            AND r.arrival_city = a.city
+     )
+     AND a.city <> 'Москва'
+ORDER BY city;
+
+SELECT city
+   FROM airports
+   WHERE city <> 'Москва'
+EXCEPT
+SELECT arrival_city
+   FROM routes
+   WHERE departure_city ='Москва'
+ORDER BY city;
+
+UNION перечислит весь список городов (в которые есть рейсы из Москвы, и в которые рейсов нет), INTERSECT - список городов, в которые есть рейсы из Москвы, а EXCEPT - города, в которые нет рейсов из Москвы.
+
+\\15
+SELECT aa.city, aa.airport_code, aa.airport_name
+   FROM (
+     SELECT city, count( * )
+     FROM airports
+     GROUP BY city
+     HAVING count( * ) > 1
+) AS a
+JOIN airports AS aa ON a.city = aa.city
+ORDER BY aa.city, aa.airport_name;
+
+Необязательно, важно чтобы присутствовал фильтр HAVING count( * ) > 1.
+
+\\16
+SELECT count( * )
+FROM ( SELECT DISTINCT city FROM airports ) AS a1
+JOIN ( SELECT DISTINCT city FROM airports ) AS a2
+ON a1.city <> a2.city;
+
+\\16.2
+WITH cities AS ( SELECT DISTINCT city FROM airports )
+SELECT count( * )
+FROM cities AS a1
+JOIN cities AS a2
+ON a1.city <> a2.city;
+
+\\17.1
+SELECT * FROM airports
+   WHERE timezone IN ( 'Asia/Novokuznetsk', 'Asia/Krasnoyarsk');
+
+SELECT * FROM airports
+   WHERE timezone = ANY 
+   (
+     VALUES ('Asia/Novokuznetsk'), ('Asia/Krasnoyarsk')
+   );
+   
+\\17.2
+SELECT departure_city, count( * )
+   FROM routes
+   GROUP BY departure_city
+   HAVING departure_city IN 
+   (
+      SELECT city
+      FROM airports
+      WHERE longitude > 150
+   )
+ORDER BY count DESC;
+
+\\17.3
+SELECT departure_city, count( * )
+   FROM routes
+   GROUP BY departure_city
+   HAVING departure_city = ANY 
+   (
+      SELECT city
+      FROM airports
+      WHERE longitude > 150
+   )
+ORDER BY count DESC;
+
+\\18.1
+WITH tickets_seats
+AS (
+    SELECT f.flight_id,
+           f.flight_no,
+           f.departure_city,
+           f.arrival_city,
+           f.aircraft_code,
+           count( tf.ticket_no ) AS fact_passengers,
+           ( SELECT count( s.seat_no )
+               FROM seats s
+               WHERE s.aircraft_code = f.aircraft_code
+           ) AS total_seats
+    FROM flights_v f
+    JOIN ticket_flights tf ON f.flight_id = tf.flight_id
+    WHERE f.status = 'Arrived'
+    GROUP BY 1, 2, 3, 4, 5
+)
+SELECT ts.departure_city,
+       ts.arrival_city,
+       sum( ts.fact_passengers ) AS sum_pass,
+       sum( ts.total_seats ) AS sum_seats,
+       round( sum( ts.fact_passengers )::numeric /
+       sum( ts.total_seats )::numeric, 2 ) AS frac
+FROM tickets_seats ts
+GROUP BY ts.departure_city, ts.arrival_city
+ORDER BY ts.departure_city;
+
+\\18.2
+Да, так как seat_no есть в каждой строке таблицы seats.
+
+\\18.3
+WITH tickets_seats
+AS (
+	SELECT f.flight_id,
+           f.flight_no,
+           f.departure_city,
+           f.arrival_city,
+           f.aircraft_code,
+		   tf.fare_conditions,
+           count( tf.ticket_no ) AS fact_passengers,
+           ( SELECT count( s.seat_no )
+               FROM seats s
+               WHERE s.aircraft_code = f.aircraft_code 
+					AND s.fare_conditions = tf.fare_conditions
+           ) AS total_seats
+    FROM flights_v f
+    JOIN ticket_flights tf ON f.flight_id = tf.flight_id
+    WHERE f.status = 'Arrived'
+    GROUP BY 1, 2, 3, 4, 5, 6
+)
+SELECT ts.departure_city,
+       ts.arrival_city,
+	   ts.fare_conditions,
+       sum( ts.fact_passengers ) AS sum_pass,
+       sum( ts.total_seats ) AS sum_seats,
+       round( sum( ts.fact_passengers )::numeric /
+       sum( ts.total_seats )::numeric, 2 ) AS frac
+FROM tickets_seats ts
+GROUP BY ts.departure_city, ts.arrival_city, ts.fare_conditions
+ORDER BY ts.departure_city;
+
+\\19.1
+public.now() вместо bookings.now(), поскольку схема bookings была переименована мной в public
+
+SELECT *
+   FROM flights_v
+   WHERE departure_city = 'Кемерово'
+     AND arrival_city = 'Москва'
+     AND actual_arrival < public.now();
+	 
+Данный запрос возвращает очень большую таблицу, поэтому будет прикреплен результат следующего запроса:
+SELECT flight_id, flight_no, actual_arrival, public.now()
+   FROM flights_v
+   WHERE departure_city = 'Кемерово'
+     AND arrival_city = 'Москва'
+     AND actual_arrival < public.now();
+	
+\\19.2
+SELECT t.passenger_name, b.seat_no
+FROM (
+      ticket_flights tf
+      JOIN tickets t ON tf.ticket_no = t.ticket_no
+     )
+JOIN boarding_passes b
+     ON  tf.ticket_no = b.ticket_no
+     AND tf.flight_id = b.flight_id
+WHERE tf.flight_id = 27584
+ORDER BY t.passenger_name; 
+
+\\19.3
+SELECT t.passenger_name,
+       substr( t.passenger_name, strpos( t.passenger_name, ' ' ) + 1
+       ) AS lastname,
+       left( t.passenger_name, strpos( t.passenger_name, ' ' ) - 1
+       ) AS firstname,
+       b.seat_no
+   FROM (
+        ticket_flights tf
+        JOIN tickets t ON tf.ticket_no = t.ticket_no
+        )
+JOIN boarding_passes b
+   ON  tf.ticket_no = b.ticket_no
+   AND tf.flight_id = b.flight_id
+WHERE tf.flight_id = 27584
+ORDER BY 2, 3; 
+
+\\19.4
+SELECT s.seat_no, p.passenger_name
+   FROM seats s
+   LEFT OUTER JOIN (
+        SELECT t.passenger_name, b.seat_no
+           FROM (
+                 ticket_flights tf
+                 JOIN tickets t ON tf.ticket_no = t.ticket_no
+                )
+        JOIN boarding_passes b
+           ON  tf.ticket_no = b.ticket_no
+           AND tf.flight_id = b.flight_id
+        WHERE tf.flight_id = 27584
+   ) AS p
+   ON s.seat_no = p.seat_no
+WHERE s.aircraft_code = 'SU9'
+ORDER BY s.seat_no; 
+
+\\19.5
+SELECT s.seat_no, p.passenger_name, p.email
+   FROM seats s
+   LEFT OUTER JOIN (
+     SELECT t.passenger_name, b.seat_no,
+            t.contact_data->'email' AS email
+        FROM (
+           ticket_flights tf
+           JOIN tickets t ON tf.ticket_no = t.ticket_no
+             )
+        JOIN boarding_passes b
+          ON  tf.ticket_no = b.ticket_no
+          AND tf.flight_id = b.flight_id
+        WHERE tf.flight_id = 27584
+) AS p
+   ON s.seat_no = p.seat_no
+WHERE s.aircraft_code = 'SU9'
+ORDER BY
+   left( s.seat_no, length( s.seat_no ) - 1 )::integer,
+   right( s.seat_no, 1 );
+   
+\\19.6
+WITH p AS (
+	 SELECT t.passenger_name, b.seat_no,
+			t.contact_data->'email' AS email,
+			tf.fare_conditions
+		FROM (
+		   ticket_flights tf
+		   JOIN tickets t ON tf.ticket_no = t.ticket_no
+			 )
+		JOIN boarding_passes b
+		  ON  tf.ticket_no = b.ticket_no
+		  AND tf.flight_id = b.flight_id
+		WHERE tf.flight_id = 27584
+)
+SELECT s.seat_no, p.passenger_name, p.email, p.fare_conditions
+   FROM seats s
+   LEFT OUTER JOIN p
+   ON s.seat_no = p.seat_no
+WHERE s.aircraft_code = 'SU9'
+ORDER BY
+   left( s.seat_no, length( s.seat_no ) - 1 )::integer,
+   right( s.seat_no, 1 );
