@@ -1,0 +1,215 @@
+\\1
+CREATE TEMP TABLE aircrafts_tmp AS
+   SELECT * FROM aircrafts WITH NO DATA;
+
+ALTER TABLE aircrafts_tmp
+   ADD PRIMARY KEY ( aircraft_code );
+
+ALTER TABLE aircrafts_tmp
+   ADD UNIQUE ( model );
+   
+\\
+
+CREATE TEMP TABLE aircrafts_log AS
+   SELECT * FROM aircrafts WITH NO DATA;
+
+ALTER TABLE aircrafts_log
+   ADD COLUMN when_add timestamp DEFAULT current_timestamp;
+
+ALTER TABLE aircrafts_log
+   ADD COLUMN operation text;   
+   
+\\
+
+WITH add_row AS
+( INSERT INTO aircrafts_tmp
+  SELECT * FROM aircrafts
+  RETURNING *
+)
+INSERT INTO aircrafts_log (aircraft_code, model, range, operation)
+  SELECT add_row.aircraft_code, add_row.model, add_row.range, 'INSERT'
+  FROM add_row;
+
+SELECT * FROM aircrafts_log;
+
+\\2
+WITH add_row AS
+( INSERT INTO aircrafts_tmp
+   SELECT * FROM aircrafts
+   RETURNING aircraft_code, model, range,
+             current_timestamp, 'INSERT'
+)
+INSERT INTO aircrafts_log
+   SELECT * FROM add_row;
+   
+Нужно написать * вместо вопросительного знака.
+
+\\3
+Думаю будут выведены добавленные строки.
+
+INSERT INTO aircrafts_tmp SELECT * FROM aircrafts RETURNING *;
+
+Это можно использовать с общими табличными выражениями, чтобы выводить в них нужные столбцы.
+
+\\4
+CREATE TEMP TABLE seats_tmp (LIKE seats INCLUDING ALL);
+INSERT INTO seats_tmp SELECT * FROM seats;
+
+INSERT INTO seats_tmp VALUES ('319', '2A', 'Business')
+    ON CONFLICT (aircraft_code, seat_no) DO NOTHING;
+	
+INSERT INTO seats_tmp VALUES ('319', '2A', 'Business')
+    ON CONFLICT ON CONSTRAINT seats_tmp_pkey DO NOTHING;
+
+\\5
+COPY aircrafts_tmp FROM STDIN WITH (FORMAT csv);
+IL9, Ilyushin IL96, 9800
+I93, Ilyushin IL96-300, 9800
+\.
+SELECT * FROM aircrafts_tmp;
+
+Поскольку разделителем является запятая, пробел был включен в название самолета. Например, если написать так:
+I94,Ilyushin IL96-400,9800
+То в столбце model значение не будет смещено вправо (не будет пробела в начале).
+
+\\6
+COPY aircrafts_tmp FROM 'C:/Users/Sergey/Documents/aircrafts_tmp.csv' WITH (FORMAT csv);
+
+Нет, не будут, пока есть "проблемные" строки.
+
+Например:
+784,Boeing 784-300,8500
+773,Boeing 777-300,11100
+763,Boeing 767-300,7900
+SU9,Sukhoi SuperJet-100,3000
+SU8,Sukhoi SuperJet-200,5000 
+
+И для:
+784,Boeing 784-300,8500
+SU8,Sukhoi SuperJet-200,5000 
+
+\\7
+SELECT flight_no, flight_id, departure_city,
+       arrival_city, scheduled_departure
+   FROM flights_v
+   WHERE scheduled_departure
+        BETWEEN bookings.now() AND bookings.now() + INTERVAL '15 days'
+        AND ( departure_city, arrival_city ) IN
+        ( ( 'Красноярск', 'Москва' ),
+          ( 'Москва', 'Сочи'),
+          ( 'Сочи', 'Москва' ),
+          ( 'Сочи', 'Красноярск' )
+        )
+ORDER BY departure_city, arrival_city, scheduled_departure;
+
+CREATE TEMP TABLE ticket_flights_tmp AS
+   SELECT * FROM ticket_flights WITH NO DATA;
+ALTER TABLE ticket_flights_tmp
+   ADD PRIMARY KEY ( ticket_no, flight_id ); 
+
+CREATE TEMP TABLE tickets_directions AS
+   SELECT DISTINCT departure_city, arrival_city FROM routes;
+ALTER TABLE tickets_directions
+   ADD COLUMN last_ticket_time timestamp;
+ALTER TABLE tickets_directions
+   ADD COLUMN tickets_num integer DEFAULT 0;   
+
+WITH sell_tickets AS
+( INSERT INTO ticket_flights_tmp
+    ( ticket_no, flight_id, fare_conditions, amount )
+    VALUES ( '1234567890123', 13829, 'Economy', 10500 ),
+           ( '1234567890123', 4728, 'Economy', 3400 ),
+           ( '1234567890123', 30523, 'Economy', 3400 ),
+           ( '1234567890123', 7757, 'Economy', 3400 ),
+           ( '1234567890123', 30829, 'Economy', 12800 )
+    RETURNING *
+)
+UPDATE tickets_directions td
+    SET last_ticket_time = current_timestamp,
+        tickets_num = tickets_num +
+          ( SELECT count( * )
+               FROM sell_tickets st, flights_v f
+               WHERE st.flight_id = f.flight_id
+                 AND f.departure_city = td.departure_city
+                 AND f.arrival_city = td.arrival_city
+          )
+    WHERE ( td.departure_city, td.arrival_city ) IN
+      ( SELECT departure_city, arrival_city
+          FROM flights_v
+          WHERE flight_id IN ( SELECT flight_id FROM sell_tickets )
+);
+
+SELECT departure_city AS dep_city,
+       arrival_city AS arr_city,
+       last_ticket_time,
+       tickets_num AS num
+FROM tickets_directions
+WHERE tickets_num > 0
+ORDER BY departure_city, arrival_city;
+
+\\8
+WITH aicrafts_seats AS
+( SELECT aircraft_code, model, seats_num,
+         rank() OVER (
+            PARTITION BY left( model, strpos( model, ' ' ) - 1 )
+            ORDER BY seats_num 
+		 )
+    FROM
+      ( SELECT a.aircraft_code, a.model, count( * ) AS seats_num
+          FROM aircrafts_tmp a, seats s
+          WHERE a.aircraft_code = s.aircraft_code
+          GROUP BY 1, 2
+      ) AS seats_numbers
+)
+DELETE FROM aircrafts_tmp a
+   USING aicrafts_seats a_s
+   WHERE a.aircraft_code = a_s.aircraft_code
+      AND left( a.model, strpos( a.model, ' ' ) - 1 )
+          IN ( 'Boeing', 'Airbus' )
+      AND a_s.rank = 1
+RETURNING *;
+
+\\9
+CREATE TABLE seats_tmp AS SELECT * FROM seats WITH NO DATA;
+
+INSERT INTO seats_tmp ( aircraft_code, seat_no, fare_conditions )
+    SELECT aircraft_code, seat_row || letter, fare_condition
+        FROM
+          -- компоновки салонов
+          ( VALUES ( 'SU9', 3, 20, 'F' ),
+                   ( '773', 5, 30, 'I' ),
+                   ( '763', 4, 25, 'H' ),
+                   ( '733', 3, 20, 'F' ),
+                   ( '320', 5, 25, 'F' ),
+                   ( '321', 4, 20, 'F' ),
+                   ( '319', 3, 20, 'F' ),
+                   ( 'CN1', 0, 10, 'B' ),
+                   ( 'CR2', 2, 15, 'D' )
+          ) AS aircraft_info ( aircraft_code, max_seat_row_business,
+                               max_seat_row_economy, max_letter )
+CROSS JOIN
+    -- классы обслуживания
+    ( VALUES ( 'Business' ), ( 'Economy' ) 
+	) AS fare_conditions (fare_condition)
+CROSS JOIN
+    -- список номеров рядов кресел
+    ( VALUES ( '1' ), ( '2' ), ( '3' ), ( '4' ), ( '5' ),
+             ( '6' ), ( '7' ), ( '8' ), ( '9' ), ( '10' ),
+             ( '11' ), ( '12' ), ( '13' ), ( '14' ), ( '15' ),
+             ( '16' ), ( '17' ), ( '18' ), ( '19' ), ( '20' ),
+             ( '21' ), ( '22' ), ( '23' ), ( '24' ), ( '25' ),
+            ( '26' ), ( '27' ), ( '28' ), ( '29' ), ( '30' )
+    ) AS seat_rows ( seat_row )
+CROSS JOIN
+    -- список номеров (позиций) кресел в ряду
+    ( VALUES ( 'A' ), ( 'B' ), ( 'C' ), ( 'D' ), ( 'E' ),
+             ( 'F' ), ( 'G' ), ( 'H' ), ( 'I' )
+    ) AS letters ( letter )
+WHERE
+    CASE WHEN fare_condition = 'Business'
+            THEN seat_row::integer <= max_seat_row_business
+         WHEN fare_condition = 'Economy'
+            THEN seat_row::integer > max_seat_row_business
+              AND seat_row::integer <= max_seat_row_economy
+    END
+AND letter <= max_letter;
