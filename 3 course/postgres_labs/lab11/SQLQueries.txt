@@ -1,0 +1,50 @@
+\\1
+\\Общее количество студентов из всех групп
+
+CREATE OR REPLACE FUNCTION count_students() 
+RETURNS SETOF bigint
+AS $BODY$ 
+BEGIN	
+	RETURN QUERY select SUM("Количество студентов") FROM "Группа";
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+\\2
+\\Вернуть суммарную оплату для преподавателя (количество часов * оплата за 1 час, и так для каждого предмета)
+CREATE OR REPLACE FUNCTION get_salary(IN id integer) 
+RETURNS integer
+AS $BODY$ 
+DECLARE
+rec record;
+salary integer;
+BEGIN	
+	salary := 0;
+	FOR rec IN (SELECT "Количество часов", "Оплата" FROM "Нагрузка" WHERE "ID_Преподаватель" = id)
+	LOOP
+		salary := salary + rec."Количество часов" * rec."Оплата";
+	END LOOP;
+	RETURN salary;
+END;
+$BODY$
+LANGUAGE plpgsql 
+\\3
+\\Вывести всех преподавателей, у которых стаж больше или равен experience
+CREATE OR REPLACE FUNCTION get_prepods(IN experience integer) 
+RETURNS SETOF "Преподаватель"
+AS $BODY$ 
+BEGIN	
+	RETURN QUERY SELECT * FROM "Преподаватель" WHERE "Стаж" >= experience;
+END;
+$BODY$
+LANGUAGE plpgsql 
+\\4 
+\\Вывести название предметов для заданных ID_Преподаватель и ID_Группа
+CREATE OR REPLACE FUNCTION get_subject(IN ID_Преподаватель integer, IN ID_Группа integer) 
+RETURNS SETOF varchar
+AS $BODY$ 
+BEGIN	
+	RETURN QUERY SELECT "Предмет" FROM "Нагрузка" WHERE "ID_Преподаватель" = ID_Преподаватель AND "ID_Группа" = ID_Группа;
+END;
+$BODY$
+LANGUAGE plpgsql 
