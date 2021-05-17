@@ -1,0 +1,403 @@
+\\ИЗДАТЕЛЬСТВО
+CREATE TABLE "Автор"
+(   id_authors int,	
+    fio_authors varchar(20) NOT NULL,		
+    PRIMARY KEY(id_authors)  
+);
+
+INSERT INTO "Автор" VALUES 
+	(1, 'Иванов И. И.'),
+	(2, 'Петров П. П.'),
+	(3, 'Сидоров С. С.'),
+	(4, 'Кузнецов К. К.');
+
+CREATE TABLE "Издательство"
+(   id_publishers int,
+    name varchar(20) NOT NULL,		
+    PRIMARY KEY(id_publishers)  
+);
+
+INSERT INTO "Издательство" VALUES 
+	(1, 'Питер'),
+	(2, 'Дрофа'),
+	(3, 'Феникс'),
+	(4, 'Финансы и статистика');
+
+CREATE TABLE "Книга"
+(   id_books int,
+    name varchar(50) NOT NULL,
+	year_out varchar(4) NOT NULL,
+    PRIMARY KEY(id_books)  
+);
+
+INSERT INTO "Книга" VALUES 
+	(1, 'Основы программирования', '2003'),
+	(2, 'Мировая экономика', '2000'),
+	(3, 'Информатика', '2007'),
+	(4, 'Операционные системы', '2007'),
+	(5, 'Физика 11 класс', '1999'),
+	(6, 'Химия 10 класс', '2005');
+
+CREATE TABLE "Сводная"
+(   id_out int,
+    id_books int NOT NULL,
+	id_authors int NOT NULL,
+	id_publishers int NOT NULL,
+    PRIMARY KEY(id_out),
+	FOREIGN KEY(id_books) REFERENCES "Книга"(id_books),
+	FOREIGN KEY(id_authors) REFERENCES "Автор"(id_authors),
+	FOREIGN KEY(id_publishers) REFERENCES "Издательство"(id_publishers)
+);
+
+INSERT INTO "Сводная" VALUES 
+	(1, 1, 3, 1),
+	(2, 2, 1, 4),
+	(3, 6, 4, 2),
+	(4, 5, 2, 2),
+	(5, 3, 3, 1),
+	(6, 3, 1, 1),
+	(7, 4, 1, 1),
+	(8, 4, 1, 3);
+	
+\\1. Функция
+CREATE OR REPLACE FUNCTION count_books_of_author(IN author_name text) 
+	RETURNS integer
+AS $BODY$
+DECLARE
+	id_author integer;
+	count_books integer;
+BEGIN	
+	id_author := (SELECT id_authors FROM "Автор" WHERE fio_authors = author_name);
+	IF id_author IS NOT NULL 
+	THEN
+		count_books := (SELECT COUNT(id_books) FROM "Сводная" WHERE id_authors = id_author);
+		RETURN count_books;
+	ELSE 
+		RETURN -1;
+	END IF;
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+Для проверки добавим автора без книг:
+INSERT INTO "Автор" VALUES 
+	(5, 'Сергеев С. С.');
+
+SELECT count_books_of_author('Иванов И. И.');
+SELECT count_books_of_author('Сергеев С. С.');
+SELECT count_books_of_author('Алексеев А. А.');
+
+\\2
+CREATE OR REPLACE FUNCTION books_published(izdat text)
+    RETURNS TABLE("Название книги" text, "Фамилии авторов" text, "Дата издания" text) 
+AS $BODY$
+DECLARE
+	izd_id integer;
+BEGIN	
+	izd_id := (SELECT id_publishers from "Издательство" WHERE name = "izdat");
+	RETURN QUERY
+	SELECT cast(K.name as text), string_agg(DISTINCT A.fio_authors, ', '), cast(year_out as text) 
+	FROM "Сводная" as S
+	INNER JOIN "Книга" AS K ON S.id_books = K.id_books
+	INNER JOIN "Автор" AS A ON S.id_authors = A.id_authors
+	WHERE S.id_books IN (select id_books from "Сводная" as S WHERE S.id_publishers = izd_id)
+	GROUP BY K.name, year_out;
+END;
+$BODY$
+LANGUAGE plpgsql
+
+\\3
+DROP FUNCTION books_published;
+
+\\4
+CREATE OR REPLACE FUNCTION fibonacci(n integer)
+    RETURNS TABLE("Число Фибоначчи" numeric) 
+AS $BODY$
+DECLARE 
+	i integer;
+	one numeric;
+	two numeric;
+BEGIN	
+	two := 1;
+	return query (SELECT two);
+	if n > 2 then
+		i := 3;
+		one := 1;
+		return query (SELECT one);
+		while n >= i loop
+			two := one + two;
+			one := two - one;
+			i := i + 1;
+			return query (SELECT two);	
+		end loop;
+	end if;
+END;
+$BODY$
+LANGUAGE 'plpgsql'
+
+SELECT fibonacci(8);
+
+\\ МАГАЗИН
+\\1
+CREATE TABLE "Кассир"
+(   "ID_Кассир" serial,	
+    "ФИО" text NOT NULL,		
+    PRIMARY KEY("ID_Кассир")  
+);
+
+INSERT INTO "Кассир" ("ФИО") VALUES 
+	('Иванов И. И.'),
+	('Петров П. П.'),
+	('Сидоров С. С.');
+	
+CREATE TABLE "Продукт"
+(   "ID_Продукт" serial,
+	"Название" text NOT NULL,
+    "Цена" float NOT NULL,		
+    PRIMARY KEY("ID_Продукт")  
+);	
+
+INSERT INTO "Продукт" ("Название", "Цена") VALUES 
+	('Пылесос', 12599),
+	('Сплит-система', 17300),
+	('Микроволновка', 5150);
+
+CREATE TABLE "Клиент"
+(   "ID_Клиент" serial,
+    "ФИО" text NOT NULL,		
+    PRIMARY KEY("ID_Клиент")  
+);	
+
+INSERT INTO "Клиент" ("ФИО") VALUES 
+	('Кузнецов К. К.'),
+	('Сергеев С. С.'),
+	('Алексеев А. А.'),
+	('Есенин С. А.');
+
+CREATE TABLE "Продажа"
+(   "ID_Продажа" serial,
+    "ID_Клиент" int NOT NULL,	
+	"ID_Продукт" int NOT NULL,
+	"ID_Кассир" int NOT NULL,	
+	"Количество" smallint NOT NULL,	
+	"Дата продажи" timestamp NOT NULL,
+	"Общая сумма" float NOT NULL,
+    PRIMARY KEY("ID_Продажа"),
+	FOREIGN KEY("ID_Клиент") REFERENCES "Клиент"("ID_Клиент") ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY("ID_Продукт") REFERENCES "Продукт"("ID_Продукт") ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY("ID_Кассир") REFERENCES "Кассир"("ID_Кассир") ON DELETE CASCADE ON UPDATE CASCADE	
+);	
+
+\\ 1 клиент совершил 5 покупок, 2 клиент - сумма > 50000, 
+\\ 3 клиент ничего не покупал, 4 клиент совершил 5 покупок и сумма > 50000
+INSERT INTO "Продажа" 
+	("ID_Клиент", "ID_Продукт", "ID_Кассир", "Количество", "Дата продажи", "Общая сумма") VALUES 
+	(1, 1, 1, 1, now(), 12599),
+	(1, 3, 2, 1, now(), 5150),
+	(1, 3, 3, 2, now(), 10300),
+	(1, 3, 1, 1, now(), 5150),
+	(1, 3, 1, 1, now(), 5150),
+	(2, 2, 2, 3, now(), 51900),
+	(4, 2, 1, 1, now(), 17300),
+	(4, 2, 2, 1, now(), 17300),
+	(4, 2, 3, 1, now(), 17300),
+	(4, 2, 2, 1, now(), 17300),
+	(4, 2, 1, 1, now(), 17300);
+	
+\\2
+CREATE OR REPLACE FUNCTION get_discount(IN id integer) 
+	RETURNS float
+AS $BODY$
+DECLARE
+	discount float;
+BEGIN	
+	discount := 1;
+	IF (SELECT COUNT(*) FROM "Продажа" WHERE "ID_Клиент" = id) >= 5
+	THEN
+		discount := 0.97;
+	END IF;
+	
+	IF (SELECT SUM("Общая сумма") FROM "Продажа" WHERE "ID_Клиент" = id) > 50000
+	THEN
+		discount := 0.95;
+	END IF;
+	
+	RETURN discount;
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+\\3
+\\3. Вставка
+CREATE OR REPLACE PROCEDURE insert_cashier(IN FIO text) 
+AS $BODY$
+BEGIN	
+	INSERT INTO "Кассир" ("ФИО") VALUES (FIO);
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+CREATE OR REPLACE PROCEDURE insert_client(IN FIO text) 
+AS $BODY$
+BEGIN	
+	INSERT INTO "Клиент" ("ФИО") VALUES (FIO);
+END;
+$BODY$
+LANGUAGE plpgsql
+
+CREATE OR REPLACE PROCEDURE insert_product(IN name text, IN price float) 
+AS $BODY$
+BEGIN	
+	INSERT INTO "Продукт" ("Название", "Цена") VALUES (name, price);
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+CREATE OR REPLACE PROCEDURE insert_sale
+	(IN id_client int, IN id_product int, IN id_cashier int, IN count int, IN date timestamp) 
+AS $BODY$
+DECLARE
+	discount float;
+	summa int;
+BEGIN	
+	discount := (SELECT get_discount(id_client));
+	summa := (SELECT "Цена" FROM "Продукт" WHERE "ID_Продукт" = id_product) * count * discount;
+	INSERT INTO "Продажа" ("ID_Клиент", "ID_Продукт", "ID_Кассир", "Количество", "Дата продажи", "Общая сумма")
+	VALUES (id_client, id_product, id_cashier, count, date, summa);
+END;
+$BODY$
+LANGUAGE plpgsql
+
+\\ Скидка 5%
+CALL insert_sale(4, 4, 1, 3, now()::timestamp);
+\\ Скидка 3%
+CALL insert_sale(1, 3, 2, 1, now()::timestamp);
+\\ Скидка 0%
+CALL insert_sale(3, 3, 4, 1, now()::timestamp);
+
+\\3. Изменение
+CREATE OR REPLACE PROCEDURE update_cashier(IN id int, IN FIO text) 
+AS $BODY$
+BEGIN	
+	UPDATE "Кассир" SET "ФИО" = FIO WHERE "ID_Кассир" = id;
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+CREATE OR REPLACE PROCEDURE update_client(IN id int, IN FIO text) 
+AS $BODY$
+BEGIN	
+	UPDATE "Клиент" SET "ФИО" = FIO WHERE "ID_Клиент" = id;
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+\\ Суммы в продажах для старых записей не изменяются. 
+\\ Это можно объяснить из предметной области: данная функция устанавливает новую цену товара, 
+\\ а в продажах учитываются старые цены для старых записей.
+CREATE OR REPLACE PROCEDURE update_product(IN id int, IN name text, IN price float) 
+AS $BODY$
+BEGIN	
+	UPDATE "Продукт" SET "Название" = name, "Цена" = price WHERE "ID_Продукт" = id;
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+\\Нельзя использовать функцию get_discount для получения скидки, 
+\\так как она будет учитывать текущую редактируемую запись и от этого может измениться объем скидки
+\\Поэтому перед изменением общей суммы, вычисляется размер скидки по оригинальной записи (как старая общая сумма / цена * количество) 
+\\И применяется к новой сумме
+
+CREATE OR REPLACE PROCEDURE update_sale
+	(IN id int, IN id_client int, IN id_product int, IN id_cashier int, IN count int, IN date timestamp) 
+AS $BODY$
+DECLARE
+	price float;
+	discount float;
+	summa int;
+BEGIN	
+	discount := (SELECT round(("Общая сумма" / 
+		((SELECT "Цена" FROM "Продукт" WHERE "ID_Продукт" = "Продажа"."ID_Продукт") * "Количество"))::numeric,2)
+		FROM "Продажа" WHERE "ID_Продажа" = id);
+	summa := (SELECT "Цена" FROM "Продукт" WHERE "ID_Продукт" = id_product) * count * discount;
+	UPDATE "Продажа" 
+	SET "ID_Клиент" = id_client, "ID_Продукт" = id_product, "ID_Кассир" = id_cashier, 
+		"Количество" = count, "Дата продажи" = date, "Общая сумма" = summa
+		WHERE "ID_Продажа" = id;
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+\\Вычисляется скидка 3% перед изменением и перерасчитывается общая сумма: 1678100
+CALL update_sale(13, 1, 2, 2, 100, '2021-05-17 15:55:13'::timestamp); 
+'
+\\3. Удаление (каскадное, при удалении кассира удаляются соответствующие записи в продажах)
+CREATE OR REPLACE PROCEDURE delete_cashier(IN id int) 
+AS $BODY$
+BEGIN	
+	DELETE FROM "Кассир" WHERE "ID_Кассир" = id;
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+CREATE OR REPLACE PROCEDURE delete_client(IN id int) 
+AS $BODY$
+BEGIN	
+	DELETE FROM "Клиент" WHERE "ID_Клиент" = id;
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+CREATE OR REPLACE PROCEDURE delete_product(IN id int) 
+AS $BODY$
+BEGIN	
+	DELETE FROM "Продукт" WHERE "ID_Продукт" = id;
+END;
+$BODY$
+LANGUAGE plpgsql
+
+CREATE OR REPLACE PROCEDURE delete_sale(IN id int) 
+AS $BODY$
+BEGIN	
+	DELETE FROM "Продажа" WHERE "ID_Продажа" = id;
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+CALL delete_cashier(4)
+CALL delete_client(2)
+CALL delete_client(3)
+CALL delete_product(4)
+CALL delete_sale(13)
+
+\\ Удалены продажи: 6 (так как ID клиента = 2), 12 (т.к. ID продукта = 4), 13 (т.к. delete_sale (13)), и 14 (т.к. ID клиента = 3 и ID кассира = 4)
+
+\\4
+CREATE OR REPLACE FUNCTION get_full_discount(IN id integer, IN summa float, IN date timestamp) 
+	RETURNS float
+AS $BODY$
+DECLARE
+	discount float;
+BEGIN	
+	discount := (SELECT get_discount(id));
+	IF (SELECT EXTRACT(DOW FROM date)) = 0 
+	THEN
+		discount := discount - 0.03;
+	END IF;
+	
+	IF summa > 100000 
+	THEN
+		discount := discount - 0.01;
+	END IF;
+	
+	RETURN round((discount)::numeric, 2);
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+\\У клиента скидка 5%, сумма выше 100000 и дата выходной: скидка 9%
+SELECT get_full_discount(4, 111000, '2021-05-16 15:00:00');
+\\У клиента скидка 5%, сумма выше 100000 и не выходной: скидка 6%
+SELECT get_full_discount(4, 111000, '2021-05-17 15:00:00');
+\\У клиента скидка 5%, сумма <= 100000 и не выходной: скидка 5%
+SELECT get_full_discount(4, 111000, '2021-05-17 15:00:00');
