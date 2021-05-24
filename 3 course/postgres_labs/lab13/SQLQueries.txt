@@ -1,0 +1,93 @@
+\\1
+CREATE FUNCTION calc_sale_count()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+	NEW."Общая сумма" := NEW."Количество" * (SELECT "Цена" FROM "Продукт" WHERE NEW."ID_Продукт" = "ID_Продукт");
+	RETURN NEW;
+END
+$BODY$;
+
+CREATE TRIGGER t_insert_sale
+    BEFORE INSERT
+    ON "Продажа"
+    FOR EACH ROW
+    EXECUTE PROCEDURE calc_sale_count();
+	
+INSERT INTO "Продажа" 
+	("ID_Клиент", "ID_Продукт", "ID_Кассир", "Количество", "Дата продажи") VALUES 
+	(1, 3, 1, 2, now()),
+	(1, 1, 2, 3, now());
+	
+\\2
+\\Добавим столбец с базовой скидкой для клиента:
+ALTER TABLE "Клиент" ADD COLUMN "Скидка" FLOAT NOT NULL DEFAULT 1
+\\Обновим базовые скидки для клиентов на данный момент:
+UPDATE "Клиент" cl
+    SET "Скидка" = ( SELECT get_discount(cl."ID_Клиент") )
+    WHERE ( cl."ID_Клиент" ) IN ( SELECT "ID_Клиент" FROM "Клиент");
+\\задание 2
+CREATE FUNCTION recalc_discount()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+	UPDATE "Клиент" SET "Скидка" = (SELECT get_discount("ID_Клиент")) WHERE "ID_Клиент" = OLD."ID_Клиент";
+	RETURN OLD;
+END
+$BODY$;
+
+CREATE TRIGGER t_delete_sale
+    AFTER DELETE
+    ON "Продажа"
+    FOR EACH ROW
+    EXECUTE PROCEDURE recalc_discount();
+
+\\проверим скидку перед удалением, она равна 0.95 (5% скидка) для клиента 1 
+\\так как общая сумма больше 50к
+SELECT SUM("Общая сумма") FROM "Продажа" WHERE "ID_Клиент" = 1
+\\удаляем
+DELETE FROM "Продажа" WHERE "ID_Продажа" = 13;
+\\теперь сумма меньше 50к, а именно 48649, поэтому скидка 3%
+
+\\3
+\\не совсем понятен смысл данного задания, 
+\\зачем создавать триггерную функцию, которая принимает параметр через массив TG_ARGV
+\\если ID_клиента доступен в переменных OLD/NEW (так как это операция UPDATE)
+\\и каким образом триггерная функция должна возвращать информацию (и куда)
+\\так или иначе, был создан следующий триггер
+\\информация выводится через RAISE NOTICE
+\\параметр триггерной функции вбит в триггер (значение 1), которое используется для вывода нарастающего итога
+
+CREATE FUNCTION display_info()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	items RECORD;
+BEGIN
+	FOR items IN 
+	(	SELECT DISTINCT(S."Дата продажи"), 
+			(SELECT SUM(S2."Общая сумма")
+			FROM "Продажа" S2
+			WHERE S2."Дата продажи" <= S."Дата продажи"
+			AND S2."ID_Клиент" = S."ID_Клиент") as "Общая сумма"
+		FROM "Продажа" S
+		WHERE S."ID_Клиент" = TG_ARGV[0]::integer
+		ORDER BY S."Дата продажи"
+	)
+	LOOP
+        RAISE NOTICE 'Дата продажи: %, Общая сумма: %', items."Дата продажи", items."Общая сумма";
+    END LOOP;
+	RETURN NEW;
+END
+$BODY$;
+
+CREATE TRIGGER t_update_sale
+    AFTER UPDATE
+    ON "Продажа"
+    FOR EACH ROW
+    EXECUTE PROCEDURE display_info(1);
+	
+UPDATE "Продажа" SET "ID_Кассир" = 2 WHERE "ID_Продажа" = 12	
