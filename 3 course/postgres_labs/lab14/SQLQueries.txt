@@ -1,0 +1,98 @@
+\\3
+CREATE OR REPLACE PROCEDURE generate_data_in_groups(n integer)
+AS $BODY$
+BEGIN	
+	INSERT INTO "Группа" ("Специальность", "Отделение", "Количество студентов")
+	SELECT 	('2.' || to_char((random() * 60 + 0), 'FM00') || '.' || to_char((random() * 2 + 3), 'FM00') || '.' || to_char((random() * 11 + 0), 'FM00')) AS "Специальность",
+		(array['Очное', 'Заочное'])[ceil(random()*2)] AS "Отделение",
+		(random() * 20 + 10)::int AS "Количество студентов"
+	FROM generate_series(1,n);
+END;
+$BODY$
+LANGUAGE 'plpgsql'
+
+CREATE OR REPLACE PROCEDURE generate_data_in_prepods(n integer)
+AS $BODY$
+DECLARE 
+	i integer;
+BEGIN	
+	i := 0;
+	WHILE i < n LOOP
+		INSERT INTO "Преподаватель" ("Фамилия", "Имя", "Отчество", "Телефон", "Стаж")
+		SELECT 	array_to_string(ARRAY(SELECT chr((ascii('А') + round(random() * 31)) :: integer) FROM generate_series(1,20)), '') AS "Фамилия",
+				array_to_string(ARRAY(SELECT chr((ascii('А') + round(random() * 31)) :: integer) FROM generate_series(1,20)), '') AS "Имя",
+				array_to_string(ARRAY(SELECT chr((ascii('А') + round(random() * 31)) :: integer) FROM generate_series(1,20)), '') AS "Отчество",
+				to_char((random() * 9999999999 + 0), 'FM70000000000') AS "Телефон",
+				(random() * 30 + 1)::smallint AS "Стаж";
+				
+		i := i + 1;
+	END LOOP;
+END;
+$BODY$
+LANGUAGE 'plpgsql'		
+		
+CREATE OR REPLACE PROCEDURE generate_data_in_nagruzka(n integer)
+AS $BODY$
+DECLARE 
+	i integer;
+BEGIN	
+	i := 0;
+	WHILE i < n LOOP
+	INSERT INTO "Нагрузка" ("ID_Преподаватель", "ID_Группа", "Количество часов", "Предмет", "Тип занятия", "Оплата")
+	SELECT 	(random() * 999 + 1)::int AS "ID_Преподаватель",
+			(random() * 999 + 1)::int AS "ID_Группа",
+			(random() * 196 + 4)::int AS "Количество часов",
+			array_to_string(ARRAY(SELECT chr((ascii('А') + round(random() * 31)) :: integer) FROM generate_series(1,20)), '') AS "Предмет",
+			(array['Лекция', 'Практика'])[ceil(random()*2)] AS "Тип занятия",
+			(round(random() * 20) * 100 + 100)::int AS "Оплата";
+	i := i + 1;
+	END LOOP;
+END;
+$BODY$
+LANGUAGE 'plpgsql'		
+
+\\4 - 5
+SELECT * FROM "Группа" WHERE "Специальность" = '2.42.05.03'; //35 ms
+
+SELECT * FROM "Преподаватель" WHERE "Фамилия" LIKE '%Ы'; //36 ms
+
+//35 ms
+SELECT "Группа"."ID_Группа", "Группа"."Специальность", "Преподаватель"."Фамилия", "Нагрузка"."Предмет", "Нагрузка"."Количество часов"
+	FROM "Группа", "Преподаватель", "Нагрузка"
+	WHERE "Нагрузка"."ID_Группа" = "Группа"."ID_Группа"
+	AND "Нагрузка"."ID_Преподаватель" = "Преподаватель"."ID_Преподаватель"
+	AND "Нагрузка"."Количество часов" IN ('15', '193', '51')
+	ORDER BY "Нагрузка"."Количество часов";
+	
+\\6 - 7 - 8
+CREATE INDEX index_specialnost ON "Группа" ("Специальность");
+SELECT * FROM "Группа" WHERE "Специальность" = '2.42.05.03'; //31ms
+
+CREATE INDEX index_familia ON "Преподаватель" ("Фамилия");
+SELECT * FROM "Преподаватель" WHERE "Фамилия" LIKE '%Ы'; //28ms
+
+//33 ms
+SELECT "Группа"."ID_Группа", "Группа"."Специальность", "Преподаватель"."Фамилия", "Нагрузка"."Предмет", "Нагрузка"."Количество часов"
+	FROM "Группа", "Преподаватель", "Нагрузка"
+	WHERE "Нагрузка"."ID_Группа" = "Группа"."ID_Группа"
+	AND "Нагрузка"."ID_Преподаватель" = "Преподаватель"."ID_Преподаватель"
+	AND "Нагрузка"."Количество часов" IN ('15', '193', '51')
+	ORDER BY "Нагрузка"."Количество часов";
+	
+\\9
+CREATE INDEX index_hours ON "Нагрузка" USING HASH ("Количество часов");
+
+\\10 
+//32ms
+
+\\1 миллион строк в преподавателе до индекса
+SELECT * FROM "Преподаватель" WHERE "Фамилия" LIKE '%Я'; // 236ms
+SELECT * FROM "Преподаватель" WHERE "Фамилия" = 'ЫСЦАЕЗКЮЕШЛАБЙВСЕЙЖЯ'; // 180ms
+\\после индекса
+CREATE INDEX index_familia ON "Преподаватель" ("Фамилия");
+//239 ms
+//38 ms
+
+\\300к строк в нагрузке
+\\до индекса - 80ms
+\\после индекса - 50ms
