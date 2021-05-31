@@ -1,0 +1,124 @@
+\\1
+CREATE USER new_agent;
+
+\\2
+CREATE USER agent_with_password PASSWORD 'pass';
+
+\\7
+DELETE FROM "Customer" WHERE "ID_Customer" = 1;
+INSERT INTO "Order" ("Sum", "Date", "ID_Customer", "ID_Agent") 
+	VALUES (99999999, now(), 1, 1);
+UPDATE "Agent" SET "Commission" = "Commission" + 10000;
+SELECT * FROM "Agent";
+
+ERROR:  permission denied for table *** (где "***" - название таблиц: Customer, Agent, Order).
+
+\\8 
+Должен сказать, что агенты не имеют никакой свободы действий, все вышеперечисленные запросы сообщают об отсутствии прав.
+
+\\9
+CREATE GROUP agents;
+
+\\10
+REVOKE ALL ON ALL TABLES IN SCHEMA PUBLIC FROM PUBLIC;
+GRANT SELECT ON ALL TABLES IN SCHEMA PUBLIC TO agents;
+
+\\11
+GRANT agents TO new_agent, agent_with_password;
+
+\\12
+Все кроме SELECT запрещено.
+
+\\15
+CREATE GROUP customers;
+
+\\16
+GRANT INSERT ON "Order" TO customers;
+
+И стоит добавить возможность использовать последовательность ID в таблице Order, иначе вставка без указания ID будет невозможна.
+GRANT USAGE, SELECT ON SEQUENCE "Order_ID_Order_seq" TO customers;
+
+CREATE USER customer_1 IN ROLE customers;
+
+\\18 
+Запросы из пункта 7.
+Все запрещено, кроме вставки.
+
+\\20
+CREATE USER burn_to_die
+WITH PASSWORD 'temp'
+VALID UNTIL '2021-05-31 23:49:00'
+
+\\22
+ALTER USER agent_with_password CONNECTION LIMIT 1;
+
+\\27
+CREATE OR REPLACE FUNCTION agent_orders(id integer)
+RETURNS TABLE("Date" date, "Sum" real, "Customer name" text) 
+SECURITY DEFINER
+AS $BODY$
+BEGIN
+	RETURN QUERY
+	SELECT "Order"."Date", "Order"."Sum", "Customer"."Name"::text 
+	FROM "Order" INNER JOIN "Customer" 
+		ON "Order"."ID_Customer" = "Customer"."ID_Customer"
+	WHERE "Order"."ID_Agent" = id;
+END;
+$BODY$
+LANGUAGE plpgsql
+
+\\28
+REVOKE ALL ON FUNCTION agent_orders(integer) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION agent_orders(integer) TO agents;
+
+Также следует отнять у агентов возможность просматривать все таблицы, иначе функция бессмыслена.
+REVOKE ALL ON ALL TABLES IN SCHEMA PUBLIC FROM agents;
+
+\\29
+SELECT * FROM agent_orders(2);
+
+\\30
+CREATE GROUP prepods;
+CREATE USER prepod_1 PASSWORD 'pass' IN ROLE prepods;
+
+GRANT SELECT ON "Группа" TO prepods;
+
+CREATE OR REPLACE FUNCTION prepod_nagruzka(id integer)
+RETURNS TABLE("Номер группы" int, "Специальность" text, "Количество часов" smallint, "Предмет" text, "Тип занятия" text, "Оплата" real) 
+SECURITY DEFINER
+AS $BODY$
+BEGIN
+	RETURN QUERY
+	SELECT "Группа"."ID_Группа", "Группа"."Специальность"::text, 
+	"Нагрузка"."Количество часов", "Нагрузка"."Предмет"::text, "Нагрузка"."Тип занятия"::text, "Нагрузка"."Оплата"
+	FROM "Группа" INNER JOIN "Нагрузка" 
+		ON "Группа"."ID_Группа" = "Нагрузка"."ID_Группа"
+	WHERE "Нагрузка"."ID_Преподаватель" = id;
+END;
+$BODY$
+LANGUAGE plpgsql
+
+REVOKE ALL ON FUNCTION prepod_nagruzka(integer) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION prepod_nagruzka(integer) TO prepods;
+
+CREATE GROUP students;
+CREATE USER student_1 PASSWORD 'pass' IN ROLE students;
+
+CREATE OR REPLACE FUNCTION student_nagruzka(id integer)
+RETURNS TABLE("Преподаватель" text, "Телефон преподавателя" text, "Количество часов" smallint, "Предмет" text, "Тип занятия" text) 
+SECURITY DEFINER
+AS $BODY$
+BEGIN
+	RETURN QUERY
+	SELECT ("Преподаватель"."Фамилия" || ' ' || "Преподаватель"."Имя" || ' ' || "Преподаватель"."Отчество")::text, "Преподаватель"."Телефон"::text, 
+	"Нагрузка"."Количество часов", "Нагрузка"."Предмет"::text, "Нагрузка"."Тип занятия"::text
+	FROM "Преподаватель" INNER JOIN "Нагрузка" 
+		ON "Преподаватель"."ID_Преподаватель" = "Нагрузка"."ID_Преподаватель"
+	WHERE "Нагрузка"."ID_Группа" = id;
+END;
+$BODY$
+LANGUAGE plpgsql
+
+REVOKE ALL ON FUNCTION student_nagruzka(integer) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION student_nagruzka(integer) TO prepods;
+GRANT EXECUTE ON FUNCTION student_nagruzka(integer) TO students;
