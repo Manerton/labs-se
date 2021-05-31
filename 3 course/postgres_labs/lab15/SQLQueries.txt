@@ -1,0 +1,147 @@
+\\1 
+Через pgAdmin 4 была создана резервная копия базы данных.
+
+\\2
+SELECT * FROM "Нагрузка";
+
+\\3
+BEGIN;
+DELETE FROM "Нагрузка";
+SELECT * FROM "Нагрузка";
+\\5
+ROLLBACK;
+SELECT * FROM "Нагрузка";
+
+\\7
+Предупреждение WARNING:  there is no transaction in progress, поскольку мы вернулись к состоянию до удаления (до начала транзакции), поэтому и сохранять было нечего.
+
+\\8
+CREATE TABLE test
+(   first bigint,	
+    second bigint,		
+    third bigint
+);
+
+\\9
+INSERT INTO test VALUES 
+	(1, 1, 1),
+	(2, 2, 2),
+	(3, 3, 3),
+	(4, 4, 4),
+	(5, 5, 5);
+
+\\10
+SELECT * FROM test;
+
+\\11
+BEGIN;
+DELETE FROM test;
+
+\\12
+COMMIT;
+
+\\13
+WARNING:  there is no transaction in progress
+
+\\14 
+Изменения были сохранены, поэтому "откатиться" уже невозможно.
+
+\\15
+ALTER TABLE test ADD COLUMN id int PRIMARY KEY;
+
+INSERT INTO test (id, first, second, third) 
+VALUES (1, 1, 1, 1);
+	
+\\16
+CREATE OR REPLACE PROCEDURE Count(IN inc boolean) 
+AS $BODY$
+DECLARE
+	one int;
+	i int;
+	n int;
+BEGIN	
+	i := 1;
+	
+	IF (inc) 
+		THEN one := 1;
+		ELSE one := -1;
+	END IF;
+		
+	N := COUNT(*) FROM test;
+	WHILE i <= N LOOP
+		UPDATE test SET first = first + one 
+			WHERE id = i;
+		UPDATE test SET second = second + one 
+			WHERE id = i;
+		UPDATE test SET third = third + one 
+			WHERE id = i;	
+		i := i + 1;
+	END LOOP;
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+\\17
+CREATE OR REPLACE PROCEDURE Count1() 
+AS $BODY$
+BEGIN	
+	CALL Count(true);
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+CREATE OR REPLACE PROCEDURE Count2() 
+AS $BODY$
+BEGIN	
+	CALL Count(false);
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+\\18
+BEGIN;
+CALL Count1();
+CALL Count2();
+SELECT * FROM test;
+COMMIT;
+
+\\20
+DELETE FROM test;
+
+\\21
+INSERT INTO test (id, first, second, third) 
+VALUES (1, 1, 1, 1);
+
+\\22
+BEGIN;
+CALL Count2();
+CALL Count1();
+SELECT * FROM test;
+COMMIT;
+
+\\24
+На уровне изоляции Read committed (по умолчанию) "грязное" чтение, то есть когда транзакция читает данные, записанные параллельной незавершённой транзакции - невозможно, поскольку транзакции на этом уровне видят только те данные, которые были зафиксированы до начала запроса командой COMMIT.
+
+Неповторяющееся чтение - транзакция читает те же данные, но обнаруживает, что они были изменены другой параллельной транзакцией.
+
+Транзакция 1							|	Транзакция 2
+
+											SELECT "Количество студентов" FROM "Группа" WHERE "ID_Группа"=1;
+UPDATE "Группа" 
+SET "Количество студентов" 
+	= "Количество студентов"+1 
+WHERE "ID_Группа"=1; 	
+COMMIT; 	
+											SELECT "Количество студентов" FROM "Группа" WHERE "ID_Группа"=1;
+
+Фантомные операции чтения - транзакция повторно выполняет запрос, возвращающий набор строк для некоторого условия, и обнаруживает, что набор строк, удовлетворяющих условию, изменился из-за транзакции, завершившейся за это время.
+
+Транзакция 1							|	Транзакция 2
+
+											SELECT SUM("Количество студентов") FROM "Группа";
+INSERT INTO "Группа" 
+("Специальность", "Отделение", "Количество студентов")
+VALUES ('2.09.03.08', 'Очное', 11); 	
+COMMIT; 	
+											SELECT SUM("Количество студентов") FROM "Группа";
+Этих ошибок при параллельной обработке транзакций можно избежать с помощью использования других уровней изоляции (Repeatable read - неповторяющееся чтение невозможно, и Serializable - невозможно и фантомное чтение).
