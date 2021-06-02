@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Lab3.Models.ToDoListItemModel>
+@{
+    ViewData["Title"] = "Дела в списке - " + @ViewBag.ListName;
+}
+
+<div class="text-center">
+    <h1 class="display-4">Дела в списке - @ViewBag.ListName</h1>
+    <form method="post">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Название дела</th>
+                    <th scope="col">Выполнено?</th>
+                    <th scoep="col">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 1;
+                }
+                @foreach (var item in Model)
+                {
+                        <tr>
+                            <th scope="row">@(i++)</th>
+                            <td class="w-100">@item.Name</td>
+                            <td>@item.Done</td>
+                            <td nowrap>
+                                <a class="btn btn-outline-primary" asp-controller="ToDoListItem" asp-action="Update"
+                            asp-route-id="@item.ItemId">Изменить</a> |
+                                <input class="btn btn-danger" type="submit" value="X" asp-controller="ToDoListItem"
+                            asp-action="Delete" asp-route-id="@item.ItemId">
+                            </td>
+                        </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+    <a class="btn btn-outline-primary" asp-controller="ToDoListItem" asp-action="Create" asp-route-id="@ViewBag.ListId">Добавить новое дело</a>
+    <a class="btn btn-danger" asp-controller="ToDoList" asp-action="Index">Вернуться</a>
+</div>

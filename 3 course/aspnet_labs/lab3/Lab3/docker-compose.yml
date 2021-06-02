@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  lab3:
+    image: lab3
+    build: .
+    depends_on: 
+      - db
+  db:
+    image: postgres

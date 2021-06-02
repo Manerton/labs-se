@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Добавление нового дела в список - " + @ViewBag.ListName;
+}
+
+<div class="text-center">
+    <h1 class="display-4">Добавление нового дела в список - @ViewBag.ListName</h1>
+    <form method="post" class="text-left">
+        <input type="text" name="ListId" id="ListId" value="@ViewBag.ListId" hidden>
+        <p>
+            <label for="Name"><b>Название:</b></label><br>
+            <input type="text" name="Name" id="Name" class="w-100" required>
+        </p>
+        <p>
+            <label for="Done"><b>Выполнено?:</b></label><br>
+            <input type="checkbox" name="Done" id="Done" value="true">
+        </p>
+        <input type="submit" value="Добавить">
+    </form>
+</div>

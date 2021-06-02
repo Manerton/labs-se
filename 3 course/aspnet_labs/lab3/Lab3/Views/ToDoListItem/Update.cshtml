@@ -1,0 +1,21 @@
+@model Lab3.Models.ToDoListItemModel
+@{
+    ViewData["Title"] = "Редактирование дела в списке - " + @ViewBag.ListName;
+}
+
+<div class="text-center">
+    <h1 class="display-4">Редактирование дела в списке - @ViewBag.ListName</h1>
+    <form method="post" class="text-left">
+        <input type="text" name="ItemId" id="ItemId" value="@Model.ItemId" hidden>
+        <input type="text" name="ListId" id="ListId" value="@Model.ListId" hidden>
+        <p>
+            <label for="Name"><b>Название:</b></label><br>
+            <input type="text" name="Name" id="Name" value="@Model.Name" class="w-100" required>
+        </p>
+        <p>
+            <label for="Done"><b>Выполнено?:</b></label><br>
+            <input type="checkbox" name="Done" id="Done" value="true" checked="@Model.Done">
+        </p>
+        <input type="submit" value="Сохранить изменения">
+    </form>
+</div>
