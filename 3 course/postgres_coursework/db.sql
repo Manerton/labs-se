@@ -119,10 +119,6 @@ CREATE TABLE менеджер
 	PRIMARY KEY (id_менеджер)
 );
 
-CREATE VIEW менеджер_v 
-AS SELECT id_менеджер, фамилия AS "Фамилия", имя AS "Имя", отчество AS "Отчество", телефон AS "Телефон", email AS "Электронная почта"
-FROM менеджер ORDER BY id_менеджер;
-
 -- Статус
 CREATE TABLE статус
 (
@@ -181,7 +177,7 @@ CREATE TABLE позиция_заказа
 
 -- Создание ролей
 CREATE USER operator PASSWORD 'oper123';
-GRANT SELECT ON категория, менеджер, менеджер_v, поставщик, производитель, пункт_выдачи, склад, товар_на_складе, товар TO operator;
+GRANT SELECT ON категория, менеджер, поставщик, производитель, пункт_выдачи, склад, товар_на_складе, товар TO operator;
 
 CREATE GROUP managers;
 GRANT SELECT ON заказ TO managers;
@@ -205,20 +201,28 @@ LANGUAGE plpgsql
 
 -- Функция редактирования менеджера
 CREATE OR REPLACE FUNCTION update_manager
-(IN id int, IN surname text, IN name text, IN otchestvo text, IN tel text, IN mail text, IN passw text) 
+(IN id int, IN surname text, IN name text, IN otchestvo text, IN tel text, IN new_mail text, IN passw text) 
 RETURNS void
 SECURITY DEFINER
 AS $BODY$
+DECLARE
+	old_mail text;
 BEGIN	
-	UPDATE менеджер 
-	SET фамилия = surname, 
-	имя = name, 
-	отчество = otchestvo, 
-	телефон = tel, 
-	email = mail
-	WHERE id_менеджер = id;
+	old_mail := (SELECT email FROM менеджер WHERE id_менеджер = id);
+	IF (SELECT usename FROM pg_user WHERE old_mail != new_mail AND usename = mail) IS NOT NULL
+	THEN 
+		RAISE reserved_name;
+	ELSE 
+		UPDATE менеджер 
+		SET фамилия = surname, 
+		имя = name, 
+		отчество = otchestvo, 
+		телефон = tel, 
+		email = new_mail
+		WHERE id_менеджер = id;
 
-	EXECUTE FORMAT('ALTER USER %I WITH PASSWORD ''%I''', mail, passw);
+		EXECUTE FORMAT('ALTER USER %I WITH PASSWORD ''%I''', new_mail, passw);
+	END IF;
 END;
 $BODY$
 LANGUAGE plpgsql  

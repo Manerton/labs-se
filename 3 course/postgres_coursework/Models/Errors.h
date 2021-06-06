@@ -10,7 +10,8 @@ namespace Errors
     enum ErrCode: int {
         not_null_violation = 23502,
         check_violation = 23514,
-        duplicate_object = 42710
+        duplicate_object = 42710,
+        reserved_name = 42939
     };
 
     static QString msg(QSqlError errorCode)
@@ -24,6 +25,8 @@ namespace Errors
                 if (errorCode.text().indexOf("менеджер_телефон_check") != -1) return "Номер телефона должен состоять из 11 символов!";
             case ErrCode::duplicate_object:
                 if (errorCode.text().indexOf("role") != -1) return "Данный пользователь уже зарегестрирован!";
+            case ErrCode::reserved_name:
+                return "Указанный логин занят другим пользователем!";
             default:
                 return "Непредвиденная ошибка, сообщите администратору следующий код: " + QString::number(code);
         }
