@@ -16,14 +16,14 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Sql REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Sql REQUIRED)
 set(PROJECT_SOURCES
         main.cpp
-        MainWindow.ui MainWindow.h MainWindow.cpp
+        Controllers/MainWindow.h Controllers/MainWindow.cpp Views/MainWindow.ui
         Database.h Database.cpp
-        IRepository.h
-        NagruzkaRepository.h NagruzkaRepository.cpp
-        AuthForm.h AuthForm.cpp AuthForm.ui
-        BuyerForm.h BuyerForm.cpp BuyerForm.ui
-        ManagerForm.h ManagerForm.cpp ManagerForm.ui
-        OperatorForm.h OperatorForm.cpp OperatorForm.ui
+        Models/IRepository.h
+        Models/NagruzkaRepository.h Models/NagruzkaRepository.cpp
+        Controllers/AuthForm.h Controllers/AuthForm.cpp Views/AuthForm.ui
+        Controllers/BuyerForm.h Controllers/BuyerForm.cpp Views/BuyerForm.ui
+        Controllers/ManagerForm.h Controllers/ManagerForm.cpp Views/ManagerForm.ui
+        Controllers/OperatorForm.h Controllers/OperatorForm.cpp Views/OperatorForm.ui
         StringTools.h
 )
 
