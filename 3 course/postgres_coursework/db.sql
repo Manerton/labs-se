@@ -198,8 +198,36 @@ END;
 $BODY$
 LANGUAGE plpgsql 
 
+-- Разрешаем добавлять менеджеров оператору
 GRANT EXECUTE ON PROCEDURE add_manager(text, text, text, text, text, text) TO operator;
-
+-- Добавляем несколько менеджеров
 CALL add_manager('Иванов', 'Иван', 'Иванович', '79999999979', 'test@mail.ru', 'test1');
 CALL add_manager('Петров', 'Петр', 'Петрович', '79089195979', 'petr1@yandex.ru', 'petya');
 CALL add_manager('Алексеев', 'Алексей', 'Алексеевич', '79889225979', 'alexey88@mail.ru', 'leha1');
+
+-- Функция - кто я?
+CREATE OR REPLACE FUNCTION whoami() 
+RETURNS text
+SECURITY DEFINER
+AS $BODY$
+DECLARE
+	group_role text;
+	this_user text;
+BEGIN	
+	this_user := (SELECT session_user);
+	group_role := (SELECT rolname FROM pg_user
+				JOIN pg_auth_members ON (pg_user.usesysid=pg_auth_members.member)
+				JOIN pg_roles ON (pg_roles.oid=pg_auth_members.roleid)
+				WHERE pg_user.usename = this_user);
+	IF group_role IS NOT NULL
+	THEN
+		RETURN group_role;
+	ELSE 
+		RETURN this_user;
+	END IF;
+END;
+$BODY$
+LANGUAGE plpgsql 
+
+-- Разрешаем функцию для оператора, менеджеров и покупателя
+GRANT EXECUTE ON FUNCTION whoami() TO operator, managers, buyer;

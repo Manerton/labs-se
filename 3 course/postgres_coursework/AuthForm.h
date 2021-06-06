@@ -26,6 +26,7 @@ signals:
 private slots:
     void on_authBuyer_pushButton_clicked();
     void on_auth_pushButton_clicked();
+    void on_pass_LineEdit_returnPressed();
 };
 
 #endif // AUTHFORM_H

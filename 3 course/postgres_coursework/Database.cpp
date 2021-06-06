@@ -2,6 +2,7 @@
 #include <cmath>
 #include <QtSql/QSqlError>
 #include <QMessageBox>
+#include <QDebug>
 #include "StringTools.h"
 
 using namespace StringTools;
@@ -9,7 +10,6 @@ using namespace StringTools;
 // подключение к БД
 void Database::setConnection(std::string_view db_name, std::string_view login, std::string_view password)
 {
-    db = QSqlDatabase::addDatabase("QPSQL");
     db.setDatabaseName(db_name.cbegin());
     db.setHostName(hostname);
     db.setPort(port);
@@ -46,6 +46,16 @@ void Database::execWithDisplay(const QString &str)
     {
         model->setQuery(query);
     }
+}
+
+void Database::first()
+{
+    query.first();
+}
+
+QVariant Database::value(int i)
+{
+    return query.value(i);
 }
 
 void Database::prepare(const QString &str)

@@ -24,7 +24,8 @@ class Database
 // методы
 public:
     explicit Database()
-        : model{std::make_shared<QSqlQueryModel>()},
+        : db(QSqlDatabase::addDatabase("QPSQL")),
+          model{std::make_shared<QSqlQueryModel>()},
           query(db)
     {}
     // установить подключение к БД
@@ -38,11 +39,11 @@ public:
     void exec();
     void exec(const QString &str);
     void execWithDisplay(const QString &str);
+    void first();
+    QVariant value(int i);
     void prepare(const QString &str);
     void bindValue(const QString &placeholder, const QVariant &val);
-
     std::map<int, QString> getAttributesList(const QString &str);
-
 };
 
 #endif // DATABASE_H
