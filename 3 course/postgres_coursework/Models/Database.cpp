@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include "StringTools.h"
+#include "Errors.h"
 
 using namespace StringTools;
 
@@ -18,7 +19,7 @@ void Database::setConnection(std::string_view db_name, std::string_view login, s
 
     if (!db.open()) {
         QMessageBox::critical(nullptr, "Ошибка",
-                              "Не удалось подключиться к базе данных!", QMessageBox::Close);
+                              "Не удалось подключиться к базе данных!");
 
         exit(EXIT_FAILURE);
     }
@@ -27,20 +28,21 @@ void Database::setConnection(std::string_view db_name, std::string_view login, s
 void Database::exec()
 {
     if (!query.exec())
-        QMessageBox::critical(nullptr,"Ошибка",query.lastError().text());
+        QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError()));
+
 }
 
 void Database::exec(const QString &str)
 {
     if (!query.exec(str))
-        QMessageBox::critical(nullptr,"Ошибка",query.lastError().text());
+        QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError().nativeErrorCode()));
 }
 
 void Database::execWithDisplay(const QString &str)
 {
     if (!query.exec(str))
     {
-        QMessageBox::critical(nullptr,"Ошибка",query.lastError().text());
+        QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError().nativeErrorCode()));
     }
     else
     {
@@ -60,7 +62,8 @@ QVariant Database::value(int i)
 
 void Database::prepare(const QString &str)
 {
-    query.prepare(str);
+    if (!query.prepare(str))
+        QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError().nativeErrorCode()));
 }
 
 void Database::bindValue(const QString &placeholder, const QVariant &val)

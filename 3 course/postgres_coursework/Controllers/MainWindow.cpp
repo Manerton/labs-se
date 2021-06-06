@@ -54,23 +54,10 @@ void MainWindow::showOperatorForm()
 {
     ui->stackedWidget->setCurrentWidget(operatorForm.get());
     this->show();
+    operatorForm->initialRead();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-/*Repository::NagruzkaModel MainWindow::parse_NagruzkaModel()
-{
-    Repository::NagruzkaModel data;
-    data.id = ui->tableView->model()->index(ui->lineEdit_id->text().toInt()-1,0).data().toString();
-    data.id_group = ui->comboBox_group->currentText();
-    data.id_lecturer = ui->comboBox_lecturer->currentText();
-    data.hours = ui->lineEdit_hours->text();
-    data.subject = ui->lineEdit_subject->text();
-    data.type_subject = ui->lineEdit_type_subject->text();
-    data.pay = ui->lineEdit_pay->text();
-    return data;
-}*/
-

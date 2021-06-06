@@ -119,6 +119,10 @@ CREATE TABLE менеджер
 	PRIMARY KEY (id_менеджер)
 );
 
+CREATE VIEW менеджер_v 
+AS SELECT id_менеджер, фамилия AS "Фамилия", имя AS "Имя", отчество AS "Отчество", телефон AS "Телефон", email AS "Электронная почта"
+FROM менеджер ORDER BY id_менеджер;
+
 -- Статус
 CREATE TABLE статус
 (
@@ -177,7 +181,7 @@ CREATE TABLE позиция_заказа
 
 -- Создание ролей
 CREATE USER operator PASSWORD 'oper123';
-GRANT SELECT ON категория, менеджер, поставщик, производитель, пункт_выдачи, склад, товар_на_складе, товар TO operator;
+GRANT SELECT ON категория, менеджер, менеджер_v, поставщик, производитель, пункт_выдачи, склад, товар_на_складе, товар TO operator;
 
 CREATE GROUP managers;
 GRANT SELECT ON заказ TO managers;
@@ -185,8 +189,9 @@ GRANT SELECT ON заказ TO managers;
 CREATE USER buyer PASSWORD 'buyer';
 
 -- Функция добавления нового менеджера
-CREATE OR REPLACE PROCEDURE add_manager
+CREATE OR REPLACE FUNCTION add_manager
 (IN surname text, IN name text, IN otchestvo text, IN tel text, IN email text, IN passw text) 
+RETURNS void
 SECURITY DEFINER
 AS $BODY$
 BEGIN	
@@ -196,14 +201,52 @@ BEGIN
 	EXECUTE FORMAT('CREATE USER %I PASSWORD ''%I'' IN ROLE managers', email, passw);
 END;
 $BODY$
-LANGUAGE plpgsql 
+LANGUAGE plpgsql  
 
--- Разрешаем добавлять менеджеров оператору
-GRANT EXECUTE ON PROCEDURE add_manager(text, text, text, text, text, text) TO operator;
+-- Функция редактирования менеджера
+CREATE OR REPLACE FUNCTION update_manager
+(IN id int, IN surname text, IN name text, IN otchestvo text, IN tel text, IN mail text, IN passw text) 
+RETURNS void
+SECURITY DEFINER
+AS $BODY$
+BEGIN	
+	UPDATE менеджер 
+	SET фамилия = surname, 
+	имя = name, 
+	отчество = otchestvo, 
+	телефон = tel, 
+	email = mail
+	WHERE id_менеджер = id;
+
+	EXECUTE FORMAT('ALTER USER %I WITH PASSWORD ''%I''', mail, passw);
+END;
+$BODY$
+LANGUAGE plpgsql  
+
+-- Функция удаления менеджера
+CREATE OR REPLACE FUNCTION delete_manager
+(IN id int) 
+RETURNS void
+SECURITY DEFINER
+AS $BODY$
+DECLARE
+	login text;
+BEGIN	
+	login := (SELECT email FROM менеджер WHERE id_менеджер = id);
+	DELETE FROM менеджер WHERE id_менеджер = id;
+	EXECUTE FORMAT('DROP USER %I', login);
+END;
+$BODY$
+LANGUAGE plpgsql  
+
+-- Разрешаем добавлять, изменять и удалять менеджеров оператору
+GRANT EXECUTE ON FUNCTION add_manager(text, text, text, text, text, text) TO operator;
+GRANT EXECUTE ON FUNCTION update_manager(int, text, text, text, text, text, text) TO operator;
+GRANT EXECUTE ON FUNCTION delete_manager(int) TO operator;
 -- Добавляем несколько менеджеров
-CALL add_manager('Иванов', 'Иван', 'Иванович', '79999999979', 'test@mail.ru', 'test1');
-CALL add_manager('Петров', 'Петр', 'Петрович', '79089195979', 'petr1@yandex.ru', 'petya');
-CALL add_manager('Алексеев', 'Алексей', 'Алексеевич', '79889225979', 'alexey88@mail.ru', 'leha1');
+SELECT add_manager('Иванов', 'Иван', 'Иванович', '79999999979', 'test@mail.ru', 'test1');
+SELECT add_manager('Петров', 'Петр', 'Петрович', '79089195979', 'petr1@yandex.ru', 'petya');
+SELECT add_manager('Алексеев', 'Алексей', 'Алексеевич', '79889225979', 'alexey88@mail.ru', 'leha1');
 
 -- Функция - кто я?
 CREATE OR REPLACE FUNCTION whoami() 

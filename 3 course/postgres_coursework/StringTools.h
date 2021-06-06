@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <QString>
+#include <QVariant>
 
 namespace StringTools {
     using Tokens = std::vector<QString>;
@@ -30,10 +31,10 @@ namespace StringTools {
         return result;
     }
 
-    // если строка пустая, то возвращаем строку NULL
-    static QString convertIfNull(const QString &elem)
+    // если строка пустая, то возвращаем NULL
+    static QVariant convertIfNull(const QString &elem)
     {
-        if (elem.trimmed().isEmpty()) return "NULL";
+        if (elem.trimmed().isEmpty()) return QVariant();
         return elem;
     }
 }

@@ -15,11 +15,6 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-// методы
-//    Repository::NagruzkaModel parse_NagruzkaModel();
-    void updateAttributesList();
-    void clearFields();
-    void clearIdField();
 // поля
     Ui::MainWindow *ui;
     Database db;

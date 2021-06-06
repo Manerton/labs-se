@@ -19,16 +19,16 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="table1">
+     <widget class="QWidget" name="manager">
       <attribute name="title">
-       <string>table1</string>
+       <string>Менеджер</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
        <property name="topMargin">
         <number>6</number>
        </property>
        <item row="0" column="0">
-        <layout class="QFormLayout" name="nagruzka_data">
+        <layout class="QFormLayout" name="manager_data">
          <property name="sizeConstraint">
           <enum>QLayout::SetDefaultConstraint</enum>
          </property>
@@ -52,10 +52,15 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
              <underline>false</underline>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgb(0, 0, 0);
+</string>
            </property>
            <property name="text">
             <string>Номер строки:</string>
@@ -75,6 +80,9 @@
            <property name="autoFillBackground">
             <bool>false</bool>
            </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(223, 223, 223);</string>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -86,135 +94,6 @@
            </property>
            <property name="placeholderText">
             <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_lecturer">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Номер преподавателя:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QComboBox" name="comboBox_lecturer">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_group">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Номер группы:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QComboBox" name="comboBox_group">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_hours">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Количество часов:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QLineEdit" name="lineEdit_hours">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="label_subject">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Предмет:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QLineEdit" name="lineEdit_subject">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_type_subject">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Тип занятия</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QLineEdit" name="lineEdit_type_subject">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_pay">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Оплата:</string>
-           </property>
-           <property name="wordWrap">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QLineEdit" name="lineEdit_pay">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
            </property>
           </widget>
          </item>
@@ -231,6 +110,153 @@
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="lastName_Label">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+             <underline>false</underline>
+            </font>
+           </property>
+           <property name="text">
+            <string>Фамилия:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="lastName_LineEdit">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="firstName_Label">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Имя:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="firstName_LineEdit">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="otchestvo_Label">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
+             <underline>false</underline>
+            </font>
+           </property>
+           <property name="text">
+            <string>Отчество:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLineEdit" name="otchestvo_LineEdit">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="telephone_Label">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Телефон:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLineEdit" name="telephone_LineEdit">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="maxLength">
+            <number>11</number>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="email_Label">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>E-mail:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QLineEdit" name="email_LineEdit">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="password_Label">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Пароль:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QLineEdit" name="password_LineEdit">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="echoMode">
+            <enum>QLineEdit::Password</enum>
            </property>
           </widget>
          </item>
@@ -297,6 +323,13 @@
        <widget class="QPushButton" name="pushButton_remove">
         <property name="text">
          <string>Удалить запись</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_clearInput">
+        <property name="text">
+         <string>Очистить поля</string>
         </property>
        </widget>
       </item>

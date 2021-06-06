@@ -19,7 +19,8 @@ set(PROJECT_SOURCES
         Controllers/MainWindow.h Controllers/MainWindow.cpp Views/MainWindow.ui
         Models/Database.h Models/Database.cpp
         Models/IRepository.h
-        Models/NagruzkaRepository.h Models/NagruzkaRepository.cpp
+        Models/Errors.h
+        Models/ManagerRepository.h Models/ManagerRepository.cpp
         Controllers/AuthForm.h Controllers/AuthForm.cpp Views/AuthForm.ui
         Controllers/BuyerForm.h Controllers/BuyerForm.cpp Views/BuyerForm.ui
         Controllers/ManagerForm.h Controllers/ManagerForm.cpp Views/ManagerForm.ui
