@@ -1,5 +1,5 @@
 #include "AuthForm.h"
-#include "ui_AuthForm.h"
+#include "../Views/ui_AuthForm.h"
 
 AuthForm::AuthForm(Database& _db) :
     QWidget(),

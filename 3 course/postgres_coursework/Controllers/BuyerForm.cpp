@@ -1,5 +1,5 @@
 #include "BuyerForm.h"
-#include "ui_BuyerForm.h"
+#include "../Views/ui_BuyerForm.h"
 
 BuyerForm::BuyerForm(QWidget *parent, Database &_db) :
     QWidget(parent),

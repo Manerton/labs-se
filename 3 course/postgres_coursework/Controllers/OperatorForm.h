@@ -2,7 +2,8 @@
 #define OPERATORFORM_H
 
 #include <QWidget>
-#include "NagruzkaRepository.h"
+#include "Models/Database.h"
+#include "Models/NagruzkaRepository.h"
 
 namespace Ui {
     class OperatorForm;

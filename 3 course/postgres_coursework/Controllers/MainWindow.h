@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 #include <memory>
 #include <QMainWindow>
-#include "Database.h"
+#include "Models/Database.h"
 #include "AuthForm.h"
 #include "BuyerForm.h"
 #include "ManagerForm.h"

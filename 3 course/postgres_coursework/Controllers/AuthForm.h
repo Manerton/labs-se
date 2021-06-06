@@ -2,7 +2,7 @@
 #define AUTHFORM_H
 
 #include <QWidget>
-#include "Database.h"
+#include "Models/Database.h"
 
 namespace Ui {
     class AuthForm;

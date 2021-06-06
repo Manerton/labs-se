@@ -1,5 +1,5 @@
 #include "ManagerForm.h"
-#include "ui_ManagerForm.h"
+#include "../Views/ui_ManagerForm.h"
 
 ManagerForm::ManagerForm(QWidget *parent, Database &_db) :
     QWidget(parent),

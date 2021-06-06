@@ -17,7 +17,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Sql REQUIRED)
 set(PROJECT_SOURCES
         main.cpp
         Controllers/MainWindow.h Controllers/MainWindow.cpp Views/MainWindow.ui
-        Database.h Database.cpp
+        Models/Database.h Models/Database.cpp
         Models/IRepository.h
         Models/NagruzkaRepository.h Models/NagruzkaRepository.cpp
         Controllers/AuthForm.h Controllers/AuthForm.cpp Views/AuthForm.ui

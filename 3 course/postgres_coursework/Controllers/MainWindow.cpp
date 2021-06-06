@@ -1,5 +1,5 @@
 #include "MainWindow.h"
-#include "ui_MainWindow.h"
+#include "../Views/ui_MainWindow.h"
 #include <cstdint>
 #include <memory>
 #include <QTableView>

@@ -1,5 +1,5 @@
 #include "OperatorForm.h"
-#include "ui_OperatorForm.h"
+#include "../Views/ui_OperatorForm.h"
 #include "QMessageBox"
 
 OperatorForm::OperatorForm(QWidget *parent, Database &_db) :
