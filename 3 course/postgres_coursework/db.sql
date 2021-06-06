@@ -209,7 +209,7 @@ DECLARE
 	old_mail text;
 BEGIN	
 	old_mail := (SELECT email FROM менеджер WHERE id_менеджер = id);
-	IF (SELECT usename FROM pg_user WHERE old_mail != new_mail AND usename = mail) IS NOT NULL
+	IF (SELECT usename FROM pg_user WHERE old_mail != new_mail AND usename = new_mail) IS NOT NULL
 	THEN 
 		RAISE reserved_name;
 	ELSE 
