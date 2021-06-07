@@ -1,73 +1,76 @@
 lexer grammar TLexer;
 
-// Follows directly after the standard #includes in h + cpp files.
-@lexer::postinclude {
-/* lexer postinclude section */
-#ifndef _WIN32
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#endif
-}
+fragment ESCAPED_QUOTE : '\\"';
+LITERAL : '"' ( ESCAPED_QUOTE | ~('\n'|'\r') )* '"'
+        | '\'' ( ESCAPED_QUOTE | ~('\n'|'\r') )* '\'';
 
-Program: Lexeme | Whitespace;
-Lexeme: ;
-Literal: ;
-Special: '(' | ')' | ',' | ';' | '[' | ']' | '`' | '{' | '}';
-Whitespace: ;
-Whitestuff: ;
-Whitechar: ;
-Newline: ;
-Space: ' ';
-Tab: '  ';
-Comment: ;
-NComment: ;
-Any: ;
-Graphic: ;
-Small: ;
-Large: ;
-Symbol: ;
-Octit: [0-7];
-Digit: ;
-Hexit: ;
-Octal: ;
-Decimal: ;
-Hex: ;
-Integer: ;
-Float: ;
-Char: ;
-String: ;
-Boolean: ;
-Id: ;
-Type: ;
-Reserve: ;
+COMMA : ',';
+SEMICOLON : ';';
+
+END : 'end';
+
+// условия
+IF: 'if';
+ELSE : 'else';
+ELSIF : 'elsif';
+
+// цикл
+WHILE : 'while';
+
+// булевые переменные
+TRUE : 'true';
+FALSE : 'false';
+
+// арифметические операции
+PLUS : '+';
+MINUS : '-';
+MUL : '*';
+DIV : '/';
+MOD : '%';
+
+// сравнения
+EQUAL : '==';
+NOT_EQUAL : '!=';
+GREATER : '>';
+LESS : '<';
+LESS_EQUAL : '<=';
+GREATER_EQUAL : '>=';
+
+// присваивание
+ASSIGN : '=';
+
+// логические операции
+AND : 'and' | '&&';
+OR : 'or' | '||';
+NOT : 'not' | '!';
+
+// скобки
+L_BRACKET : '(';
+R_BRACKET : ')';
+L_SQBRACKET : '[';
+R_SQBRACKET : ']';
 
 
-ID: LETTER (LETTER | '0'..'9')*;
-fragment LETTER : [a-zA-Z\u0080-\u{10FFFF}];
+// перевод каретки и новая строка
+NEWLINE : ('\r')? '\n';
 
-LessThan: '<';
-GreaterThan:  '>';
-Equal: '=';
-And: 'and';
+WS : (' ' | '\t')+ -> skip;
 
-Colon: ':';
-Semicolon: ';';
-Plus: '+';
-Minus: '-';
-Star: '*';
-OpenPar: '(';
-ClosePar: ')';
-OpenCurly: '{' -> pushMode(Mode1);
-CloseCurly: '}' -> popMode;
-QuestionMark: '?';
-Comma: ',' -> skip;
-Dollar: '$' -> more, mode(Mode1);
-Ampersand: '&' -> type(DUMMY);
+// комменты
+COMMENT : ('#' ~('\r' | '\n')* NEWLINE) -> skip;
+E_COMMENT : ('=begin' .*? '=end') -> skip;
+// отступы (пробелы и табы)
 
-String: '"' .*? '"';
-Foo: {canTestFoo()}? 'foo' {isItFoo()}? { myFooLexerAction(); };
-Bar: 'bar' {isItBar()}? { myBarLexerAction(); };
-Any: Foo Dot Bar? DotDot Baz;
-
-Comment : '#' ~[\r\n]* '\r'? '\n' -> skip;
-WS: [ \t\r\n]+ -> channel(99);
-
+UNDERSCORE : '_';
+// буквы
+fragment SMALL : [a-z];
+fragment BIG : [A-Z];
+// числа
+fragment DIGIT : [0-9];
+INT : DIGIT+;
+EXPONENT : ('e' | 'E') (PLUS | MINUS)? INT;
+FLOAT : INT '.' INT (EXPONENT)?
+      | INT EXPONENT
+      ;
+// идентификатор
+ID : (SMALL | BIG | UNDERSCORE)(SMALL | BIG | UNDERSCORE | DIGIT)*;

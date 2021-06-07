@@ -7,7 +7,7 @@
             "request": "launch",
             "input": "test.txt",
             "grammar": "TParser.g4",
-            "startRule": "main",
+            "startRule": "programm",
             "printParseTree": true,
             "visualParseTree": true
         }

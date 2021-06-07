@@ -1,39 +1,5 @@
-main = do
-    let sum =
-         let a = 158
-             b = 13
-         in (a+b)
-    let sub =
-         let a = -113 * 3 - 4
-             b = 208
-         in (a-b)
-    let divOnPos = 
-         let a = 195495
-             b = 13
-         in (a / b)
-    let divOnNeg = 
-         let b = -34
-         in (divOnPos / b)
-    let divOnSelf = (divOnNeg / divOnNeg)
-    let divOnBigger = 
-         let five = 5
-         in (divOnSelf / five)
-    let mulPos =
-         let a = 55
-             b = 56
-         in  (a*b)
-    let mulNeg =
-         let b = -2
-         in (mulPos*b)
-    let mulZero =
-         let zero = 0
-         in(mulNeg*zero)
-    print(sum)
-    print(sub)
-    print(divOnPos)
-    print(divOnNeg)
-    print(divOnSelf)
-    print(divOnBigger)
-    print(mulPos)
-    print(mulNeg)
-    print(mulZero)
+﻿a = (5 + 3) * 10
+b = true
+c = a + b
+d = [1, 5, 9]
+e = d[0+1]

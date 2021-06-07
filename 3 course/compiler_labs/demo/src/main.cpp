@@ -11,6 +11,7 @@
 //
 
 #include <iostream>
+#include <fstream>
 
 #include "antlr4-runtime.h"
 #include "TLexer.h"
@@ -21,19 +22,23 @@ using namespace antlr4;
 
 int main(int , const char **) {
     system("chcp 65001");
-    ANTLRInputStream input("a + (x * (y ? 0 : 1) + z + \"пипец\");");
-    TLexer lexer(&input);
-    CommonTokenStream tokens(&lexer);
+    std::ifstream f("test.txt");
+    if (f.is_open())
+    {
+        ANTLRInputStream input(f);
+        TLexer lexer(&input);
+        CommonTokenStream tokens(&lexer);
 
-    tokens.fill();
-    for (auto token : tokens.getTokens()) {
-        std::cout << token->toString() << std::endl;
+        tokens.fill();
+        for (auto token : tokens.getTokens()) {
+            std::cout << token->toString() << std::endl;
+        }
+
+        TParser parser(&tokens);
+        tree::ParseTree* tree = parser.programm();
+
+        std::cout << tree->toStringTree(&parser, true) << std::endl << std::endl;
     }
-
-    TParser parser(&tokens);
-    tree::ParseTree* tree = parser.main();
-
-    std::cout << tree->toStringTree(&parser) << std::endl << std::endl;
     system("pause");
     return 0;
 }
