@@ -34,16 +34,23 @@ namespace Errors
                 case ErrCode::not_null_violation:
                     return "Пожалуйста, заполните все обязательные поля!";
                 case ErrCode::check_violation:
+                {
                     if (errorCode.text().indexOf("менеджер_телефон_check") != -1)
                         return "Номер телефона должен состоять из 11 символов!";
+
+                    break;
+                }
                 case ErrCode::duplicate_object:
+                {
                     if (errorCode.text().indexOf("role") != -1)
                         return "Данный пользователь уже зарегестрирован!";
+
+                    break;
+                }
                 case ErrCode::reserved_name:
                     return "Указанный логин занят другим пользователем!";
-                default:
-                    return "Непредвиденная ошибка, сообщите администратору следующий код: " + QString::number(code);
             }
+            return "Непредвиденная ошибка, сообщите администратору следующий код: " + QString::number(code);
         }
     }
 }
