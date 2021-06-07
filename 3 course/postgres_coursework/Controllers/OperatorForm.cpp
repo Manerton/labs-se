@@ -1,11 +1,13 @@
 #include "OperatorForm.h"
 #include "../Views/ui_OperatorForm.h"
 #include "QMessageBox"
+#include "QDebug"
 
 OperatorForm::OperatorForm(QWidget *parent, Database &_db) :
     QWidget(parent),
     ui(new Ui::OperatorForm),
     db(_db),
+    categoryRepository(db),
     managerRepository(db)
 {
     ui->setupUi(this);
@@ -14,15 +16,49 @@ OperatorForm::OperatorForm(QWidget *parent, Database &_db) :
     //updateAttributesList();
 }
 
+void OperatorForm::read(int tableIndex)
+{
+    const int tableName = tableIndex;
+    switch (tableName)
+    {
+        case dbTable::category:
+            categoryRepository.read();
+            break;
+        case dbTable::manager:
+            managerRepository.read();
+            break;
+        default:
+            qDebug() << tableName;
+    }
+}
+
 void OperatorForm::initialRead()
 {
-    managerRepository.read();
+    this->read(0);
     ui->tableView->hideColumn(0);
+}
+
+void OperatorForm::on_tabWidget_currentChanged(int index)
+{
+    this->read(index);
 }
 
 int OperatorForm::getSelectedEntryId() const
 {
-    return ui->tableView->model()->index(ui->lineEdit_id->text().toInt()-1,0).data().toInt();
+    const int tableName = ui->tabWidget->currentIndex();
+    int value = 0;
+    switch (tableName)
+    {
+        case dbTable::category:
+            value = ui->idCategory_LineEdit->text().toInt()-1;
+            break;
+        case dbTable::manager:
+            value = ui->idManager_LineEdit->text().toInt()-1;
+            break;
+        default:
+            qDebug() << tableName;
+    }
+    return ui->tableView->model()->index(value,0).data().toInt();
 }
 
 ManagerModel OperatorForm::parseManagerModel() const
@@ -38,6 +74,14 @@ ManagerModel OperatorForm::parseManagerModel() const
     return data;
 }
 
+CategoryModel OperatorForm::parseCategoryModel() const
+{
+    CategoryModel data;
+    data.id = getSelectedEntryId();
+    data.name = ui->nameCategory_LineEdit->text();
+    return data;
+}
+
 void OperatorForm::updateAttributesList()
 {
     /*auto map = db.getAttributesList("преподаватель");
@@ -48,15 +92,38 @@ void OperatorForm::updateAttributesList()
 
 void OperatorForm::on_pushButton_create_clicked()
 {
-    managerRepository.create(parseManagerModel());
+
+    const int tableName = ui->tabWidget->currentIndex();
+    switch (tableName)
+    {
+        case dbTable::category:
+            categoryRepository.create(parseCategoryModel());
+            break;
+        case dbTable::manager:
+            managerRepository.create(parseManagerModel());
+            break;
+        default:
+            qDebug() << tableName;
+    }
 }
 
 void OperatorForm::on_pushButton_update_clicked()
 {
-    managerRepository.update(parseManagerModel());
+    const int tableName = ui->tabWidget->currentIndex();
+    switch (tableName)
+    {
+        case dbTable::category:
+            categoryRepository.update(parseCategoryModel());
+            break;
+        case dbTable::manager:
+            managerRepository.update(parseManagerModel());
+            break;
+        default:
+            qDebug() << tableName;
+    }
 }
 
-void OperatorForm::on_pushButton_remove_clicked()
+int OperatorForm::execRemoveMessageBox()
 {
     QMessageBox messageBox(QMessageBox::Question,
                            "Вы уверены?",
@@ -66,29 +133,81 @@ void OperatorForm::on_pushButton_remove_clicked()
     messageBox.setButtonText(QMessageBox::Yes, "Да");
     messageBox.setButtonText(QMessageBox::No, "Нет");
     messageBox.exec();
-    if (messageBox.result() == QMessageBox::Yes)
+    return messageBox.result();
+}
+
+void OperatorForm::on_pushButton_remove_clicked()
+{
+    auto choice = this->execRemoveMessageBox();
+    if (choice == QMessageBox::Yes)
     {
-        managerRepository.remove(getSelectedEntryId());
+        const int tableName = ui->tabWidget->currentIndex();
+        switch (tableName)
+        {
+            case dbTable::category:
+                categoryRepository.remove(getSelectedEntryId());
+                break;
+            case dbTable::manager:
+                managerRepository.remove(getSelectedEntryId());
+                break;
+            default:
+                qDebug() << tableName;
+        }
     }
     this->clearFields();
 }
 void OperatorForm::on_pushButton_search_clicked()
 {
-    managerRepository.search(parseManagerModel());
+    const int tableName = ui->tabWidget->currentIndex();
+    switch (tableName)
+    {
+        case dbTable::category:
+            categoryRepository.search(parseCategoryModel());
+            break;
+        case dbTable::manager:
+            managerRepository.search(parseManagerModel());
+            break;
+        default:
+            qDebug() << tableName;
+    }
     this->clearIdField();
 }
 
-void OperatorForm::on_tableView_activated(const QModelIndex &index)
+void OperatorForm::moveDataToInput_manager(int row, QAbstractItemModel* model)
 {
-    int row = index.row();
-    auto model = ui->tableView->model();
-    ui->lineEdit_id->setText(QString::number(row+1));
+    ui->idManager_LineEdit->setText(QString::number(row+1));
     ui->lastName_LineEdit->setText(model->index(row,1).data().toString());
     ui->firstName_LineEdit->setText(model->index(row,2).data().toString());
     ui->otchestvo_LineEdit->setText(model->index(row,3).data().toString());
     ui->telephone_LineEdit->setText(model->index(row,4).data().toString());
     ui->email_LineEdit->setText (model->index(row,5).data().toString());
     ui->password_LineEdit->setText(model->index(row,6).data().toString());
+}
+
+void OperatorForm::moveDataToInput_category(int row, QAbstractItemModel* model)
+{
+    ui->idCategory_LineEdit->setText(QString::number(row+1));
+    ui->nameCategory_LineEdit->setText(model->index(row,1).data().toString());
+}
+
+void OperatorForm::on_tableView_activated(const QModelIndex &index)
+{
+    const int row = index.row();
+    auto model = ui->tableView->model();
+
+    const int tableName = ui->tabWidget->currentIndex();
+    switch (tableName)
+    {
+        case dbTable::category:
+            moveDataToInput_category(row, model);
+            break;
+        case dbTable::manager:
+            moveDataToInput_manager(row, model);
+            break;
+        default:
+            qDebug() << tableName;
+    }
+
     /*int i = ui->comboBox_lecturer->findData(model->index(row,1).data().toString());
     if ( i != -1 ) {
         ui->comboBox_lecturer->setCurrentIndex(i);
@@ -97,18 +216,51 @@ void OperatorForm::on_tableView_activated(const QModelIndex &index)
 
 void OperatorForm::clearIdField()
 {
-    ui->lineEdit_id->clear();
+    const int tableName = ui->tabWidget->currentIndex();
+    switch (tableName)
+    {
+        case dbTable::category:
+            ui->idCategory_LineEdit->clear();
+            break;
+        case dbTable::manager:
+            ui->idManager_LineEdit->clear();
+            break;
+        default:
+            qDebug() << tableName;
+    }
 }
 
-void OperatorForm::clearFields()
+void OperatorForm::clearFields_manager()
 {
-    this->clearIdField();
     ui->lastName_LineEdit->clear();
     ui->firstName_LineEdit->clear();
     ui->otchestvo_LineEdit->clear();
     ui->telephone_LineEdit->clear();
     ui->email_LineEdit->clear();
     ui->password_LineEdit->clear();
+}
+
+void OperatorForm::clearFields_category()
+{
+    ui->nameCategory_LineEdit->clear();
+}
+
+void OperatorForm::clearFields()
+{
+    this->clearIdField();
+
+    const int tableName = ui->tabWidget->currentIndex();
+    switch (tableName)
+    {
+        case dbTable::category:
+            this->clearFields_category();
+            break;
+        case dbTable::manager:
+            this->clearFields_manager();
+            break;
+        default:
+            qDebug() << tableName;
+    }
 }
 
 OperatorForm::~OperatorForm()

@@ -19,6 +19,125 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
+     <widget class="QWidget" name="category">
+      <attribute name="title">
+       <string>Категория</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <layout class="QFormLayout" name="category_data">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetDefaultConstraint</enum>
+         </property>
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+         </property>
+         <property name="rowWrapPolicy">
+          <enum>QFormLayout::DontWrapRows</enum>
+         </property>
+         <property name="labelAlignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+         <property name="formAlignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <property name="topMargin">
+          <number>5</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="idCategory_Label">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
+             <underline>false</underline>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgb(0, 0, 0);
+</string>
+           </property>
+           <property name="text">
+            <string>Номер строки:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="idCategory_LineEdit">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(223, 223, 223);</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="frame">
+            <bool>false</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="placeholderText">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="Line" name="line_3">
+           <property name="frameShadow">
+            <enum>QFrame::Sunken</enum>
+           </property>
+           <property name="lineWidth">
+            <number>0</number>
+           </property>
+           <property name="midLineWidth">
+            <number>2</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="nameCategory_Label">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+             <underline>false</underline>
+            </font>
+           </property>
+           <property name="text">
+            <string>Название:*</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="nameCategory_LineEdit">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="manager">
       <attribute name="title">
        <string>Менеджер</string>
@@ -48,7 +167,7 @@
           <number>5</number>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_id">
+          <widget class="QLabel" name="idManager_Label">
            <property name="font">
             <font>
              <pointsize>12</pointsize>
@@ -68,7 +187,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="lineEdit_id">
+          <widget class="QLineEdit" name="idManager_LineEdit">
            <property name="enabled">
             <bool>true</bool>
            </property>
@@ -118,13 +237,13 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <weight>50</weight>
+             <bold>false</bold>
              <underline>false</underline>
             </font>
            </property>
            <property name="text">
-            <string>Фамилия:</string>
+            <string>Фамилия:*</string>
            </property>
           </widget>
          </item>
@@ -142,12 +261,12 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <weight>50</weight>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
-            <string>Имя:</string>
+            <string>Имя:*</string>
            </property>
           </widget>
          </item>
@@ -190,12 +309,12 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <weight>50</weight>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
-            <string>Телефон:</string>
+            <string>Телефон:*</string>
            </property>
           </widget>
          </item>
@@ -216,12 +335,12 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <weight>50</weight>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
-            <string>E-mail:</string>
+            <string>E-mail:*</string>
            </property>
           </widget>
          </item>
@@ -239,12 +358,12 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <weight>50</weight>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
-            <string>Пароль:</string>
+            <string>Пароль:*</string>
            </property>
           </widget>
          </item>
@@ -263,12 +382,6 @@
         </layout>
        </item>
       </layout>
-     </widget>
-     <widget class="QWidget" name="table2">
-      <attribute name="title">
-       <string>table2</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout"/>
      </widget>
     </widget>
    </item>

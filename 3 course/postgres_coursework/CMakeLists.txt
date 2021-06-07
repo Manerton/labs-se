@@ -21,6 +21,7 @@ set(PROJECT_SOURCES
         Models/IRepository.h
         Models/Errors.h
         Models/ManagerRepository.h Models/ManagerRepository.cpp
+        Models/CategoryRepository.h Models/CategoryRepository.cpp
         Controllers/AuthForm.h Controllers/AuthForm.cpp Views/AuthForm.ui
         Controllers/BuyerForm.h Controllers/BuyerForm.cpp Views/BuyerForm.ui
         Controllers/ManagerForm.h Controllers/ManagerForm.cpp Views/ManagerForm.ui
@@ -33,7 +34,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
     )
 else()
-        add_executable(postgres_coursework
+        add_executable(postgres_coursework WIN32
             ${PROJECT_SOURCES}
         )
 endif()

@@ -18,11 +18,14 @@ void Database::setConnection(std::string_view db_name, std::string_view login, s
     db.setPassword(password.cbegin());
 
     if (!db.open()) {
-        QMessageBox::critical(nullptr, "Ошибка",
-                              "Не удалось подключиться к базе данных!");
-
-        exit(EXIT_FAILURE);
+        QMessageBox::critical(nullptr, "Ошибка", Errors::msg(db.lastError()));
     }
+    else connected = true;
+}
+
+bool Database::isConnected() const
+{
+    return connected;
 }
 
 void Database::exec()
@@ -35,14 +38,14 @@ void Database::exec()
 void Database::exec(const QString &str)
 {
     if (!query.exec(str))
-        QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError().nativeErrorCode()));
+        QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError()));
 }
 
 void Database::execWithDisplay(const QString &str)
 {
     if (!query.exec(str))
     {
-        QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError().nativeErrorCode()));
+        QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError()));
     }
     else
     {

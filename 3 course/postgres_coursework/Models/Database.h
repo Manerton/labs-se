@@ -21,6 +21,7 @@ class Database
     // объект для передачи SQL запросов в базу на исполнение
     // из него же получаем и результаты
     QSqlQuery query;
+    bool connected = false;
 // методы
 public:
     explicit Database()
@@ -30,6 +31,7 @@ public:
     {}
     // установить подключение к БД
     void setConnection(string_view db_name, string_view login, string_view password);
+    bool isConnected() const;
     // вернуть указатель на модель (для интерфейса)
     std::shared_ptr<QSqlQueryModel> getModel()
     {

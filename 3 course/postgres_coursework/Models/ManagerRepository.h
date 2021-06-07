@@ -1,8 +1,8 @@
 #ifndef MANAGERREPOSITORY_H
 #define MANAGERREPOSITORY_H
 
-#include "IRepository.h"
 #include "QString"
+#include "IRepository.h"
 
 struct ManagerModel
 {
