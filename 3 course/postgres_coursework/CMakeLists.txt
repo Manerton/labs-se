@@ -22,6 +22,7 @@ set(PROJECT_SOURCES
         Models/Errors.h
         Models/ManagerRepository.h Models/ManagerRepository.cpp
         Models/CategoryRepository.h Models/CategoryRepository.cpp
+        Models/ManufacturerRepository.h Models/ManufacturerRepository.cpp
         Controllers/AuthForm.h Controllers/AuthForm.cpp Views/AuthForm.ui
         Controllers/BuyerForm.h Controllers/BuyerForm.cpp Views/BuyerForm.ui
         Controllers/ManagerForm.h Controllers/ManagerForm.cpp Views/ManagerForm.ui

@@ -1,0 +1,30 @@
+#ifndef MANUFACTURERREPOSITORY_H
+#define MANUFACTURERREPOSITORY_H
+
+#include "QString"
+#include "IRepository.h"
+
+struct ManufacturerModel
+{
+    int id;
+    QString name;
+    QString country;
+};
+
+class ManufacturerRepository : public IRepository<ManufacturerModel>
+{
+    Database& db;
+
+    QString getSelectQuery();
+public:
+    ManufacturerRepository(Database& _db)
+        : db(_db)
+    {}
+    virtual void create(const ManufacturerModel &data) override;
+    virtual void read() override;
+    virtual void update(const ManufacturerModel &data) override;
+    virtual void remove(int id) override;
+    void search(const ManufacturerModel &data);
+};
+
+#endif // MANUFACTURERREPOSITORY_H

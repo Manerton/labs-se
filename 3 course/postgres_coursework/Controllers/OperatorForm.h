@@ -5,6 +5,7 @@
 #include "Models/Database.h"
 #include "Models/ManagerRepository.h"
 #include "Models/CategoryRepository.h"
+#include "Models/ManufacturerRepository.h"
 
 namespace Ui {
     class OperatorForm;
@@ -18,7 +19,8 @@ class OperatorForm : public QWidget
     enum dbTable : int
     {
         category = 0,
-        manager = 1
+        manager = 1,
+        manufacturer = 2
     };
 
     Database& db;
@@ -28,14 +30,19 @@ class OperatorForm : public QWidget
     ManagerRepository managerRepository;
     ManagerModel parseManagerModel() const;
 
+    ManufacturerRepository manufacturerRepository;
+    ManufacturerModel parseManufacturerModel() const;
+
     void updateAttributesList();
     void clearFields();
     void clearIdField();
     int getSelectedEntryId() const;
     void moveDataToInput_category(int row, QAbstractItemModel *model);
     void moveDataToInput_manager(int row, QAbstractItemModel *model);
+    void moveDataToInput_manufacturer(int row, QAbstractItemModel *model);
     void clearFields_manager();
     void clearFields_category();
+    void clearFields_manufacturer();
     int execRemoveMessageBox();
     void read(int tableIndex);
 private slots:

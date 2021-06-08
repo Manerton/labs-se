@@ -8,7 +8,8 @@ OperatorForm::OperatorForm(QWidget *parent, Database &_db) :
     ui(new Ui::OperatorForm),
     db(_db),
     categoryRepository(db),
-    managerRepository(db)
+    managerRepository(db),
+    manufacturerRepository(db)
 {
     ui->setupUi(this);
     ui->tableView->setSortingEnabled(false);
@@ -26,6 +27,9 @@ void OperatorForm::read(int tableIndex)
             break;
         case dbTable::manager:
             managerRepository.read();
+            break;
+        case dbTable::manufacturer:
+            manufacturerRepository.read();
             break;
         default:
             qDebug() << tableName;
@@ -55,6 +59,9 @@ int OperatorForm::getSelectedEntryId() const
         case dbTable::manager:
             value = ui->idManager_LineEdit->text().toInt()-1;
             break;
+        case dbTable::manufacturer:
+            value = ui->idManufacturer_LineEdit->text().toInt()-1;
+            break;
         default:
             qDebug() << tableName;
     }
@@ -82,6 +89,15 @@ CategoryModel OperatorForm::parseCategoryModel() const
     return data;
 }
 
+ManufacturerModel OperatorForm::parseManufacturerModel() const
+{
+    ManufacturerModel data;
+    data.id = getSelectedEntryId();
+    data.name = ui->nameManufacturer_LineEdit->text();
+    data.country = ui->country_LineEdit->text();
+    return data;
+}
+
 void OperatorForm::updateAttributesList()
 {
     /*auto map = db.getAttributesList("преподаватель");
@@ -102,6 +118,9 @@ void OperatorForm::on_pushButton_create_clicked()
         case dbTable::manager:
             managerRepository.create(parseManagerModel());
             break;
+        case dbTable::manufacturer:
+            manufacturerRepository.create(parseManufacturerModel());
+            break;
         default:
             qDebug() << tableName;
     }
@@ -117,6 +136,9 @@ void OperatorForm::on_pushButton_update_clicked()
             break;
         case dbTable::manager:
             managerRepository.update(parseManagerModel());
+            break;
+        case dbTable::manufacturer:
+            manufacturerRepository.update(parseManufacturerModel());
             break;
         default:
             qDebug() << tableName;
@@ -150,6 +172,9 @@ void OperatorForm::on_pushButton_remove_clicked()
             case dbTable::manager:
                 managerRepository.remove(getSelectedEntryId());
                 break;
+            case dbTable::manufacturer:
+                manufacturerRepository.remove(getSelectedEntryId());
+                break;
             default:
                 qDebug() << tableName;
         }
@@ -167,6 +192,9 @@ void OperatorForm::on_pushButton_search_clicked()
         case dbTable::manager:
             managerRepository.search(parseManagerModel());
             break;
+        case dbTable::manufacturer:
+            manufacturerRepository.search(parseManufacturerModel());
+            break;
         default:
             qDebug() << tableName;
     }
@@ -182,6 +210,13 @@ void OperatorForm::moveDataToInput_manager(int row, QAbstractItemModel* model)
     ui->telephone_LineEdit->setText(model->index(row,4).data().toString());
     ui->email_LineEdit->setText (model->index(row,5).data().toString());
     ui->password_LineEdit->setText(model->index(row,6).data().toString());
+}
+
+void OperatorForm::moveDataToInput_manufacturer(int row, QAbstractItemModel *model)
+{
+    ui->idManufacturer_LineEdit->setText(QString::number(row+1));
+    ui->nameManufacturer_LineEdit->setText(model->index(row,1).data().toString());
+    ui->country_LineEdit->setText(model->index(row,2).data().toString());
 }
 
 void OperatorForm::moveDataToInput_category(int row, QAbstractItemModel* model)
@@ -204,6 +239,9 @@ void OperatorForm::on_tableView_activated(const QModelIndex &index)
         case dbTable::manager:
             moveDataToInput_manager(row, model);
             break;
+        case dbTable::manufacturer:
+            moveDataToInput_manufacturer(row, model);
+            break;
         default:
             qDebug() << tableName;
     }
@@ -225,6 +263,9 @@ void OperatorForm::clearIdField()
         case dbTable::manager:
             ui->idManager_LineEdit->clear();
             break;
+        case dbTable::manufacturer:
+            ui->idManufacturer_LineEdit->clear();
+            break;
         default:
             qDebug() << tableName;
     }
@@ -245,6 +286,12 @@ void OperatorForm::clearFields_category()
     ui->nameCategory_LineEdit->clear();
 }
 
+void OperatorForm::clearFields_manufacturer()
+{
+    ui->nameManufacturer_LineEdit->clear();
+    ui->country_LineEdit->clear();
+}
+
 void OperatorForm::clearFields()
 {
     this->clearIdField();
@@ -257,6 +304,9 @@ void OperatorForm::clearFields()
             break;
         case dbTable::manager:
             this->clearFields_manager();
+            break;
+        case dbTable::manufacturer:
+            this->clearFields_manufacturer();
             break;
         default:
             qDebug() << tableName;

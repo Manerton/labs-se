@@ -11,7 +11,8 @@ namespace Errors
         not_null_violation = 23502,
         check_violation = 23514,
         duplicate_object = 42710,
-        reserved_name = 42939
+        reserved_name = 42939,
+        unique_violation = 23505
     };
 
     static QString msg(QSqlError errorCode)
@@ -47,6 +48,8 @@ namespace Errors
 
                     break;
                 }
+                case ErrCode::unique_violation:
+                    return "Нарушение требования уникальности значения в столбце таблицы!";
                 case ErrCode::reserved_name:
                     return "Указанный логин занят другим пользователем!";
             }

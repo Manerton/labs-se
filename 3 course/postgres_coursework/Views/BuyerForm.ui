@@ -13,8 +13,18 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_3" rowstretch="2,1">
-   <item row="0" column="0" colspan="3">
+  <layout class="QGridLayout" name="gridLayout_3" rowstretch="0,2,1">
+   <item row="2" column="1">
+    <widget class="Line" name="line">
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="3">
     <widget class="QTableView" name="tableView">
      <property name="font">
       <font>
@@ -81,7 +91,7 @@
      </attribute>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
       <number>0</number>
@@ -205,17 +215,7 @@
      </widget>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="Line" name="line">
-     <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2">
+   <item row="2" column="2">
     <widget class="QGroupBox" name="buttons">
      <property name="title">
       <string>Управление базой</string>
@@ -260,6 +260,21 @@
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="text">
+      <string>Мы рады приветствовать вас в нашем магазине, уважаемый покупатель!</string>
+     </property>
     </widget>
    </item>
   </layout>

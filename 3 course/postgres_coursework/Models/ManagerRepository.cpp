@@ -83,7 +83,7 @@ void ManagerRepository::search(const ManagerModel &data)
     if (!data.email.isEmpty())
         searchOptions.emplace_back("LOWER(email) LIKE LOWER('%" + data.email + "%')");
 
-    size_t N = searchOptions.size();
+    const size_t N = searchOptions.size();
     if (!searchOptions.empty())
     {
         for (size_t i = 0; i < N-1; ++i)
