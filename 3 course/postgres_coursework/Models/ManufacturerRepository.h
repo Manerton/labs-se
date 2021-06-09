@@ -1,7 +1,7 @@
 #ifndef MANUFACTURERREPOSITORY_H
 #define MANUFACTURERREPOSITORY_H
 
-#include "QString"
+#include <QString>
 #include "IRepository.h"
 
 struct ManufacturerModel
@@ -15,13 +15,13 @@ class ManufacturerRepository : public IRepository<ManufacturerModel>
 {
     Database& db;
 
-    QString getSelectQuery();
+    QString getSelectQuery() const;
 public:
     ManufacturerRepository(Database& _db)
         : db(_db)
     {}
     virtual void create(const ManufacturerModel &data) override;
-    virtual void read() override;
+    virtual void read() const override;
     virtual void update(const ManufacturerModel &data) override;
     virtual void remove(int id) override;
     void search(const ManufacturerModel &data);

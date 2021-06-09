@@ -32,7 +32,6 @@
       <property name="enabled">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="page"/>
      </widget>
     </item>
    </layout>

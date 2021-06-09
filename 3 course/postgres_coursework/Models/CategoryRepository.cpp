@@ -3,7 +3,7 @@
 
 using namespace StringTools;
 
-QString CategoryRepository::getSelectQuery()
+QString CategoryRepository::getSelectQuery() const
 {
     const Tokens args = {"SELECT id_категория, название as",
                          quote("Название категории"),
@@ -20,7 +20,7 @@ void CategoryRepository::create(const CategoryModel &data)
     this->read();
 }
 
-void CategoryRepository::read()
+void CategoryRepository::read() const
 {
     db.execWithDisplay(getSelectQuery() + " ORDER BY id_категория");
 }

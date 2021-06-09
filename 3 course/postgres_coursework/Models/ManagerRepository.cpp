@@ -3,7 +3,7 @@
 
 using namespace StringTools;
 
-QString ManagerRepository::getSelectQuery()
+QString ManagerRepository::getSelectQuery() const
 {
     const Tokens args = {"SELECT id_менеджер",
                          ", фамилия as", quote("Фамилия"),
@@ -29,7 +29,7 @@ void ManagerRepository::create(const ManagerModel &data)
     this->read();
 }
 
-void ManagerRepository::read()
+void ManagerRepository::read() const
 {
     db.execWithDisplay(getSelectQuery() + " ORDER BY id_менеджер");
 }

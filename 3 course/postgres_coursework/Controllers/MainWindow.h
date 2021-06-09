@@ -26,9 +26,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void showManagerForm();
 private slots:
     void showBuyerForm();
-    void showManagerForm();
+
     void showOperatorForm();
 };
 #endif // MAINWINDOW_H

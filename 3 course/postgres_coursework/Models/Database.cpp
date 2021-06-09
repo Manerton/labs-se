@@ -32,7 +32,6 @@ void Database::exec()
 {
     if (!query.exec())
         QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError()));
-
 }
 
 void Database::exec(const QString &str)
@@ -76,12 +75,12 @@ void Database::bindValue(const QString &placeholder, const QVariant &val)
 
 std::map<int, QString> Database::getAttributesList(const QString &str)
 {
-    Tokens args = {"SELECT", quote("id_" + str), "FROM", quote(str)};
+    Tokens args = {"SELECT * FROM", quote(str)};
     query.exec(vecToStr(args));
     std::map<int, QString> map;
     while (query.next())
     {
-        map[query.value(0).toInt()] = query.value(0).toString();
+        map[query.value(0).toInt()] = query.value(1).toString();
     }
     return map;
 }

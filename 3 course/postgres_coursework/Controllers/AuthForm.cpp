@@ -43,13 +43,17 @@ void AuthForm::on_auth_pushButton_clicked()
     }
 }
 
-AuthForm::~AuthForm()
-{
-    delete ui;
-}
-
 void AuthForm::on_pass_LineEdit_returnPressed()
 {
     ui->auth_pushButton->click();
 }
 
+void AuthForm::on_login_LineEdit_returnPressed()
+{
+    ui->auth_pushButton->click();
+}
+
+AuthForm::~AuthForm()
+{
+    delete ui;
+}

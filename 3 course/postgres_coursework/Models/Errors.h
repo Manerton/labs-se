@@ -38,7 +38,8 @@ namespace Errors
                 {
                     if (errorCode.text().indexOf("менеджер_телефон_check") != -1)
                         return "Номер телефона должен состоять из 11 символов!";
-
+                    if (errorCode.text().indexOf("пункт_выдачи_площадь_check") != -1)
+                        return "Площадь помещения должна быть больше 0 кв. м.";
                     break;
                 }
                 case ErrCode::duplicate_object:

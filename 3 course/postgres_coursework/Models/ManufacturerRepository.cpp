@@ -3,7 +3,7 @@
 
 using namespace StringTools;
 
-QString ManufacturerRepository::getSelectQuery()
+QString ManufacturerRepository::getSelectQuery() const
 {
     const Tokens args = {"SELECT id_производитель",
                          ", название as", quote("Название производителя"),
@@ -22,7 +22,7 @@ void ManufacturerRepository::create(const ManufacturerModel &data)
     this->read();
 }
 
-void ManufacturerRepository::read()
+void ManufacturerRepository::read() const
 {
     db.execWithDisplay(getSelectQuery() + " ORDER BY id_производитель");
 }
