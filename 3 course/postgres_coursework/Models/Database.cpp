@@ -32,6 +32,7 @@ void Database::exec()
 {
     if (!query.exec())
         QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError()));
+    qDebug() << query.lastError();
 }
 
 void Database::exec(const QString &str)

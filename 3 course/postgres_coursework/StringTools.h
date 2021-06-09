@@ -37,6 +37,11 @@ namespace StringTools {
         if (elem.trimmed().isEmpty()) return QVariant();
         return elem;
     }
+    static QVariant convertIfNull(const int &elem)
+    {
+        if (!elem) return QVariant();
+        return elem;
+    }
 }
 
 #endif // STRINGTOOLS_H

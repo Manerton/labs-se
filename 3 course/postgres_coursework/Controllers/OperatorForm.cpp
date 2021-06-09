@@ -1,8 +1,9 @@
 #include "OperatorForm.h"
 #include "../Views/ui_OperatorForm.h"
-#include "QMessageBox"
-#include "QDebug"
-#include "QMenu"
+#include <QMessageBox>
+#include <QDebug>
+#include <QMenu>
+#include <QJsonDocument>
 
 OperatorForm::OperatorForm(QWidget *parent, Database &_db) :
     QWidget(parent),
@@ -79,12 +80,13 @@ void OperatorForm::initialRead()
     // готовим все comboBox для внешних аттрибутов
     // (т.е помещаем в comboBox строку для пользователя
     // и там же прячем настоящий id внешнего ключа)
-    updateAttributesList();
+    this->updateAttributesList();
 }
 
 void OperatorForm::on_tabWidget_currentChanged(int index)
 {
     this->read(index);
+    this->updateAttributesList();
 }
 
 int OperatorForm::getSelectedEntryId() const
@@ -165,12 +167,42 @@ ProductModel OperatorForm::parseProductModel() const
 {
     ProductModel data;
     data.id = getSelectedEntryId();
-    //data.id_manufacturer =
-    //data.id_category =
+    data.id_manufacturer = ui->manufacturer_comboBox->currentData().toInt();
+    data.id_category = ui->category_comboBox->currentData().toInt();
     data.name = ui->nameProduct_LineEdit->text();
     data.cost = ui->cost_LineEdit->text().toFloat();
     data.warranty = ui->warranty_LineEdit->text().toShort();
-    //data.specs =
+    for (int i = 0; i < ui->specs_tableWidget->rowCount(); ++i)
+    {
+        QString valText = ui->specs_tableWidget->item(i,1)->text();
+
+        bool okInt = false;
+        int integer = valText.toInt(&okInt);
+
+        bool okFloat = false;
+        float real = valText.toFloat(&okFloat);
+
+        bool okBoolTrue =   ( valText.toLower().indexOf("true") != -1 );
+        bool okBoolFalse =  ( valText.toLower().indexOf("false") != -1 );
+
+        if (okInt) {
+            data.specs.insert(ui->specs_tableWidget->item(i,0)->text(), integer);
+        }
+        else if (okFloat) {
+            data.specs.insert(ui->specs_tableWidget->item(i,0)->text(), real);
+        }
+        else if (okBoolTrue) {
+            data.specs.insert(ui->specs_tableWidget->item(i,0)->text(), true);
+        }
+        else if (okBoolFalse) {
+            data.specs.insert(ui->specs_tableWidget->item(i,0)->text(), false);
+        }
+        else {
+            data.specs.insert(ui->specs_tableWidget->item(i,0)->text(), valText);
+        }
+    }
+    qDebug() << data.specs;
+    //data.specs = { {"key_str", "value"}, {"key_int", 5}, {"key_bool", true} };
     return data;
 }
 
@@ -361,12 +393,37 @@ void OperatorForm::moveDataToInput_deliveryPoint(int row, QAbstractItemModel *mo
 void OperatorForm::moveDataToInput_product(int row, QAbstractItemModel *model)
 {
     ui->idProduct_LineEdit->setText(QString::number(row+1));
-    //ui->manufacturer_comboBox->
-    //ui->category_comboBox->
+
+    int i = ui->manufacturer_comboBox->findText(model->index(row,1).data().toString());
+    if ( i != -1 ) {
+        ui->manufacturer_comboBox->setCurrentIndex(i);
+    }
+
+    int j = ui->category_comboBox->findText(model->index(row,2).data().toString());
+    if ( j != -1 ) {
+        ui->category_comboBox->setCurrentIndex(j);
+    }
+
     ui->nameProduct_LineEdit->setText(model->index(row,3).data().toString());
     ui->cost_LineEdit->setText(model->index(row,4).data().toString());
     ui->warranty_LineEdit->setText(model->index(row,5).data().toString());
-    //ui->specs_tableWidget->
+
+    ui->specs_tableWidget->clearContents();
+    ui->specs_tableWidget->setRowCount(0);
+    QJsonDocument doc = QJsonDocument::fromJson(model->index(row,6).data().toString().toUtf8());
+    if (doc.isObject())
+    {
+        QVariantMap jsonMap = doc.object().toVariantMap();
+        auto it = jsonMap.constBegin();
+        while (it != jsonMap.constEnd())
+        {
+            int i = ui->specs_tableWidget->rowCount();
+            ui->specs_tableWidget->insertRow(i);
+            ui->specs_tableWidget->setItem(i, 0, new QTableWidgetItem(it.key()));
+            ui->specs_tableWidget->setItem(i, 1, new QTableWidgetItem(it.value().toString(), static_cast<int>(it.value().type())));
+            ++it;
+        }
+    }
 }
 
 void OperatorForm::moveDataToInput_category(int row, QAbstractItemModel* model)
@@ -401,11 +458,6 @@ void OperatorForm::on_tableView_activated(const QModelIndex &index)
         default:
             qDebug() << tableName;
     }
-
-    /*int i = ui->comboBox_lecturer->findData(model->index(row,1).data().toString());
-    if ( i != -1 ) {
-        ui->comboBox_lecturer->setCurrentIndex(i);
-    }*/
 }
 
 void OperatorForm::clearIdField()
@@ -464,12 +516,13 @@ void OperatorForm::clearFields_deliveryPoint()
 
 void OperatorForm::clearFields_product()
 {
-    //ui->manufacturer_comboBox->
-    //ui->category_comboBox->
+    ui->manufacturer_comboBox->setCurrentIndex(0);
+    ui->category_comboBox->setCurrentIndex(0);
     ui->nameProduct_LineEdit->clear();
     ui->cost_LineEdit->clear();
     ui->warranty_LineEdit->clear();
-    ui->specs_tableWidget->clear();
+    ui->specs_tableWidget->clearContents();
+    ui->specs_tableWidget->setRowCount(0);
 }
 
 void OperatorForm::clearFields()

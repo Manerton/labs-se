@@ -32,6 +32,7 @@ CREATE TABLE товар
 	гарантийный_срок smallint NOT NULL CHECK (гарантийный_срок > 0),
 	характеристики jsonb,
 	PRIMARY KEY (id_товар),
+	UNIQUE (id_производитель, наименование),
 	CONSTRAINT производитель_exists FOREIGN KEY (id_производитель)
         REFERENCES производитель (id_производитель)
         ON UPDATE CASCADE
@@ -41,6 +42,12 @@ CREATE TABLE товар
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
+
+INSERT INTO товар (id_производитель, id_категория, наименование, стоимость, гарантийный_срок, характеристики) VALUES 
+(1, 5, 'i5-11400F', 17200, 36, '{"Количество ядер": 6, "Количество потоков": 12, "Архитектура": "Rocket Lake", "Встроенное видеоядро": false}'),
+(4, 5, 'Ryzen 5800X', 37900, 36, '{"Количество ядер": 6, "Количество потоков": 12, "Архитектура": "Zen 3", "Встроенное видеоядро" : false, "Кеш L3" : 32 }'),
+(4, 5, 'Ryzen 5600X', 23600, 36, '{"Количество ядер": 8, "Количество потоков": 16, "Архитектура": "Zen 3", "Встроенное видеоядро" : false, "Кеш L3" : 32 }'),
+(2, 1, 'Redmi Note 8T', 12000, 12, '{"ОС": "Android 9.0 Pie", "Процессор": "Snapdragon 665", "Камера (Мп)": 48, "Количество ядер" : 8, "Разрешение экрана" : "2340x1080", "Технология изготовления экрана" : "IPS" }');
 
 CREATE VIEW товар_v AS 
 (SELECT id_товар, производитель.название AS "Производитель", категория.название AS "Категория", 
@@ -167,10 +174,11 @@ CREATE TABLE позиция_заказа
 
 -- Создание ролей
 CREATE USER operator PASSWORD 'oper123';
-GRANT SELECT ON категория, менеджер, производитель, пункт_выдачи, товар_на_складе, товар TO operator;
+GRANT SELECT ON категория, менеджер, производитель, пункт_выдачи, товар_на_складе, товар, товар_v TO operator;
 GRANT INSERT, UPDATE, DELETE ON категория TO operator;
 GRANT INSERT, UPDATE, DELETE ON производитель TO operator;
 GRANT INSERT, UPDATE, DELETE ON пункт_выдачи TO operator;
+GRANT INSERT, UPDATE, DELETE ON товар TO operator;
 
 CREATE GROUP managers;
 GRANT SELECT ON заказ TO managers;

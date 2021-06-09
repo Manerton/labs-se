@@ -40,6 +40,10 @@ namespace Errors
                         return "Номер телефона должен состоять из 11 символов!";
                     if (errorCode.text().indexOf("пункт_выдачи_площадь_check") != -1)
                         return "Площадь помещения должна быть больше 0 кв. м.";
+                    if (errorCode.text().indexOf("товар_гарантийный_срок_check") != -1)
+                        return "Гарантийный срок должен быть не менее 1 месяца!";
+                    if (errorCode.text().indexOf("товар_стоимость_check") != -1)
+                        return "Нулевая или отрицательная стоимость недопустима!";
                     break;
                 }
                 case ErrCode::duplicate_object:
