@@ -9,6 +9,7 @@
 #include "Models/ManufacturerRepository.h"
 #include "Models/DeliveryPointRepository.h"
 #include "Models/ProductRepository.h"
+#include "Models/ProductInWarehouseRepository.h"
 
 namespace Ui {
     class OperatorForm;
@@ -25,7 +26,8 @@ class OperatorForm : public QWidget
         manager = 1,
         manufacturer = 2,
         deliveryPoint = 3,
-        product = 4
+        product = 4,
+        productInWareHouse = 5
     };
 
     Database& db;
@@ -46,6 +48,9 @@ class OperatorForm : public QWidget
     std::unique_ptr<QMenu> specs_contextMenu;
     std::unique_ptr<QMenu> createSpecsContextMenu();
 
+    ProductInWarehouseRepository productInWarehouseRepository;
+    ProductInWarehouseModel parseProductInWarehouseModel() const;
+
     void updateAttributesList();
     void clearFields();
     void clearIdField();
@@ -55,11 +60,13 @@ class OperatorForm : public QWidget
     void moveDataToInput_manufacturer(int row, QAbstractItemModel *model);
     void moveDataToInput_deliveryPoint(int row, QAbstractItemModel *model);
     void moveDataToInput_product(int row, QAbstractItemModel *model);
+    void moveDataToInput_productInWarehouse(int row, QAbstractItemModel *model);
     void clearFields_manager();
     void clearFields_category();
     void clearFields_manufacturer();
     void clearFields_deliveryPoint();
     void clearFields_product();
+    void clearFields_productInWarehouse();
     int execRemoveMessageBox();
     void read(int tableIndex);
     void prepareUi();

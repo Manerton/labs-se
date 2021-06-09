@@ -41,7 +41,8 @@ public:
     void exec();
     void exec(const QString &str);
     void execWithDisplay(const QString &str);
-    void first();
+    bool first();
+    bool next();
     QVariant value(int i);
     void prepare(const QString &str);
     void bindValue(const QString &placeholder, const QVariant &val);

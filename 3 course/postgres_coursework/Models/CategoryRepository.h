@@ -24,6 +24,7 @@ public:
     virtual void update(const CategoryModel &data) override;
     virtual void remove(int id) override;
     void search(const CategoryModel &data);
+    std::map<int, QString> getAttributesList() const;
 };
 
 #endif // CATEGORYREPOSITORY_H

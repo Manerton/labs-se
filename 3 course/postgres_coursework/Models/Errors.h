@@ -44,6 +44,10 @@ namespace Errors
                         return "Гарантийный срок должен быть не менее 1 месяца!";
                     if (errorCode.text().indexOf("товар_стоимость_check") != -1)
                         return "Нулевая или отрицательная стоимость недопустима!";
+                    if (errorCode.text().indexOf("товар_на_складе_количество_check") != -1)
+                        return "Количество товара не может быть отрицательным!";
+                    if (errorCode.text().indexOf("Insert product with count 0") != -1)
+                        return "Нельзя добавить товар на склад с количеством равным нулю!";
                     break;
                 }
                 case ErrCode::duplicate_object:

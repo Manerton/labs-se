@@ -20,7 +20,6 @@ class ProductRepository : public IRepository<ProductModel>
 {
     Database& db;
 
-    QString getSelectQuery() const;
 public:
     ProductRepository(Database& _db)
         : db(_db)
@@ -30,6 +29,7 @@ public:
     virtual void update(const ProductModel &data) override;
     virtual void remove(int id) override;
     void search(const ProductModel &data);
+    std::map<int, QString> getAttributesList() const;
 };
 
 #endif // PRODUCTREPOSITORY_H

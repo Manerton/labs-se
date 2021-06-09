@@ -61,3 +61,8 @@ void CategoryRepository::search(const CategoryModel &data)
     }
     else this->read();
 }
+
+std::map<int, QString> CategoryRepository::getAttributesList() const
+{
+    return db.getAttributesList("SELECT id_категория, название FROM категория");
+}

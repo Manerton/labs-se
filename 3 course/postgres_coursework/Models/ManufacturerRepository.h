@@ -25,6 +25,7 @@ public:
     virtual void update(const ManufacturerModel &data) override;
     virtual void remove(int id) override;
     void search(const ManufacturerModel &data);
+    std::map<int, QString> getAttributesList() const;
 };
 
 #endif // MANUFACTURERREPOSITORY_H

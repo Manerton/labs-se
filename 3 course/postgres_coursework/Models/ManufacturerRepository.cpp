@@ -77,3 +77,8 @@ void ManufacturerRepository::search(const ManufacturerModel &data)
     }
     else this->read();
 }
+
+std::map<int, QString> ManufacturerRepository::getAttributesList() const
+{
+    return db.getAttributesList("SELECT id_производитель, название FROM производитель");
+}

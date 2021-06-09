@@ -4,11 +4,6 @@
 
 using namespace StringTools;
 
-QString ProductRepository::getSelectQuery() const
-{
-
-}
-
 void ProductRepository::create(const ProductModel &data)
 {
     db.prepare("INSERT INTO товар (id_производитель, id_категория, наименование, стоимость, гарантийный_срок, характеристики) "
@@ -35,7 +30,6 @@ void ProductRepository::update(const ProductModel &data)
 {
     if (data.id)
     {
-        qDebug() << data.id;
         db.prepare("UPDATE товар "
                    "SET id_производитель = :id_manufacturer, id_категория = :id_category, наименование = :name, "
                    "стоимость = :cost, гарантийный_срок = :warranty, характеристики = :specs "
@@ -69,5 +63,38 @@ void ProductRepository::remove(int id)
 
 void ProductRepository::search(const ProductModel &data)
 {
-    this->read();
+    Tokens searchOptions;
+    QString query = "SELECT * FROM товар_v WHERE ";
+
+    if (data.id_manufacturer)
+        searchOptions.emplace_back("Производитель = (SELECT название FROM производитель WHERE id_производитель = " + QString::number(data.id_manufacturer) + ")");
+
+    if (data.id_category)
+        searchOptions.emplace_back("Категория = (SELECT название FROM категория WHERE id_категория = " + QString::number(data.id_category) + ")");
+
+    if (!data.name.isEmpty())
+        searchOptions.emplace_back("Наименование ILIKE '%" + data.name + "%'");
+
+    if (data.cost > 0)
+        searchOptions.emplace_back("cast(Стоимость as text) ILIKE '%" + QString::number(data.cost) + "%'");
+
+    if (data.warranty > 0)
+        searchOptions.emplace_back("cast(\"Гарантийный срок\" as text) ILIKE '%" + QString::number(data.warranty) + "%'");
+
+    const size_t N = searchOptions.size();
+    if (!searchOptions.empty())
+    {
+        for (size_t i = 0; i < N-1; ++i)
+        {
+            query += searchOptions[i] + " AND ";
+        }
+        query += searchOptions[N-1];
+        db.execWithDisplay(query);
+    }
+    else this->read();
+}
+
+std::map<int, QString> ProductRepository::getAttributesList() const
+{
+    return db.getAttributesList("SELECT id_товар, (Производитель || ' ' || Наименование) FROM товар_v");
 }

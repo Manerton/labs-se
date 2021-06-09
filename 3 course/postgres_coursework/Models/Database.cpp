@@ -32,7 +32,6 @@ void Database::exec()
 {
     if (!query.exec())
         QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError()));
-    qDebug() << query.lastError();
 }
 
 void Database::exec(const QString &str)
@@ -51,11 +50,17 @@ void Database::execWithDisplay(const QString &str)
     {
         model->setQuery(query);
     }
+    qDebug() << query.lastError();
 }
 
-void Database::first()
+bool Database::first()
 {
-    query.first();
+    return query.first();
+}
+
+bool Database::next()
+{
+    return query.next();
 }
 
 QVariant Database::value(int i)
@@ -74,10 +79,9 @@ void Database::bindValue(const QString &placeholder, const QVariant &val)
     query.bindValue(placeholder,val);
 }
 
-std::map<int, QString> Database::getAttributesList(const QString &str)
+std::map<int, QString> Database::getAttributesList(const QString& str)
 {
-    Tokens args = {"SELECT * FROM", quote(str)};
-    query.exec(vecToStr(args));
+    this->exec(str);
     std::map<int, QString> map;
     while (query.next())
     {

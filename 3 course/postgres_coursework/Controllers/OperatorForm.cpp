@@ -14,7 +14,8 @@ OperatorForm::OperatorForm(QWidget *parent, Database &_db) :
     manufacturerRepository(db),
     deliveryPointRepository(db),
     productRepository(db),
-    specs_contextMenu(createSpecsContextMenu())
+    specs_contextMenu(createSpecsContextMenu()),
+    productInWarehouseRepository(db)
 {
     ui->setupUi(this);
     this->prepareUi();
@@ -30,6 +31,9 @@ void OperatorForm::prepareUi()
     ui->specs_tableWidget->horizontalHeader()->setVisible(true);
     // связка для работы контекстного меню для таблицы характеристик товара
     connect(ui->specs_tableWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(specs_customMenuRequested(QPoint)));
+    ui->productionDate_dateEdit->setMaximumDate(QDate::currentDate());
+    ui->productionDate_dateEdit->setDate(ui->productionDate_dateEdit->minimumDate());
+    ui->productionDate_dateEdit->setSpecialValueText("не выбрана");
 }
 
 void OperatorForm::specs_customMenuRequested(QPoint pos)
@@ -67,6 +71,9 @@ void OperatorForm::read(int tableIndex)
         case dbTable::product:
             productRepository.read();
             break;
+        case dbTable::productInWareHouse:
+            productInWarehouseRepository.read();
+            break;
         default:
             qDebug() << tableName;
     }
@@ -87,6 +94,15 @@ void OperatorForm::on_tabWidget_currentChanged(int index)
 {
     this->read(index);
     this->updateAttributesList();
+
+    if (ui->tabWidget->currentIndex() == dbTable::productInWareHouse)
+    {
+        ui->pushButton_update->setDisabled(true);
+    }
+    else
+    {
+        ui->pushButton_update->setDisabled(false);
+    }
 }
 
 int OperatorForm::getSelectedEntryId() const
@@ -109,6 +125,9 @@ int OperatorForm::getSelectedEntryId() const
             break;
         case dbTable::product:
             value = ui->idProduct_LineEdit->text().toInt()-1;
+            break;
+        case dbTable::productInWareHouse:
+            value = ui->idProductInWarehouse_LineEdit->text().toInt()-1;
             break;
         default:
             qDebug() << tableName;
@@ -180,7 +199,7 @@ ProductModel OperatorForm::parseProductModel() const
         int integer = valText.toInt(&okInt);
 
         bool okFloat = false;
-        float real = valText.toFloat(&okFloat);
+        double real = valText.toDouble(&okFloat);
 
         bool okBoolTrue =   ( valText.toLower().indexOf("true") != -1 );
         bool okBoolFalse =  ( valText.toLower().indexOf("false") != -1 );
@@ -201,7 +220,6 @@ ProductModel OperatorForm::parseProductModel() const
             data.specs.insert(ui->specs_tableWidget->item(i,0)->text(), valText);
         }
     }
-    qDebug() << data.specs;
     //data.specs = { {"key_str", "value"}, {"key_int", 5}, {"key_bool", true} };
     return data;
 }
@@ -223,17 +241,42 @@ std::unique_ptr<QMenu> OperatorForm::createSpecsContextMenu()
     return menu;
 }
 
+ProductInWarehouseModel OperatorForm::parseProductInWarehouseModel() const
+{
+    ProductInWarehouseModel data;
+    data.id = getSelectedEntryId();
+    data.id_product = ui->product_comboBox->currentData().toInt();
+
+    // если не выбрана дата
+    if (ui->productionDate_dateEdit->text() == ui->productionDate_dateEdit->specialValueText())
+    {
+        data.production_date = QDate();
+    }
+    else // если выбрана
+    {
+        data.production_date = ui->productionDate_dateEdit->date();
+    }
+
+    data.count = ui->count_LineEdit->text().toShort();
+    return data;
+}
+
 void OperatorForm::updateAttributesList()
 {
-    auto manufacturer_map = db.getAttributesList("производитель");
+    auto manufacturer_map = manufacturerRepository.getAttributesList();
     ui->manufacturer_comboBox->clear();
     ui->manufacturer_comboBox->addItem("");
     for (const auto& elem : manufacturer_map) ui->manufacturer_comboBox->addItem(elem.second, elem.first);
 
-    auto category_map = db.getAttributesList("категория");
+    auto category_map = categoryRepository.getAttributesList();
     ui->category_comboBox->clear();
     ui->category_comboBox->addItem("");
     for (const auto& elem : category_map) ui->category_comboBox->addItem(elem.second, elem.first);
+
+    auto product_map = productRepository.getAttributesList();
+    ui->product_comboBox->clear();
+    ui->product_comboBox->addItem("");
+    for (const auto& elem : product_map) ui->product_comboBox->addItem(elem.second, elem.first);
 }
 
 void OperatorForm::on_pushButton_create_clicked()
@@ -256,6 +299,9 @@ void OperatorForm::on_pushButton_create_clicked()
             break;
         case dbTable::product:
             productRepository.create(parseProductModel());
+            break;
+        case dbTable::productInWareHouse:
+            productInWarehouseRepository.create(parseProductInWarehouseModel());
             break;
         default:
             qDebug() << tableName;
@@ -323,6 +369,9 @@ void OperatorForm::on_pushButton_remove_clicked()
             case dbTable::product:
                 productRepository.remove(getSelectedEntryId());
                 break;
+            case dbTable::productInWareHouse:
+                productInWarehouseRepository.remove(getSelectedEntryId());
+                break;
             default:
                 qDebug() << tableName;
         }
@@ -348,6 +397,9 @@ void OperatorForm::on_pushButton_search_clicked()
             break;
         case dbTable::product:
             productRepository.search(parseProductModel());
+            break;
+        case dbTable::productInWareHouse:
+            productInWarehouseRepository.search(parseProductInWarehouseModel());
             break;
         default:
             qDebug() << tableName;
@@ -426,6 +478,19 @@ void OperatorForm::moveDataToInput_product(int row, QAbstractItemModel *model)
     }
 }
 
+void OperatorForm::moveDataToInput_productInWarehouse(int row, QAbstractItemModel *model)
+{
+    ui->idProductInWarehouse_LineEdit->setText(QString::number(row+1));
+
+    int i = ui->product_comboBox->findText(model->index(row,1).data().toString());
+    if ( i != -1 ) {
+        ui->product_comboBox->setCurrentIndex(i);
+    }
+
+    ui->productionDate_dateEdit->setDate(model->index(row,3).data().toDate());
+    ui->count_LineEdit->setText(model->index(row,4).data().toString());
+}
+
 void OperatorForm::moveDataToInput_category(int row, QAbstractItemModel* model)
 {
     ui->idCategory_LineEdit->setText(QString::number(row+1));
@@ -455,6 +520,9 @@ void OperatorForm::on_tableView_activated(const QModelIndex &index)
         case dbTable::product:
             moveDataToInput_product(row, model);
             break;
+        case dbTable::productInWareHouse:
+            moveDataToInput_productInWarehouse(row, model);
+            break;
         default:
             qDebug() << tableName;
     }
@@ -479,6 +547,9 @@ void OperatorForm::clearIdField()
             break;
         case dbTable::product:
             ui->idProduct_LineEdit->clear();
+            break;
+        case dbTable::productInWareHouse:
+            ui->idProductInWarehouse_LineEdit->clear();
             break;
         default:
             qDebug() << tableName;
@@ -525,6 +596,13 @@ void OperatorForm::clearFields_product()
     ui->specs_tableWidget->setRowCount(0);
 }
 
+void OperatorForm::clearFields_productInWarehouse()
+{
+    ui->product_comboBox->setCurrentIndex(0);
+    ui->productionDate_dateEdit->setDate(ui->productionDate_dateEdit->minimumDate());
+    ui->count_LineEdit->clear();
+}
+
 void OperatorForm::clearFields()
 {
     this->clearIdField();
@@ -546,6 +624,9 @@ void OperatorForm::clearFields()
             break;
         case dbTable::product:
             this->clearFields_product();
+            break;
+        case dbTable::productInWareHouse:
+            this->clearFields_productInWarehouse();
             break;
         default:
             qDebug() << tableName;
