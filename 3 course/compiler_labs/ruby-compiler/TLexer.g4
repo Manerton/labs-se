@@ -40,9 +40,9 @@ GREATER_EQUAL : '>=';
 ASSIGN : '=';
 
 // логические операции
-AND : 'and' | '&&';
-OR : 'or' | '||';
-NOT : 'not' | '!';
+AND : '&&';
+OR : '||';
+NOT : '!';
 
 // скобки
 L_BRACKET : '(';
@@ -50,6 +50,9 @@ R_BRACKET : ')';
 L_SQBRACKET : '[';
 R_SQBRACKET : ']';
 
+// операция ввода-вывода
+GETS : 'gets';
+PUTS : 'puts';
 
 // перевод каретки и новая строка
 NEWLINE : ('\r')? '\n';
