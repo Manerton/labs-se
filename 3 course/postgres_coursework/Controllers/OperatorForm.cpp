@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QMenu>
 #include <QJsonDocument>
+#include <QRegExpValidator>
 
 OperatorForm::OperatorForm(QWidget *parent, Database &_db) :
     QWidget(parent),
@@ -34,6 +35,8 @@ void OperatorForm::prepareUi()
     ui->productionDate_dateEdit->setMaximumDate(QDate::currentDate());
     ui->productionDate_dateEdit->setDate(ui->productionDate_dateEdit->minimumDate());
     ui->productionDate_dateEdit->setSpecialValueText("не выбрана");
+    // только цифры для телефона
+    ui->telephone_LineEdit->setValidator( new QRegExpValidator(QRegExp("[0-9]*"), this) );
 }
 
 void OperatorForm::specs_customMenuRequested(QPoint pos)

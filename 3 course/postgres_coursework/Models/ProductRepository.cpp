@@ -121,6 +121,17 @@ std::map<int, QString> ProductRepository::getAttributesList() const
     return db.getAttributesList("SELECT id_товар, (Производитель || ' ' || Наименование) FROM товар_v");
 }
 
+std::map<int, ProductRepository::productNameWithPrice> ProductRepository::getAttributesListWithPrices() const
+{
+    db.exec("SELECT id_товар, (Производитель || ' ' || Наименование), Стоимость FROM товар_v");
+    std::map<int, productNameWithPrice> map;
+    while (db.next())
+    {
+        map[db.value(0).toInt()] = {db.value(1).toString(), db.value(2).toFloat()};
+    }
+    return map;
+}
+
 QJsonDocument ProductRepository::getJsonSpecs(int id) const
 {
     db.exec("SELECT характеристики FROM товар WHERE id_товар = " + QString::number(id));

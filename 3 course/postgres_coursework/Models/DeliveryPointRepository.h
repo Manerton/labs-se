@@ -29,6 +29,8 @@ public:
     virtual void update(const DeliveryPointModel &data) override;
     virtual void remove(int id) override;
     void search(const DeliveryPointModel &data);
+    std::map<int, QString> getAttributesList() const;
+    QString getExtraFuncForId(int id) const;
 };
 
 #endif // DELIVERYPOINTREPOSITORY_H

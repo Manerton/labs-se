@@ -117,3 +117,17 @@ void DeliveryPointRepository::search(const DeliveryPointModel &data)
     }
     else this->read();
 }
+
+std::map<int, QString> DeliveryPointRepository::getAttributesList() const
+{
+    return db.getAttributesList("SELECT id_пункт_выдачи, (название || ' - ' || адрес) FROM пункт_выдачи");
+}
+
+QString DeliveryPointRepository::getExtraFuncForId(int id) const
+{
+    db.exec("SELECT array_to_string(доп_функции, ' | ') FROM пункт_выдачи WHERE id_пункт_выдачи = " + QString::number(id));
+    QString extraFunctions;
+    db.first();
+    extraFunctions = db.value(0).toString();
+    return extraFunctions;
+}

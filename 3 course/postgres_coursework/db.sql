@@ -130,7 +130,7 @@ CREATE TABLE клиент
 	фамилия text NOT NULL, 
 	имя text, 
 	отчество text, 
-	телефон varchar(11) NOT NULL UNIQUE CHECK (LENGTH(телефон) = 11), 
+	телефон varchar(11) NOT NULL UNIQUE CHECK (LENGTH(телефон) = 11 AND телефон ~ '^[0-9]*$'), 
 	email text,
 	PRIMARY KEY (id_клиент)
 );
@@ -142,7 +142,7 @@ CREATE TABLE менеджер
 	фамилия text NOT NULL, 
 	имя text NOT NULL, 
 	отчество text, 
-	телефон varchar(11) NOT NULL UNIQUE CHECK (LENGTH(телефон) = 11), 
+	телефон varchar(11) NOT NULL UNIQUE CHECK (LENGTH(телефон) = 11 AND телефон ~ '^[0-9]*$'), 
 	email text NOT NULL,
 	PRIMARY KEY (id_менеджер)
 );
@@ -218,7 +218,7 @@ CREATE GROUP managers;
 GRANT SELECT ON заказ TO managers;
 
 CREATE USER buyer PASSWORD 'buyer';
-GRANT SELECT ON каталог_товаров_v, категория, производитель, товар, товар_v TO buyer;
+GRANT SELECT ON каталог_товаров_v, категория, производитель, товар, товар_v, пункт_выдачи TO buyer;
 
 -- Функция добавления нового менеджера
 CREATE OR REPLACE FUNCTION add_manager

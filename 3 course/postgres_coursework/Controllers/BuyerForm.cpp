@@ -124,19 +124,6 @@ void BuyerForm::clearFields_product()
     ui->specs_tableWidget->setRowCount(0);
 }
 
-int BuyerForm::execRemoveMessageBox()
-{
-    QMessageBox messageBox(QMessageBox::Question,
-                           "Вы уверены?",
-                           "Вы точно хотите удалить этот товар из корзины?",
-                           QMessageBox::Yes | QMessageBox::No,
-                           this);
-    messageBox.setButtonText(QMessageBox::Yes, "Да");
-    messageBox.setButtonText(QMessageBox::No, "Нет");
-    messageBox.exec();
-    return messageBox.result();
-}
-
 void BuyerForm::read()
 {
     productRepository.readForBuyer();

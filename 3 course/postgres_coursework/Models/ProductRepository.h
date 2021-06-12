@@ -18,6 +18,8 @@ struct ProductModel
 
 class ProductRepository : public IRepository<ProductModel>
 {
+    using productNameWithPrice = QPair<QString, float>;
+
     Database& db;
     bool DoSearch(const ProductModel &data, const QString &_query);
 public:
@@ -34,6 +36,7 @@ public:
     std::map<int, QString> getAttributesList() const;
     QJsonDocument getJsonSpecs(int id) const;
     int getProductAllCount(const int id) const;
+    std::map<int, productNameWithPrice> getAttributesListWithPrices() const;
 };
 
 #endif // PRODUCTREPOSITORY_H

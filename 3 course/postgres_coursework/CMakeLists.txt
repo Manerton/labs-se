@@ -32,6 +32,7 @@ set(PROJECT_SOURCES
         Controllers/ManagerForm.h Controllers/ManagerForm.cpp Views/ManagerForm.ui
         Controllers/OperatorForm.h Controllers/OperatorForm.cpp Views/OperatorForm.ui
         Controllers/CartForm.h Controllers/CartForm.cpp Views/CartForm.ui
+        Controllers/CreateOrderForm.h Controllers/CreateOrderForm.cpp Views/CreateOrderForm.ui
         StringTools.h
 )
 
