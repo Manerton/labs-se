@@ -6,13 +6,6 @@
 #include <QMessageBox>
 #include <QDebug>
 
-/* для сортировки в таблице
-    #include <QSortFilterProxyModel>
-    QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel();
-    proxyModel->setSourceModel( db.getModel().get() );
-    ui->tableView->setModel( proxyModel );
-*/
-
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -42,6 +35,7 @@ void MainWindow::showBuyerForm()
 {
     ui->stackedWidget->setCurrentWidget(buyerForm.get());
     this->show();
+    buyerForm->initialRead();
 }
 
 void MainWindow::showManagerForm()

@@ -1,7 +1,6 @@
 #ifndef ERRORS_H
 #define ERRORS_H
 
-#include <map>
 #include <QString>
 #include <QSqlError>
 

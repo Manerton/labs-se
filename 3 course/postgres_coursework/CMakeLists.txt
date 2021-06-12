@@ -26,10 +26,12 @@ set(PROJECT_SOURCES
         Models/DeliveryPointRepository.h Models/DeliveryPointRepository.cpp
         Models/ProductRepository.h Models/ProductRepository.cpp
         Models/ProductInWarehouseRepository.h Models/ProductInWarehouseRepository.cpp
+        Models/CustomProxyModel.h
         Controllers/AuthForm.h Controllers/AuthForm.cpp Views/AuthForm.ui
         Controllers/BuyerForm.h Controllers/BuyerForm.cpp Views/BuyerForm.ui
         Controllers/ManagerForm.h Controllers/ManagerForm.cpp Views/ManagerForm.ui
         Controllers/OperatorForm.h Controllers/OperatorForm.cpp Views/OperatorForm.ui
+        Controllers/CartForm.h Controllers/CartForm.cpp Views/CartForm.ui
         StringTools.h
 )
 

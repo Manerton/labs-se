@@ -26,6 +26,11 @@ void ProductRepository::read() const
     db.execWithDisplay("SELECT * FROM товар_v ORDER BY id_товар");
 }
 
+void ProductRepository::readForBuyer() const
+{
+    db.execWithDisplay("SELECT * FROM каталог_товаров_v ORDER BY id_товар");
+}
+
 void ProductRepository::update(const ProductModel &data)
 {
     if (data.id)
@@ -61,10 +66,10 @@ void ProductRepository::remove(int id)
     }
 }
 
-void ProductRepository::search(const ProductModel &data)
+bool ProductRepository::DoSearch(const ProductModel &data, const QString& _query)
 {
     Tokens searchOptions;
-    QString query = "SELECT * FROM товар_v WHERE ";
+    QString query = _query;
 
     if (data.id_manufacturer)
         searchOptions.emplace_back("Производитель = (SELECT название FROM производитель WHERE id_производитель = " + QString::number(data.id_manufacturer) + ")");
@@ -90,11 +95,42 @@ void ProductRepository::search(const ProductModel &data)
         }
         query += searchOptions[N-1];
         db.execWithDisplay(query);
+        return true;
     }
-    else this->read();
+    return false;
+}
+
+void ProductRepository::search(const ProductModel &data)
+{
+    if (!DoSearch(data, "SELECT * FROM товар_v WHERE "))
+    {
+        this->read();
+    }
+}
+
+void ProductRepository::searchForBuyer(const ProductModel &data)
+{
+    if (!DoSearch(data, "SELECT * FROM каталог_товаров_v WHERE "))
+    {
+        this->readForBuyer();
+    }
 }
 
 std::map<int, QString> ProductRepository::getAttributesList() const
 {
     return db.getAttributesList("SELECT id_товар, (Производитель || ' ' || Наименование) FROM товар_v");
+}
+
+QJsonDocument ProductRepository::getJsonSpecs(int id) const
+{
+    db.exec("SELECT характеристики FROM товар WHERE id_товар = " + QString::number(id));
+    db.first();
+    return QJsonDocument::fromJson(db.value(0).toString().toUtf8());
+}
+
+int ProductRepository::getProductAllCount(const int id) const
+{
+    db.exec("SELECT Количество FROM каталог_товаров_v WHERE id_товар = " + QString::number(id));
+    db.first();
+    return db.value(0).toInt();
 }

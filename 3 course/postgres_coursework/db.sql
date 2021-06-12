@@ -96,6 +96,16 @@ GRANT EXECUTE ON FUNCTION add_product_to_warehouse(int, date, int) TO operator;
 
 SELECT add_product_to_warehouse(4, '2020-12-14', 10);
 
+-- Представление для покупателя - Каталог товаров
+CREATE VIEW каталог_товаров_v
+AS 
+SELECT a.id_товар, a.Категория, a.Производитель, a.Наименование, a.Стоимость, a."Гарантийный срок", b.Количество 
+FROM товар_v a, 
+	(SELECT id_товар, SUM(количество) AS "Количество" 
+ 	FROM товар_на_складе 
+ 	GROUP BY id_товар) b
+WHERE b.id_товар = a.id_товар;
+
 -- Пункт выдачи
 CREATE TABLE пункт_выдачи
 (
@@ -208,6 +218,7 @@ CREATE GROUP managers;
 GRANT SELECT ON заказ TO managers;
 
 CREATE USER buyer PASSWORD 'buyer';
+GRANT SELECT ON каталог_товаров_v, категория, производитель, товар, товар_v TO buyer;
 
 -- Функция добавления нового менеджера
 CREATE OR REPLACE FUNCTION add_manager

@@ -220,7 +220,7 @@ ProductModel OperatorForm::parseProductModel() const
             data.specs.insert(ui->specs_tableWidget->item(i,0)->text(), valText);
         }
     }
-    //data.specs = { {"key_str", "value"}, {"key_int", 5}, {"key_bool", true} };
+
     return data;
 }
 
@@ -462,7 +462,7 @@ void OperatorForm::moveDataToInput_product(int row, QAbstractItemModel *model)
 
     ui->specs_tableWidget->clearContents();
     ui->specs_tableWidget->setRowCount(0);
-    QJsonDocument doc = QJsonDocument::fromJson(model->index(row,6).data().toString().toUtf8());
+    QJsonDocument doc = productRepository.getJsonSpecs(getSelectedEntryId());
     if (doc.isObject())
     {
         QVariantMap jsonMap = doc.object().toVariantMap();
