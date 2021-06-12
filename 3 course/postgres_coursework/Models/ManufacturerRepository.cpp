@@ -12,23 +12,25 @@ QString ManufacturerRepository::getSelectQuery() const
     return vecToStr(args);
 }
 
-void ManufacturerRepository::create(const ManufacturerModel &data)
+bool ManufacturerRepository::create(const ManufacturerModel &data)
 {
     db.prepare("INSERT INTO производитель (название, страна) VALUES (:name, :country)");
     db.bindValue(":name", convertIfNull(data.name));
     db.bindValue(":country", convertIfNull(data.country));
 
-    db.exec();
-    this->read();
+    bool result = db.exec();
+    if (result) this->read();
+    return result;
 }
 
-void ManufacturerRepository::read() const
+bool ManufacturerRepository::read() const
 {
-    db.execWithDisplay(getSelectQuery() + " ORDER BY id_производитель");
+    return db.execWithDisplay(getSelectQuery() + " ORDER BY id_производитель");
 }
 
-void ManufacturerRepository::update(const ManufacturerModel &data)
+bool ManufacturerRepository::update(const ManufacturerModel &data)
 {
+    bool result = false;
     if (data.id)
     {
         db.prepare("UPDATE производитель "
@@ -38,21 +40,24 @@ void ManufacturerRepository::update(const ManufacturerModel &data)
         db.bindValue(":name", convertIfNull(data.name));
         db.bindValue(":country", convertIfNull(data.country));
 
-        db.exec();
-        this->read();
+        result = db.exec();
+        if (result) this->read();
     }
+    return result;
 }
 
-void ManufacturerRepository::remove(int id)
+bool ManufacturerRepository::remove(int id)
 {
+    bool result = false;
     if (id)
     {
         db.prepare("DELETE FROM производитель WHERE id_производитель = (:id)");
         db.bindValue(":id", id);
 
-        db.exec();
-        this->read();
+        result = db.exec();
+        if (result) this->read();
     }
+    return result;
 }
 
 void ManufacturerRepository::search(const ManufacturerModel &data)

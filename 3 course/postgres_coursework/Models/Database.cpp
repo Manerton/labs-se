@@ -28,21 +28,26 @@ bool Database::isConnected() const
     return connected;
 }
 
-void Database::exec()
+bool Database::exec()
 {
-    if (!query.exec())
+    const bool result = query.exec();
+    if (!result)
         QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError()));
+    return result;
 }
 
-void Database::exec(const QString &str)
+bool Database::exec(const QString &str)
 {
-    if (!query.exec(str))
+    const bool result = query.exec(str);
+    if (!result)
         QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError()));
+    return result;
 }
 
-void Database::execWithDisplay(const QString &str)
+bool Database::execWithDisplay(const QString &str)
 {
-    if (!query.exec(str))
+    const bool result = query.exec(str);
+    if (!result)
     {
         QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError()));
     }
@@ -51,6 +56,7 @@ void Database::execWithDisplay(const QString &str)
         model->setQuery(query);
     }
     qDebug() << query.lastError();
+    return result;
 }
 
 bool Database::first()
@@ -63,15 +69,32 @@ bool Database::next()
     return query.next();
 }
 
+bool Database::transaction()
+{
+    return db.transaction();
+}
+
+bool Database::commit()
+{
+    return db.commit();
+}
+
+bool Database::rollback()
+{
+    return db.rollback();
+}
+
 QVariant Database::value(int i)
 {
     return query.value(i);
 }
 
-void Database::prepare(const QString &str)
+bool Database::prepare(const QString &str)
 {
-    if (!query.prepare(str))
+    bool result = query.prepare(str);
+    if (!result)
         QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError().nativeErrorCode()));
+    return result;
 }
 
 void Database::bindValue(const QString &placeholder, const QVariant &val)

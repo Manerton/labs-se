@@ -38,15 +38,18 @@ public:
         return model;
     }
     // эти методы - обертка методов объекта query (что-то типа декоратора)
-    void exec();
-    void exec(const QString &str);
-    void execWithDisplay(const QString &str);
+    bool exec();
+    bool exec(const QString &str);
+    bool execWithDisplay(const QString &str);
     bool first();
     bool next();
     QVariant value(int i);
-    void prepare(const QString &str);
+    bool prepare(const QString &str);
     void bindValue(const QString &placeholder, const QVariant &val);
     std::map<int, QString> getAttributesList(const QString &str);
+    bool transaction();
+    bool commit();
+    bool rollback();
 };
 
 #endif // DATABASE_H

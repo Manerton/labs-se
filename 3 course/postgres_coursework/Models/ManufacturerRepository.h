@@ -20,10 +20,10 @@ public:
     ManufacturerRepository(Database& _db)
         : db(_db)
     {}
-    virtual void create(const ManufacturerModel &data) override;
-    virtual void read() const override;
-    virtual void update(const ManufacturerModel &data) override;
-    virtual void remove(int id) override;
+    virtual bool create(const ManufacturerModel &data) override;
+    virtual bool read() const override;
+    virtual bool update(const ManufacturerModel &data) override;
+    virtual bool remove(int id) override;
     void search(const ManufacturerModel &data);
     std::map<int, QString> getAttributesList() const;
 };

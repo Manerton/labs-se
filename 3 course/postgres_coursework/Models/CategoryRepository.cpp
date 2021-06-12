@@ -11,43 +11,49 @@ QString CategoryRepository::getSelectQuery() const
     return vecToStr(args);
 }
 
-void CategoryRepository::create(const CategoryModel &data)
+bool CategoryRepository::create(const CategoryModel &data)
 {
     db.prepare("INSERT INTO категория (название) VALUES (:name)");
     db.bindValue(":name", convertIfNull(data.name));
 
-    db.exec();
-    this->read();
+    const bool result = db.exec();
+    if (result) this->read();
+
+    return result;
 }
 
-void CategoryRepository::read() const
+bool CategoryRepository::read() const
 {
-    db.execWithDisplay(getSelectQuery() + " ORDER BY id_категория");
+    return db.execWithDisplay(getSelectQuery() + " ORDER BY id_категория");
 }
 
-void CategoryRepository::update(const CategoryModel &data)
+bool CategoryRepository::update(const CategoryModel &data)
 {
+    bool result = false;
     if (data.id)
     {
         db.prepare("UPDATE категория SET название = :name WHERE id_категория = :id");
         db.bindValue(":id", data.id);
         db.bindValue(":name", convertIfNull(data.name));
 
-        db.exec();
-        this->read();
+        result = db.exec();
+        if (result) this->read();
     }
+    return result;
 }
 
-void CategoryRepository::remove(int id)
+bool CategoryRepository::remove(int id)
 {
+    bool result = false;
     if (id)
     {
         db.prepare("DELETE FROM категория WHERE id_категория = (:id)");
         db.bindValue(":id", id);
 
-        db.exec();
-        this->read();
+        result = db.exec();
+        if (result) this->read();
     }
+    return result;
 }
 
 void CategoryRepository::search(const CategoryModel &data)

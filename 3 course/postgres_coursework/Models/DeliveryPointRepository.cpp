@@ -33,7 +33,7 @@ QVariant DeliveryPointRepository::getExtraFuncStr(const std::vector<QString> &ar
     return QVariant();
 }
 
-void DeliveryPointRepository::create(const DeliveryPointModel &data)
+bool DeliveryPointRepository::create(const DeliveryPointModel &data)
 {
     db.prepare("INSERT INTO пункт_выдачи (название, адрес, площадь, доп_функции) "
                "VALUES (:name, :address, :area, :extraFunc)");
@@ -42,17 +42,19 @@ void DeliveryPointRepository::create(const DeliveryPointModel &data)
     db.bindValue(":area", data.area);
     db.bindValue(":extraFunc", getExtraFuncStr(data.extraFunc));
 
-    db.exec();
-    this->read();
+    bool result = db.exec();
+    if (result) this->read();
+    return result;
 }
 
-void DeliveryPointRepository::read() const
+bool DeliveryPointRepository::read() const
 {
-    db.execWithDisplay(getSelectQuery() + " ORDER BY id_пункт_выдачи");
+    return db.execWithDisplay(getSelectQuery() + " ORDER BY id_пункт_выдачи");
 }
 
-void DeliveryPointRepository::update(const DeliveryPointModel &data)
+bool DeliveryPointRepository::update(const DeliveryPointModel &data)
 {
+    bool result = false;
     if (data.id)
     {
         db.prepare("UPDATE пункт_выдачи "
@@ -64,21 +66,24 @@ void DeliveryPointRepository::update(const DeliveryPointModel &data)
         db.bindValue(":area", data.area);
         db.bindValue(":extraFunc", getExtraFuncStr(data.extraFunc));
 
-        db.exec();
-        this->read();
+        result = db.exec();
+        if (result) this->read();
     }
+    return result;
 }
 
-void DeliveryPointRepository::remove(int id)
+bool DeliveryPointRepository::remove(int id)
 {
+    bool result = false;
     if (id)
     {
         db.prepare("DELETE FROM пункт_выдачи WHERE id_пункт_выдачи = (:id)");
         db.bindValue(":id", id);
 
-        db.exec();
-        this->read();
+        result = db.exec();
+        if (result) this->read();
     }
+    return result;
 }
 
 void DeliveryPointRepository::search(const DeliveryPointModel &data)

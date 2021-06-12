@@ -13,6 +13,12 @@
     <height>400</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>Оформление заказа</string>
   </property>
@@ -89,7 +95,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Пункт выдачи:</string>
+        <string>Пункт выдачи:*</string>
        </property>
       </widget>
      </item>

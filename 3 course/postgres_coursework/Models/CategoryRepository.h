@@ -19,10 +19,10 @@ public:
     CategoryRepository(Database& _db)
         : db(_db)
     {}
-    virtual void create(const CategoryModel &data) override;
-    virtual void read() const override;
-    virtual void update(const CategoryModel &data) override;
-    virtual void remove(int id) override;
+    virtual bool create(const CategoryModel &data) override;
+    virtual bool read() const override;
+    virtual bool update(const CategoryModel &data) override;
+    virtual bool remove(int id) override;
     void search(const CategoryModel &data);
     std::map<int, QString> getAttributesList() const;
 };

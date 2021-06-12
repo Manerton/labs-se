@@ -1,12 +1,27 @@
 #include "CreateOrderForm.h"
 #include "../Views/ui_CreateOrderForm.h"
 #include <QRegExpValidator>
+#include "Controllers/SmsConfirmDialog.h"
+#include <QDebug>
+
+ClientModel CreateOrderForm::parseClientModel() const
+{
+    ClientModel data;
+    data.lastname = ui->lastName_LineEdit->text();
+    data.firstname = ui->firstName_LineEdit->text();
+    data.otchestvo = ui->otchestvo_LineEdit->text();
+    data.telephone = ui->telephone_LineEdit->text();
+    data.email = ui->email_LineEdit->text();
+    return data;
+}
 
 CreateOrderForm::CreateOrderForm(Database& _db) :
     QWidget(nullptr),
     ui(new Ui::CreateOrderForm),
     db(_db),
-    deliveryPointRepository(db)
+    deliveryPointRepository(db),
+    clientRepository(db),
+    smsConfirmDialog(std::make_unique<SmsConfirmDialog>())
 {
     ui->setupUi(this);
     // только цифры для телефона
@@ -55,5 +70,27 @@ void CreateOrderForm::on_deliveryPoint_comboBox_currentIndexChanged(int)
             ui->extraFunc_comboBox->addItems(list);
         }
     }
+}
+
+
+void CreateOrderForm::on_pushButton_confirm_clicked()
+{
+    db.transaction();
+    bool result = clientRepository.create(parseClientModel());
+
+    // если не было ошибки в запросе, проверяем "СМС"
+    if (result)
+    {
+        smsConfirmDialog->clear();
+        smsConfirmDialog->exec();
+        if (smsConfirmDialog->isConfirmed())
+        {
+            db.commit();
+            emit orderDone();
+            this->close();
+        }
+        else db.rollback();
+    }
+    else db.rollback();
 }
 

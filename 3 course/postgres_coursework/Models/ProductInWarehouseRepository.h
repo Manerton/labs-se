@@ -17,18 +17,15 @@ class ProductInWarehouseRepository : public IRepository<ProductInWarehouseModel>
 {
     Database& db;
 
-private:
-    virtual void update(const ProductInWarehouseModel&) override
-    {
-        Q_UNIMPLEMENTED();
-    }
+    virtual bool update(const ProductInWarehouseModel&) override
+    { Q_UNIMPLEMENTED(); return false; }
 public:
     ProductInWarehouseRepository(Database& _db)
         : db(_db)
     {}
-    virtual void create(const ProductInWarehouseModel &data) override;
-    virtual void read() const override;
-    virtual void remove(int id) override;
+    virtual bool create(const ProductInWarehouseModel &data) override;
+    virtual bool read() const override;
+    virtual bool remove(int id) override;
     void search(const ProductInWarehouseModel &data);
 };
 

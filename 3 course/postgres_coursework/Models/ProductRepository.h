@@ -26,11 +26,11 @@ public:
     ProductRepository(Database& _db)
         : db(_db)
     {}
-    virtual void create(const ProductModel &data) override;
-    virtual void read() const override;
-    void readForBuyer() const;
-    virtual void update(const ProductModel &data) override;
-    virtual void remove(int id) override;
+    virtual bool create(const ProductModel &data) override;
+    virtual bool read() const override;
+    bool readForBuyer() const;
+    virtual bool update(const ProductModel &data) override;
+    virtual bool remove(int id) override;
     void search(const ProductModel &data);
     void searchForBuyer(const ProductModel &data);
     std::map<int, QString> getAttributesList() const;

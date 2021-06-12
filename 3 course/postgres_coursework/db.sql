@@ -293,6 +293,26 @@ SELECT add_manager('Иванов', 'Иван', 'Иванович', '79999999979'
 SELECT add_manager('Петров', 'Петр', 'Петрович', '79089195979', 'petr1@yandex.ru', 'petya');
 SELECT add_manager('Алексеев', 'Алексей', 'Алексеевич', '79889225979', 'alexey88@mail.ru', 'leha1');
 
+-- Функция добавление нового клиента (а если такой уже есть, то обновляет данные)
+CREATE OR REPLACE FUNCTION add_client
+(IN surname text, IN name text, IN otchestvo text, IN tel text, IN mail text) 
+RETURNS void
+SECURITY DEFINER
+AS $BODY$
+DECLARE
+BEGIN	
+	IF (EXISTS (SELECT 1 FROM клиент WHERE телефон = tel LIMIT 1))
+	THEN
+		UPDATE клиент SET 
+		фамилия = surname, имя = name, отчество = otchestvo, email = mail;
+	ELSE
+		INSERT INTO клиент (фамилия, имя, отчество, телефон, email) 
+		VALUES (surname, name, otchestvo, tel, mail);
+	END IF;
+END;
+$BODY$
+LANGUAGE plpgsql;
+
 -- Функция - кто я?
 CREATE OR REPLACE FUNCTION whoami() 
 RETURNS text

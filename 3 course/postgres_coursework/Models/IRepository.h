@@ -7,10 +7,10 @@ template <class T>
 class IRepository
 {
 public:
-    virtual void create(const T& data) = 0;
-    virtual void read() const = 0;
-    virtual void update(const T& data) = 0;
-    virtual void remove(int id) = 0;
+    virtual bool create(const T& data) = 0;
+    virtual bool read() const = 0;
+    virtual bool update(const T& data) = 0;
+    virtual bool remove(int id) = 0;
     virtual ~IRepository() {}
 };
 

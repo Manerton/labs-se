@@ -3,32 +3,35 @@
 
 using namespace StringTools;
 
-void ProductInWarehouseRepository::create(const ProductInWarehouseModel &data)
+bool ProductInWarehouseRepository::create(const ProductInWarehouseModel &data)
 {
     db.prepare("SELECT add_product_to_warehouse (:id_product, :production_date, :count)");
     db.bindValue(":id_product", convertIfNull(data.id_product));
     db.bindValue(":production_date", data.production_date);
     db.bindValue(":count", data.count);
 
-    db.exec();
-    this->read();
+    bool result = db.exec();
+    if (result) this->read();
+    return result;
 }
 
-void ProductInWarehouseRepository::read() const
+bool ProductInWarehouseRepository::read() const
 {
-    db.execWithDisplay("SELECT * FROM товар_на_складе_v ORDER BY id_товар_на_складе");
+    return db.execWithDisplay("SELECT * FROM товар_на_складе_v ORDER BY id_товар_на_складе");
 }
 
-void ProductInWarehouseRepository::remove(int id)
+bool ProductInWarehouseRepository::remove(int id)
 {
+    bool result = false;
     if (id)
     {
         db.prepare("DELETE FROM товар_на_складе WHERE id_товар_на_складе = (:id)");
         db.bindValue(":id", id);
 
-        db.exec();
-        this->read();
+        result = db.exec();
+        if (result) this->read();
     }
+    return result;
 }
 
 void ProductInWarehouseRepository::search(const ProductInWarehouseModel &data)

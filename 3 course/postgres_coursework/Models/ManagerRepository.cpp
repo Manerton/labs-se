@@ -15,7 +15,7 @@ QString ManagerRepository::getSelectQuery() const
     return vecToStr(args);
 }
 
-void ManagerRepository::create(const ManagerModel &data)
+bool ManagerRepository::create(const ManagerModel &data)
 {
     db.prepare("SELECT add_manager(:lastname, :firstname, :otchestvo, :telephone, :email, :password)");
     db.bindValue(":lastname", convertIfNull(data.lastname));
@@ -25,17 +25,19 @@ void ManagerRepository::create(const ManagerModel &data)
     db.bindValue(":email", convertIfNull(data.email));
     db.bindValue(":password", data.password);
 
-    db.exec();
-    this->read();
+    bool result = db.exec();
+    if (result) this->read();
+    return result;
 }
 
-void ManagerRepository::read() const
+bool ManagerRepository::read() const
 {
-    db.execWithDisplay(getSelectQuery() + " ORDER BY id_менеджер");
+    return db.execWithDisplay(getSelectQuery() + " ORDER BY id_менеджер");
 }
 
-void ManagerRepository::update(const ManagerModel &data)
+bool ManagerRepository::update(const ManagerModel &data)
 {
+    bool result = false;
     if (data.id)
     {
         db.prepare("SELECT update_manager(:id, :lastname, :firstname, :otchestvo, :telephone, :email, :password)");
@@ -47,21 +49,24 @@ void ManagerRepository::update(const ManagerModel &data)
         db.bindValue(":email", convertIfNull(data.email));
         db.bindValue(":password", data.password);
 
-        db.exec();
-        this->read();
+        result = db.exec();
+        if (result) this->read();
     }
+    return result;
 }
 
-void ManagerRepository::remove(int id)
+bool ManagerRepository::remove(int id)
 {
+    bool result = false;
     if (id)
     {
         db.prepare("SELECT delete_manager(:id)");
         db.bindValue(":id", id);
 
-        db.exec();
-        this->read();
+        result = db.exec();
+        if (result) this->read();
     }
+    return result;
 }
 
 void ManagerRepository::search(const ManagerModel &data)

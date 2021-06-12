@@ -24,10 +24,10 @@ public:
     DeliveryPointRepository(Database& _db)
         : db(_db)
     {}
-    virtual void create(const DeliveryPointModel &data) override;
-    virtual void read() const override;
-    virtual void update(const DeliveryPointModel &data) override;
-    virtual void remove(int id) override;
+    virtual bool create(const DeliveryPointModel &data) override;
+    virtual bool read() const override;
+    virtual bool update(const DeliveryPointModel &data) override;
+    virtual bool remove(int id) override;
     void search(const DeliveryPointModel &data);
     std::map<int, QString> getAttributesList() const;
     QString getExtraFuncForId(int id) const;

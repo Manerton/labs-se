@@ -13,6 +13,7 @@ CartForm::CartForm(Database &_db) :
 {
     ui->setupUi(this);
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+    connect(createOrderForm.get(), &CreateOrderForm::orderDone, this, &CartForm::close);
 }
 
 void CartForm::createCart(const std::list<int>& cart)

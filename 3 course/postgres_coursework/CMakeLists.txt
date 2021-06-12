@@ -26,6 +26,7 @@ set(PROJECT_SOURCES
         Models/DeliveryPointRepository.h Models/DeliveryPointRepository.cpp
         Models/ProductRepository.h Models/ProductRepository.cpp
         Models/ProductInWarehouseRepository.h Models/ProductInWarehouseRepository.cpp
+        Models/ClientRepository.h Models/ClientRepository.cpp
         Models/CustomProxyModel.h
         Controllers/AuthForm.h Controllers/AuthForm.cpp Views/AuthForm.ui
         Controllers/BuyerForm.h Controllers/BuyerForm.cpp Views/BuyerForm.ui
@@ -33,6 +34,7 @@ set(PROJECT_SOURCES
         Controllers/OperatorForm.h Controllers/OperatorForm.cpp Views/OperatorForm.ui
         Controllers/CartForm.h Controllers/CartForm.cpp Views/CartForm.ui
         Controllers/CreateOrderForm.h Controllers/CreateOrderForm.cpp Views/CreateOrderForm.ui
+        Controllers/SmsConfirmDialog.h Controllers/SmsConfirmDialog.cpp Views/SmsConfirmDialog.ui
         StringTools.h
 )
 

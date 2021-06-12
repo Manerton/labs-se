@@ -4,7 +4,7 @@
 
 using namespace StringTools;
 
-void ProductRepository::create(const ProductModel &data)
+bool ProductRepository::create(const ProductModel &data)
 {
     db.prepare("INSERT INTO товар (id_производитель, id_категория, наименование, стоимость, гарантийный_срок, характеристики) "
                "VALUES (:id_manufacturer, :id_category, :name, :cost, :warranty, :specs)");
@@ -17,22 +17,24 @@ void ProductRepository::create(const ProductModel &data)
     QString jsonStr = QJsonDocument(data.specs).toJson(QJsonDocument::Compact);
     db.bindValue(":specs", jsonStr != "{}" ? jsonStr : QVariant());
 
-    db.exec();
-    this->read();
+    bool result = db.exec();
+    if (result) this->read();
+    return result;
 }
 
-void ProductRepository::read() const
+bool ProductRepository::read() const
 {
-    db.execWithDisplay("SELECT * FROM товар_v ORDER BY id_товар");
+    return db.execWithDisplay("SELECT * FROM товар_v ORDER BY id_товар");
 }
 
-void ProductRepository::readForBuyer() const
+bool ProductRepository::readForBuyer() const
 {
-    db.execWithDisplay("SELECT * FROM каталог_товаров_v ORDER BY id_товар");
+    return db.execWithDisplay("SELECT * FROM каталог_товаров_v ORDER BY id_товар");
 }
 
-void ProductRepository::update(const ProductModel &data)
+bool ProductRepository::update(const ProductModel &data)
 {
+    bool result = false;
     if (data.id)
     {
         db.prepare("UPDATE товар "
@@ -49,21 +51,24 @@ void ProductRepository::update(const ProductModel &data)
         QString jsonStr = QJsonDocument(data.specs).toJson(QJsonDocument::Compact);
         db.bindValue(":specs", jsonStr != "{}" ? jsonStr : QVariant());
 
-        db.exec();
-        this->read();
+        result = db.exec();
+        if (result) this->read();
     }
+    return result;
 }
 
-void ProductRepository::remove(int id)
+bool ProductRepository::remove(int id)
 {
+    bool result = false;
     if (id)
     {
         db.prepare("DELETE FROM товар WHERE id_товар = (:id)");
         db.bindValue(":id", id);
 
-        db.exec();
-        this->read();
+        result = db.exec();
+        if (result) this->read();
     }
+    return result;
 }
 
 bool ProductRepository::DoSearch(const ProductModel &data, const QString& _query)
