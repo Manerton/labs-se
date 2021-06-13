@@ -4,6 +4,22 @@
 #include "Controllers/SmsConfirmDialog.h"
 #include <QDebug>
 
+CreateOrderForm::CreateOrderForm(Database& _db, std::map<key, count>& _cart) :
+    QWidget(nullptr),
+    ui(new Ui::CreateOrderForm),
+    db(_db),
+    cart(_cart),
+    deliveryPointRepository(db),
+    clientRepository(db),
+    orderRepository(db),
+    smsConfirmDialog(std::make_unique<SmsConfirmDialog>())
+{
+    ui->setupUi(this);
+    // только цифры для телефона
+    ui->telephone_LineEdit->setValidator( new QRegExpValidator(QRegExp("[0-9]*"), this) );
+}
+
+
 ClientModel CreateOrderForm::parseClientModel() const
 {
     ClientModel data;
@@ -15,17 +31,12 @@ ClientModel CreateOrderForm::parseClientModel() const
     return data;
 }
 
-CreateOrderForm::CreateOrderForm(Database& _db) :
-    QWidget(nullptr),
-    ui(new Ui::CreateOrderForm),
-    db(_db),
-    deliveryPointRepository(db),
-    clientRepository(db),
-    smsConfirmDialog(std::make_unique<SmsConfirmDialog>())
+OrderModel CreateOrderForm::parseOrderModel() const
 {
-    ui->setupUi(this);
-    // только цифры для телефона
-    ui->telephone_LineEdit->setValidator( new QRegExpValidator(QRegExp("[0-9]*"), this) );
+    OrderModel data{};
+    data.id_client = this->id_client;
+    data.id_deliveryPoint = ui->deliveryPoint_comboBox->currentData().toInt();
+    return data;
 }
 
 void CreateOrderForm::updateAttributesList()
@@ -36,9 +47,10 @@ void CreateOrderForm::updateAttributesList()
     for (const auto& elem : deliveryPoint_map) ui->deliveryPoint_comboBox->addItem(elem.second, elem.first);
 }
 
-void CreateOrderForm::showForm()
+void CreateOrderForm::showForm(double finalCost)
 {
     this->show();
+    ui->finalCost_LineEdit->setText(QString::number(finalCost));
     if (ui->deliveryPoint_comboBox->count() == 0)
     {
         this->updateAttributesList();
@@ -73,21 +85,47 @@ void CreateOrderForm::on_deliveryPoint_comboBox_currentIndexChanged(int)
 }
 
 
+bool CreateOrderForm::createOrder()
+{
+    bool orderResult = orderRepository.create(parseOrderModel());
+    if (orderResult)
+    {
+        const int id_order = db.getFirstValue(0).toInt();
+        for (const auto& elem : cart)
+        {
+            OrderItemModel item{};
+            item.id_order = id_order;
+            item.id_product = elem.first;
+            item.count = elem.second;
+            bool orderItemResult = orderRepository.createOrderItem(item);
+            if (!orderItemResult) return false;
+        }
+        return true;
+    }
+    return false;
+}
+
 void CreateOrderForm::on_pushButton_confirm_clicked()
 {
     db.transaction();
-    bool result = clientRepository.create(parseClientModel());
+    bool clientResult = clientRepository.create(parseClientModel());
 
     // если не было ошибки в запросе, проверяем "СМС"
-    if (result)
+    if (clientResult)
     {
         smsConfirmDialog->clear();
         smsConfirmDialog->exec();
         if (smsConfirmDialog->isConfirmed())
         {
-            db.commit();
-            emit orderDone();
-            this->close();
+            this->id_client = db.getFirstValue(0).toInt();
+            if (this->createOrder())
+            {
+                db.commit();
+                emit orderDone();
+                id_client = 0;
+                this->close();
+            }
+            else db.rollback();
         }
         else db.rollback();
     }

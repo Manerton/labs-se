@@ -1,6 +1,7 @@
 #include "SmsConfirmDialog.h"
 #include "../Views/ui_SmsConfirmDialog.h"
 #include <QDebug>
+#include <QMessageBox>
 
 SmsConfirmDialog::SmsConfirmDialog(QWidget *parent) :
     QDialog(parent),
@@ -17,6 +18,8 @@ SmsConfirmDialog::~SmsConfirmDialog()
 void SmsConfirmDialog::on_buttonBox_accepted()
 {
     confirmed = (ui->lineEdit->text() == "1111");
+    if (!confirmed) QMessageBox::critical(nullptr, "Ошибка", "Вы ввели неправильный код!");
+
 }
 
 bool SmsConfirmDialog::isConfirmed() const

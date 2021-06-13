@@ -8,17 +8,16 @@ CartForm::CartForm(Database &_db) :
     ui(new Ui::CartForm),
     db(_db),
     productRepository(db),
-    createOrderForm(std::make_unique<CreateOrderForm>(db))
+    createOrderForm(std::make_unique<CreateOrderForm>(db, current_cart))
 
 {
     ui->setupUi(this);
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
-    connect(createOrderForm.get(), &CreateOrderForm::orderDone, this, &CartForm::close);
+    connect(createOrderForm.get(), &CreateOrderForm::orderDone, this, &CartForm::handleOrderDone);
 }
 
 void CartForm::createCart(const std::list<int>& cart)
 {
-    current_cart = cart;
     this->clearCart();
     auto product_map = productRepository.getAttributesListWithPrices();
     for (const int id : cart)
@@ -38,13 +37,21 @@ void CartForm::createCart(const std::list<int>& cart)
         SpinBox->setMinimum(1);
         SpinBox->setValue(1);
 
+        current_cart[id] = 1; // количество товара в корзине по умолчанию 1
+        finalCost += cost;
+
         // меняем стоимость
         connect(SpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-            [=](int newCount)
-            {
-                const float newPrice = cost * static_cast<float>(newCount);
-                ui->tableWidget->item(row, 1)->setText(QString::number(newPrice));
-            });
+                [=](int newCount)
+        {
+            const float newPrice = cost * static_cast<float>(newCount);
+            finalCost -= ui->tableWidget->item(row,1)->text().toDouble();
+            finalCost += newPrice;
+
+            ui->tableWidget->item(row, 1)->setText(QString::number(newPrice));
+            current_cart[id] = newCount; // новое количество товара в корзине
+
+        });
 
         ui->tableWidget->setCellWidget(row, 2, SpinBox);
     }
@@ -53,13 +60,21 @@ void CartForm::createCart(const std::list<int>& cart)
 void CartForm::showCart(const std::list<int>& cart)
 {
     this->show();
-    if (cart != current_cart)
-        createCart(cart);
+    createCart(cart);
 }
 
 void CartForm::clearCart()
 {
     ui->tableWidget->setRowCount(0);
+    current_cart.clear();
+    finalCost = 0;
+}
+
+void CartForm::handleOrderDone()
+{
+    this->clearCart();
+    emit orderDone();
+    this->close();
 }
 
 CartForm::~CartForm()
@@ -74,6 +89,6 @@ void CartForm::on_pushButton_close_clicked()
 void CartForm::on_pushButton_confirm_clicked()
 {
     if (!current_cart.empty())
-        createOrderForm->showForm();
+        createOrderForm->showForm(finalCost);
 }
 

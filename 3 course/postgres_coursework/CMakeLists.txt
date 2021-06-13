@@ -27,6 +27,7 @@ set(PROJECT_SOURCES
         Models/ProductRepository.h Models/ProductRepository.cpp
         Models/ProductInWarehouseRepository.h Models/ProductInWarehouseRepository.cpp
         Models/ClientRepository.h Models/ClientRepository.cpp
+        Models/OrderRepository.h Models/OrderRepository.cpp
         Models/CustomProxyModel.h
         Controllers/AuthForm.h Controllers/AuthForm.cpp Views/AuthForm.ui
         Controllers/BuyerForm.h Controllers/BuyerForm.cpp Views/BuyerForm.ui

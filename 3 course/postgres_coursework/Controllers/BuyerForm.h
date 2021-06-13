@@ -39,6 +39,7 @@ class BuyerForm : public QWidget
     int execRemoveMessageBox();
     void read();
     void prepareUi();
+    void handleOrderDone();
 private slots:
     void on_pushButton_create_clicked();
     void on_pushButton_remove_clicked();

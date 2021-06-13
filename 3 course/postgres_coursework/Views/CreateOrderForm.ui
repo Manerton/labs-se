@@ -19,6 +19,12 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="maximumSize">
+   <size>
+    <width>700</width>
+    <height>400</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Оформление заказа</string>
   </property>

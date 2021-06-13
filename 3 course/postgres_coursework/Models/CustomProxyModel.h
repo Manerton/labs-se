@@ -35,16 +35,28 @@ public:
     // добавление в корзину
     void insertInCart(int id_product)
     {
-        if (std::find(cart.begin(), cart.end(), id_product) == cart.end())
+        if (id_product)
         {
-            cart.push_back(id_product);
+            if (std::find(cart.begin(), cart.end(), id_product) == cart.end())
+            {
+                cart.push_back(id_product);
+            }
         }
     }
     // удаление из корзины
     void removeFromCart(int id_product)
     {
-        cart.remove(id_product);
+        if (id_product)
+        {
+            cart.remove(id_product);
+        }
     }
+
+    void clearCart()
+    {
+        cart.clear();
+    }
+
     const std::list<int> &getCart() const;
 };
 

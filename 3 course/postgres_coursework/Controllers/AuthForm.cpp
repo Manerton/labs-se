@@ -29,8 +29,7 @@ void AuthForm::on_auth_pushButton_clicked()
     if (db.isConnected())
     {
         db.exec("SELECT whoami()");
-        db.first();
-        const auto role = db.value(0).toString();
+        const auto role = db.getFirstValue(0).toString();
         if (role == "operator")
         {
             emit authOperatorDone();

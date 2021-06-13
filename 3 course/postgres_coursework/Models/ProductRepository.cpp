@@ -140,13 +140,11 @@ std::map<int, ProductRepository::productNameWithPrice> ProductRepository::getAtt
 QJsonDocument ProductRepository::getJsonSpecs(int id) const
 {
     db.exec("SELECT характеристики FROM товар WHERE id_товар = " + QString::number(id));
-    db.first();
-    return QJsonDocument::fromJson(db.value(0).toString().toUtf8());
+    return QJsonDocument::fromJson(db.getFirstValue(0).toString().toUtf8());
 }
 
 int ProductRepository::getProductAllCount(const int id) const
 {
     db.exec("SELECT Количество FROM каталог_товаров_v WHERE id_товар = " + QString::number(id));
-    db.first();
-    return db.value(0).toInt();
+    return db.getFirstValue(0).toInt();
 }

@@ -18,6 +18,7 @@ BuyerForm::BuyerForm(QWidget *parent, Database &_db) :
 {
     ui->setupUi(this);
     this->prepareUi();
+    connect(cartForm.get(), &CartForm::orderDone, this, &BuyerForm::handleOrderDone);
 }
 
 void BuyerForm::prepareUi()
@@ -33,6 +34,12 @@ void BuyerForm::prepareUi()
 BuyerForm::~BuyerForm()
 {
     delete ui;
+}
+
+void BuyerForm::handleOrderDone()
+{
+    this->proxyModel->clearCart();
+    this->read();
 }
 
 ProductModel BuyerForm::parseProductModel() const

@@ -14,17 +14,25 @@ namespace Ui {
 
 class CartForm : public QWidget
 {
+    using key = int;
+    using count = int;
+
     Q_OBJECT
     Ui::CartForm *ui;
 
     Database& db;
     ProductRepository productRepository;
-    std::list<int> current_cart;
+    std::map<key, count> current_cart;
+    double finalCost = 0;
 
     std::unique_ptr<CreateOrderForm> createOrderForm;
 
     void clearCart();
     void createCart(const std::list<int>& cart);
+    void handleOrderDone();
+
+signals:
+    void orderDone();
 public:
     explicit CartForm(Database& _db);
     ~CartForm();

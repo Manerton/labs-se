@@ -132,7 +132,6 @@ QString DeliveryPointRepository::getExtraFuncForId(int id) const
 {
     db.exec("SELECT array_to_string(доп_функции, ' | ') FROM пункт_выдачи WHERE id_пункт_выдачи = " + QString::number(id));
     QString extraFunctions;
-    db.first();
-    extraFunctions = db.value(0).toString();
+    extraFunctions = db.getFirstValue(0).toString();
     return extraFunctions;
 }

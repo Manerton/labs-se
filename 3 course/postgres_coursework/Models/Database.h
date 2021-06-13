@@ -43,6 +43,7 @@ public:
     bool execWithDisplay(const QString &str);
     bool first();
     bool next();
+    QVariant getFirstValue(int i);
     QVariant value(int i);
     bool prepare(const QString &str);
     void bindValue(const QString &placeholder, const QVariant &val);

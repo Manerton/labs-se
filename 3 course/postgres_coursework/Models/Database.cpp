@@ -69,6 +69,12 @@ bool Database::next()
     return query.next();
 }
 
+QVariant Database::getFirstValue(int i)
+{
+    this->first();
+    return value(i);
+}
+
 bool Database::transaction()
 {
     return db.transaction();
