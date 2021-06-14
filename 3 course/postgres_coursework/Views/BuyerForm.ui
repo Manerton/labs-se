@@ -483,9 +483,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_myOrders">
+      <widget class="QPushButton" name="pushButton_back">
        <property name="text">
-        <string>Мои заказы</string>
+        <string>Назад</string>
        </property>
       </widget>
      </item>

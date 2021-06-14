@@ -27,6 +27,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(authForm.get(), &AuthForm::authManagerDone, this, &MainWindow::showManagerForm);
     connect(authForm.get(), &AuthForm::authOperatorDone, this, &MainWindow::showOperatorForm);
 
+    connect(buyerForm.get(), &BuyerForm::backToAuth, this, &MainWindow::backToAuth);
+    connect(managerForm.get(), &ManagerForm::backToAuth, this, &MainWindow::backToAuth);
+    connect(operatorForm.get(), &OperatorForm::backToAuth, this, &MainWindow::backToAuth);
     // показываем окно авторизации
     authForm->show();
 }
@@ -42,6 +45,7 @@ void MainWindow::showManagerForm()
 {
     ui->stackedWidget->setCurrentWidget(managerForm.get());
     this->show();
+    managerForm->initialRead();
 }
 
 void MainWindow::showOperatorForm()
@@ -49,6 +53,12 @@ void MainWindow::showOperatorForm()
     ui->stackedWidget->setCurrentWidget(operatorForm.get());
     this->show();
     operatorForm->initialRead();
+}
+
+void MainWindow::backToAuth()
+{
+    this->close();
+    authForm->show();
 }
 
 MainWindow::~MainWindow()

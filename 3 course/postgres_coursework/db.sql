@@ -35,12 +35,12 @@ CREATE TABLE товар
 	UNIQUE (id_производитель, наименование),
 	CONSTRAINT производитель_exists FOREIGN KEY (id_производитель)
         REFERENCES производитель (id_производитель)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
 	CONSTRAINT категория_exists FOREIGN KEY (id_категория)
         REFERENCES категория (id_категория)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
 );
 
 INSERT INTO товар (id_производитель, id_категория, наименование, стоимость, гарантийный_срок, характеристики) VALUES
@@ -67,8 +67,8 @@ CREATE TABLE товар_на_складе
 	PRIMARY KEY (id_товар_на_складе),
 	CONSTRAINT товар_exists FOREIGN KEY (id_товар)
         REFERENCES товар (id_товар)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
 );
 
 -- Представление
@@ -115,6 +115,8 @@ CREATE TABLE клиент
 	PRIMARY KEY (id_клиент)
 );
 
+CREATE INDEX index_client_tel ON клиент USING HASH (телефон);
+
 -- менеджер
 CREATE TABLE менеджер
 (
@@ -127,6 +129,8 @@ CREATE TABLE менеджер
 	PRIMARY KEY (id_менеджер)
 );
 
+CREATE INDEX index_manager_email ON менеджер (email);
+
 -- Статус
 CREATE TABLE статус
 (
@@ -135,7 +139,9 @@ CREATE TABLE статус
 	PRIMARY KEY (id_статус)
 );
 
-INSERT INTO статус (название)
+CREATE INDEX index_status ON статус USING HASH (название);
+
+INSERT INTO статус (название) 
 VALUES ('Открыт'), ('Завершен'), ('Отменён');
 
 -- Заказ
@@ -152,21 +158,30 @@ CREATE TABLE заказ
 	PRIMARY KEY (id_заказ),
 	CONSTRAINT клиент_exists FOREIGN KEY (id_клиент)
         REFERENCES клиент (id_клиент)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
 	CONSTRAINT статус_exists FOREIGN KEY (id_статус)
         REFERENCES статус (id_статус)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
 	CONSTRAINT пункт_выдачи_exists FOREIGN KEY (id_пункт_выдачи)
         REFERENCES пункт_выдачи (id_пункт_выдачи)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
 	CONSTRAINT менеджер_exists FOREIGN KEY (id_менеджер)
         REFERENCES менеджер (id_менеджер)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
 );
+
+-- представление заказа
+CREATE VIEW заказ_v AS 
+SELECT Z.id_заказ, D.название AS "Пункт выдачи", C.фамилия AS "Фамилия клиента", C.телефон AS "Телефон клиента", Z.время_оформления AS "Время оформления", Z.общая_сумма AS "Общая сумма"
+FROM заказ Z 
+INNER JOIN клиент C ON (Z.id_клиент = C.id_клиент)
+INNER JOIN пункт_выдачи D ON (Z.id_пункт_выдачи = D.id_пункт_выдачи)
+WHERE Z.id_статус = (SELECT id_статус FROM статус WHERE название = 'Открыт')
+ORDER BY Z.время_оформления;
 
 -- Позиция в заказе
 CREATE TABLE позиция_заказа
@@ -177,13 +192,25 @@ CREATE TABLE позиция_заказа
 	PRIMARY KEY (id_заказ, id_товар_на_складе),
 	CONSTRAINT заказ_exists FOREIGN KEY (id_заказ)
         REFERENCES заказ (id_заказ)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
 	CONSTRAINT товар_на_складе_exists FOREIGN KEY (id_товар_на_складе)
         REFERENCES товар_на_складе (id_товар_на_складе)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
 );
+
+-- представление - детали заказа
+CREATE VIEW детали_заказа_v
+AS SELECT Z.id_заказ, (T.Производитель || ' ' || T.Наименование) AS "Товар", 
+SUM(P.количество) AS "Количество", 
+T.Стоимость * SUM(P.количество) AS "Стоимость"
+FROM позиция_заказа AS P
+INNER JOIN заказ AS Z ON (P.id_заказ = Z.id_заказ)
+INNER JOIN товар_на_складе AS TW ON (TW.id_товар_на_складе = P.id_товар_на_складе)
+INNER JOIN товар_v AS T ON (TW.id_товар = T.id_товар)
+GROUP BY Z.id_заказ, Товар, T.Стоимость;
+
 
 -- Создание ролей
 CREATE USER operator PASSWORD 'oper123';
@@ -195,7 +222,9 @@ GRANT INSERT, UPDATE, DELETE ON товар TO operator;
 GRANT INSERT, DELETE ON товар_на_складе TO operator;
 
 CREATE GROUP managers;
-GRANT SELECT ON заказ TO managers;
+GRANT SELECT ON заказ, заказ_v, детали_заказа_v TO managers;
+GRANT DELETE ON заказ TO managers;
+
 
 CREATE USER buyer PASSWORD 'buyer';
 GRANT SELECT ON каталог_товаров_v, категория, производитель, товар, товар_v, пункт_выдачи TO buyer;
@@ -312,7 +341,7 @@ DECLARE
 	id_client int;
 BEGIN
 	id_client := (SELECT id_клиент FROM клиент WHERE телефон = tel);
-	IF (EXISTS (id_client))
+	IF (id_client IS NOT NULL)
 	THEN
 		UPDATE клиент SET
 		фамилия = surname, имя = name, отчество = otchestvo, email = mail
@@ -352,6 +381,7 @@ GRANT EXECUTE ON FUNCTION create_order(int, int) TO buyer;
 CREATE FUNCTION set_cancel_order_status()
     RETURNS trigger
     LANGUAGE 'plpgsql'
+	SECURITY DEFINER
 AS $BODY$
 BEGIN
 	UPDATE заказ SET id_статус = (SELECT id_статус FROM статус WHERE название = 'Отменён')
@@ -448,6 +478,24 @@ LANGUAGE plpgsql;
 
 REVOKE ALL ON FUNCTION add_product_to_order(int, int, int) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION add_product_to_order(int, int, int) TO buyer;
+
+CREATE OR REPLACE FUNCTION issue_order
+(IN id_order int)
+RETURNS void
+SECURITY DEFINER
+AS $BODY$
+BEGIN
+	UPDATE заказ
+	SET id_статус = (SELECT id_статус FROM статус WHERE название = 'Завершен'),
+	id_менеджер = (SELECT id_менеджер FROM менеджер WHERE email = session_user),
+	время_выдачи = now()
+	WHERE id_заказ = id_order;
+END;
+$BODY$
+LANGUAGE plpgsql;
+
+REVOKE ALL ON FUNCTION issue_order(int) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION issue_order(int) TO managers;
 
 -- Функция - кто я?
 CREATE OR REPLACE FUNCTION whoami()

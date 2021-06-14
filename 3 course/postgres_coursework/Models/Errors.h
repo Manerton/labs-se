@@ -11,7 +11,8 @@ namespace Errors
         check_violation = 23514,
         duplicate_object = 42710,
         reserved_name = 42939,
-        unique_violation = 23505
+        unique_violation = 23505,
+        foreign_key_violation = 23503
     };
 
     static QString msg(QSqlError errorCode)
@@ -47,6 +48,8 @@ namespace Errors
                         return "Количество товара не может быть отрицательным!";
                     if (errorCode.text().indexOf("Insert product with count 0") != -1)
                         return "Нельзя добавить товар на склад с количеством равным нулю!";
+                    if (errorCode.text().indexOf("Product in stock count less than required") != -1)
+                        return "Количество продуктов на складе меньше требуемого. Обновите каталог товаров и попробуйте заказать снова.";
                     break;
                 }
                 case ErrCode::duplicate_object:
@@ -60,6 +63,8 @@ namespace Errors
                     return "Нарушение требования уникальности значения в столбце таблицы!";
                 case ErrCode::reserved_name:
                     return "Указанный логин занят другим пользователем!";
+                case ErrCode::foreign_key_violation:
+                    return "Данную запись невозможно удалить, так как она используется в других таблицах!";
             }
             return "Непредвиденная ошибка, сообщите администратору следующий код: " + QString::number(code);
         }

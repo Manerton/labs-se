@@ -40,15 +40,18 @@ class BuyerForm : public QWidget
     void read();
     void prepareUi();
     void handleOrderDone();
+
+signals:
+    void backToAuth();
 private slots:
     void on_pushButton_create_clicked();
     void on_pushButton_remove_clicked();
     void on_pushButton_search_clicked();
     void on_pushButton_clearInput_clicked();
-    void on_pushButton_myOrders_clicked();
     void on_pushButton_cart_clicked();
     void on_tableView_activated(const QModelIndex &index);
     void on_tableView_clicked(const QModelIndex &index);
+    void on_pushButton_back_clicked();
 
 public:
     explicit BuyerForm(QWidget *parent, Database& _db);

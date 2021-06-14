@@ -64,6 +64,9 @@
            <pointsize>14</pointsize>
           </font>
          </property>
+         <property name="text">
+          <string>test@mail.ru</string>
+         </property>
         </widget>
        </item>
        <item row="1" column="0">
@@ -84,6 +87,9 @@
           <font>
            <pointsize>14</pointsize>
           </font>
+         </property>
+         <property name="text">
+          <string>test1</string>
          </property>
          <property name="echoMode">
           <enum>QLineEdit::Password</enum>

@@ -36,6 +36,7 @@ set(PROJECT_SOURCES
         Controllers/CartForm.h Controllers/CartForm.cpp Views/CartForm.ui
         Controllers/CreateOrderForm.h Controllers/CreateOrderForm.cpp Views/CreateOrderForm.ui
         Controllers/SmsConfirmDialog.h Controllers/SmsConfirmDialog.cpp Views/SmsConfirmDialog.ui
+        Controllers/OrderDetailsForm.h Controllers/OrderDetailsForm.cpp Views/OrderDetailsForm.ui
         StringTools.h
 )
 

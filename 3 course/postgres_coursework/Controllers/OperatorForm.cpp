@@ -662,3 +662,9 @@ void OperatorForm::on_extraFuncRemove_pushButton_clicked()
 {
     ui->extraFunc_comboBox->removeItem(ui->extraFunc_comboBox->currentIndex());
 }
+
+void OperatorForm::on_pushButton_back_clicked()
+{
+    emit backToAuth();
+}
+

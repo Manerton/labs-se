@@ -19,6 +19,7 @@ void Database::setConnection(std::string_view db_name, std::string_view login, s
 
     if (!db.open()) {
         QMessageBox::critical(nullptr, "Ошибка", Errors::msg(db.lastError()));
+        connected = false;
     }
     else connected = true;
 }
@@ -54,6 +55,21 @@ bool Database::execWithDisplay(const QString &str)
     else
     {
         model->setQuery(query);
+    }
+    qDebug() << query.lastError();
+    return result;
+}
+
+bool Database::execWithDisplayToOtherModel(const QString &str, std::shared_ptr<QSqlQueryModel> _model)
+{
+    const bool result = query.exec(str);
+    if (!result)
+    {
+        QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError()));
+    }
+    else
+    {
+        _model->setQuery(query);
     }
     qDebug() << query.lastError();
     return result;

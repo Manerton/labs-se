@@ -145,6 +145,7 @@ void BuyerForm::initialRead()
     // (т.е помещаем в comboBox строку для пользователя
     // и там же прячем настоящий id внешнего ключа)
     this->updateAttributesList();
+    proxyModel->clearCart();
 }
 
 void BuyerForm::on_pushButton_create_clicked()
@@ -167,11 +168,6 @@ void BuyerForm::on_pushButton_clearInput_clicked()
     this->clearFields();
 }
 
-void BuyerForm::on_pushButton_myOrders_clicked()
-{
-
-}
-
 void BuyerForm::on_pushButton_cart_clicked()
 {
     this->cartForm->showCart(proxyModel->getCart());
@@ -188,5 +184,11 @@ void BuyerForm::on_tableView_activated(const QModelIndex &index)
 void BuyerForm::on_tableView_clicked(const QModelIndex &index)
 {
     on_tableView_activated(index);
+}
+
+
+void BuyerForm::on_pushButton_back_clicked()
+{
+    emit backToAuth();
 }
 

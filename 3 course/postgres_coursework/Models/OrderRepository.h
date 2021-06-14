@@ -18,12 +18,16 @@ struct OrderItemModel
     int count;
 };
 
+struct SearchOrderModel
+{
+    int id;
+    QString clientSurname;
+    QString clientTel;
+};
+
 class OrderRepository : public IRepository<OrderModel>
 {
     Database& db;
-
-    virtual bool read() const override
-    { Q_UNIMPLEMENTED(); return false; }
 
     virtual bool update(const OrderModel&) override
     { Q_UNIMPLEMENTED(); return false; }
@@ -33,8 +37,12 @@ public:
         : db(_db)
     {}
     virtual bool create(const OrderModel &data) override;
+    virtual bool read() const override;
+    bool readOrderDetail(int id, std::shared_ptr<QSqlQueryModel> model) const;
     bool createOrderItem(const OrderItemModel &data);
     virtual bool remove(int id) override;
+    bool search(const SearchOrderModel &data);
+    bool issue(int id);
 };
 
 #endif // ORDERREPOSITORY_H

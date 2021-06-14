@@ -83,6 +83,9 @@ private slots:
     void specs_customMenuRequested(QPoint pos);
     void specs_createRecord();
     void specs_removeRecord();
+    void on_pushButton_back_clicked();
+signals:
+    void backToAuth();
 public:
     explicit OperatorForm(QWidget *parent, Database& _db);
     ~OperatorForm();
