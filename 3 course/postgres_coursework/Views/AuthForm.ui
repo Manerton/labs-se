@@ -65,7 +65,7 @@
           </font>
          </property>
          <property name="text">
-          <string>test@mail.ru</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -89,7 +89,7 @@
           </font>
          </property>
          <property name="text">
-          <string>test1</string>
+          <string/>
          </property>
          <property name="echoMode">
           <enum>QLineEdit::Password</enum>
