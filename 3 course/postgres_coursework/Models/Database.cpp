@@ -3,6 +3,7 @@
 #include <QtSql/QSqlError>
 #include <QMessageBox>
 #include <QDebug>
+#include <fstream>
 #include "StringTools.h"
 #include "Errors.h"
 
@@ -12,8 +13,23 @@ using namespace StringTools;
 void Database::setConnection(std::string_view db_name, std::string_view login, std::string_view password)
 {
     db.setDatabaseName(db_name.cbegin());
-    db.setHostName(hostname);
-    db.setPort(port);
+
+    std::ifstream settings("settings.ini");
+    if (settings.is_open())
+    {
+        std::string line;
+        std::getline(settings,line);
+        QString qLine = QString::fromStdString(line);
+        auto hostAndPort = qLine.split(":");
+        db.setHostName(hostAndPort[0]);
+        db.setPort(hostAndPort[1].toInt());
+    }
+    else
+    {
+        db.setHostName(hostname);
+        db.setPort(port);
+    }
+
     db.setUserName(login.cbegin());
     db.setPassword(password.cbegin());
 
