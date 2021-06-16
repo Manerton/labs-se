@@ -63,7 +63,7 @@ CREATE TABLE товар_на_складе
 	id_товар integer NOT NULL,
 	время_поступления timestamp NOT NULL,
 	дата_изготовления date NOT NULL,
-	количество smallint CHECK (количество >= 0),
+	количество smallint NOT NULL CHECK (количество >= 0),
 	PRIMARY KEY (id_товар_на_складе),
 	CONSTRAINT товар_exists FOREIGN KEY (id_товар)
         REFERENCES товар (id_товар)
@@ -129,7 +129,7 @@ CREATE TABLE менеджер
 	PRIMARY KEY (id_менеджер)
 );
 
-CREATE INDEX index_manager_email ON менеджер (email);
+CREATE INDEX index_manager_email ON менеджер USING HASH (email);
 
 -- Статус
 CREATE TABLE статус
@@ -188,7 +188,7 @@ CREATE TABLE позиция_заказа
 (
 	id_заказ integer NOT NULL,
 	id_товар_на_складе integer NOT NULL,
-	количество smallint CHECK (количество > 0),
+	количество smallint NOT NULL CHECK (количество > 0),
 	PRIMARY KEY (id_заказ, id_товар_на_складе),
 	CONSTRAINT заказ_exists FOREIGN KEY (id_заказ)
         REFERENCES заказ (id_заказ)
