@@ -1,6 +1,7 @@
 #include "ProductRepository.h"
 #include "StringTools.h"
 #include <QJsonDocument>
+#include <QSqlField>
 
 using namespace StringTools;
 
@@ -77,19 +78,19 @@ bool ProductRepository::DoSearch(const ProductModel &data, const QString& _query
     QString query = _query;
 
     if (data.id_manufacturer)
-        searchOptions.emplace_back("Производитель = (SELECT название FROM производитель WHERE id_производитель = " + QString::number(data.id_manufacturer) + ")");
+        searchOptions.emplace_back("Производитель = (SELECT название FROM производитель WHERE id_производитель = :id_manufacturer)");
 
     if (data.id_category)
-        searchOptions.emplace_back("Категория = (SELECT название FROM категория WHERE id_категория = " + QString::number(data.id_category) + ")");
+        searchOptions.emplace_back("Категория = (SELECT название FROM категория WHERE id_категория = :id_category)");
 
     if (!data.name.isEmpty())
-        searchOptions.emplace_back("Наименование ILIKE '%" + data.name + "%'");
+        searchOptions.emplace_back("Наименование ILIKE :name");
 
     if (data.cost > 0)
-        searchOptions.emplace_back("cast(Стоимость as text) ILIKE '%" + QString::number(data.cost) + "%'");
+        searchOptions.emplace_back("cast(Стоимость as text) ILIKE :cost");
 
     if (data.warranty > 0)
-        searchOptions.emplace_back("cast(\"Гарантийный срок\" as text) ILIKE '%" + QString::number(data.warranty) + "%'");
+        searchOptions.emplace_back("cast(\"Гарантийный срок\" as text) ILIKE :warranty");
 
     const size_t N = searchOptions.size();
     if (!searchOptions.empty())
@@ -99,7 +100,16 @@ bool ProductRepository::DoSearch(const ProductModel &data, const QString& _query
             query += searchOptions[i] + " AND ";
         }
         query += searchOptions[N-1];
-        db.execWithDisplay(query);
+
+        db.prepare(query);
+
+        db.bindValue(":id_manufacturer", data.id_manufacturer);
+        db.bindValue(":id_category", data.id_category);
+        db.bindValue(":name", "%" + data.name + "%");
+        db.bindValue(":cost", "%" + QString::number(data.cost) + "%");
+        db.bindValue(":warranty", "%" + QString::number(data.warranty) + "%");
+
+        db.execWithDisplay();
         return true;
     }
     return false;

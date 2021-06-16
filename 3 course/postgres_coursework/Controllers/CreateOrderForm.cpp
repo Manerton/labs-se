@@ -2,7 +2,6 @@
 #include "../Views/ui_CreateOrderForm.h"
 #include <QRegExpValidator>
 #include "Controllers/SmsConfirmDialog.h"
-#include <QDebug>
 
 CreateOrderForm::CreateOrderForm(Database& _db, std::map<key, count>& _cart) :
     QWidget(nullptr),

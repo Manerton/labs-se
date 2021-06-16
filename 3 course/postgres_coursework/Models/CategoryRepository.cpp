@@ -62,8 +62,10 @@ void CategoryRepository::search(const CategoryModel &data)
     QString query = getSelectQuery() + " WHERE ";
     if (!data.name.isEmpty())
     {
-        query += ("LOWER(название) LIKE LOWER('%" + data.name + "%')");
-        db.execWithDisplay(query);
+        query += ("название ILIKE :name");
+        db.prepare(query);
+        db.bindValue(":name", "%" + data.name + "%");
+        db.execWithDisplay();
     }
     else this->read();
 }

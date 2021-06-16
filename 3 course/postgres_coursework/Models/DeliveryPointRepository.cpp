@@ -91,13 +91,13 @@ void DeliveryPointRepository::search(const DeliveryPointModel &data)
     Tokens searchOptions;
     QString query = getSelectQuery() + " WHERE ";
     if (!data.name.isEmpty())
-        searchOptions.emplace_back("название ILIKE '%" + data.name + "%'");
+        searchOptions.emplace_back("название ILIKE :name");
 
     if (!data.address.isEmpty())
-        searchOptions.emplace_back("адрес ILIKE '%" + data.address + "%'");
+        searchOptions.emplace_back("адрес ILIKE :address");
 
     if (data.area > 0)
-        searchOptions.emplace_back("cast(площадь as TEXT) ILIKE '%" + QString::number(data.area) + "%'");
+        searchOptions.emplace_back("cast(площадь as TEXT) ILIKE :area");
 
     if (!data.extraFunc.empty())
     {
@@ -118,7 +118,13 @@ void DeliveryPointRepository::search(const DeliveryPointModel &data)
             query += searchOptions[i] + " AND ";
         }
         query += searchOptions[N-1];
-        db.execWithDisplay(query);
+        db.prepare(query);
+
+        db.bindValue(":name", "%" + data.name + "%");
+        db.bindValue(":address", "%" + data.address + "%");
+        db.bindValue(":area", "%" + QString::number(data.area) + "%");
+
+        db.execWithDisplay();
     }
     else this->read();
 }

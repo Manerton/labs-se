@@ -2,7 +2,6 @@
 #include <cmath>
 #include <QtSql/QSqlError>
 #include <QMessageBox>
-#include <QDebug>
 #include <fstream>
 #include "StringTools.h"
 #include "Errors.h"
@@ -61,6 +60,20 @@ bool Database::exec(const QString &str)
     return result;
 }
 
+bool Database::execWithDisplay()
+{
+    const bool result = query.exec();
+    if (!result)
+    {
+        QMessageBox::critical(nullptr,"Ошибка", Errors::msg(query.lastError()));
+    }
+    else
+    {
+        model->setQuery(query);
+    }
+    return result;
+}
+
 bool Database::execWithDisplay(const QString &str)
 {
     const bool result = query.exec(str);
@@ -72,7 +85,6 @@ bool Database::execWithDisplay(const QString &str)
     {
         model->setQuery(query);
     }
-    qDebug() << query.lastError();
     return result;
 }
 
@@ -87,7 +99,6 @@ bool Database::execWithDisplayToOtherModel(const QString &str, std::shared_ptr<Q
     {
         _model->setQuery(query);
     }
-    qDebug() << query.lastError();
     return result;
 }
 

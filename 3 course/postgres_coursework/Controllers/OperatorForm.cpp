@@ -1,7 +1,6 @@
 #include "OperatorForm.h"
 #include "../Views/ui_OperatorForm.h"
 #include <QMessageBox>
-#include <QDebug>
 #include <QMenu>
 #include <QJsonDocument>
 #include <QRegExpValidator>

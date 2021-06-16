@@ -52,10 +52,10 @@ bool OrderRepository::search(const SearchOrderModel &data)
     QString query = "SELECT * FROM заказ_v WHERE ";
 
     if (!data.clientSurname.isEmpty())
-        searchOptions.emplace_back("\"Фамилия клиента\" ILIKE '%" + data.clientSurname + "%'");
+        searchOptions.emplace_back("\"Фамилия клиента\" ILIKE :surname");
 
     if (!data.clientTel.isEmpty())
-        searchOptions.emplace_back("\"Телефон клиента\" ILIKE '%" + data.clientTel + "%'");
+        searchOptions.emplace_back("\"Телефон клиента\" ILIKE :tel");
 
     const size_t N = searchOptions.size();
     if (!searchOptions.empty())
@@ -65,7 +65,13 @@ bool OrderRepository::search(const SearchOrderModel &data)
             query += searchOptions[i] + " AND ";
         }
         query += searchOptions[N-1];
-        db.execWithDisplay(query);
+
+        db.prepare(query);
+
+        db.bindValue(":surname", "%" + data.clientSurname + "%");
+        db.bindValue(":tel", "%" + data.clientTel + "%");
+
+        db.execWithDisplay();
         return true;
     }
     return false;

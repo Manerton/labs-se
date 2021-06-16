@@ -65,10 +65,10 @@ void ManufacturerRepository::search(const ManufacturerModel &data)
     Tokens searchOptions;
     QString query = getSelectQuery() + " WHERE ";
     if (!data.name.isEmpty())
-        searchOptions.emplace_back("LOWER(название) LIKE LOWER('%" + data.name + "%')");
+        searchOptions.emplace_back("название ILIKE :name");
 
     if (!data.country.isEmpty())
-        searchOptions.emplace_back("LOWER(страна) LIKE LOWER('%" + data.country + "%')");
+        searchOptions.emplace_back("страна ILIKE :country");
 
     const size_t N = searchOptions.size();
     if (!searchOptions.empty())
@@ -78,7 +78,12 @@ void ManufacturerRepository::search(const ManufacturerModel &data)
             query += searchOptions[i] + " AND ";
         }
         query += searchOptions[N-1];
-        db.execWithDisplay(query);
+        db.prepare(query);
+
+        db.bindValue(":name", "%" + data.name + "%");
+        db.bindValue(":country", "%" + data.country + "%");
+
+        db.execWithDisplay();
     }
     else this->read();
 }

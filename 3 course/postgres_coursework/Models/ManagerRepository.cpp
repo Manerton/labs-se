@@ -74,19 +74,19 @@ void ManagerRepository::search(const ManagerModel &data)
     Tokens searchOptions;
     QString query = getSelectQuery() + " WHERE ";
     if (!data.lastname.isEmpty())
-        searchOptions.emplace_back("LOWER(фамилия) LIKE LOWER('%" + data.lastname + "%')");
+        searchOptions.emplace_back("фамилия ILIKE :lastname");
 
     if (!data.firstname.isEmpty())
-        searchOptions.emplace_back("LOWER(имя) LIKE LOWER('%" + data.firstname + "%')");
+        searchOptions.emplace_back("имя ILIKE :firstname");
 
     if (!data.otchestvo.isEmpty())
-        searchOptions.emplace_back("LOWER(отчество) LIKE LOWER('%" + data.otchestvo + "%')");
+        searchOptions.emplace_back("отчество ILIKE :otchestvo");
 
     if (!data.telephone.isEmpty())
-        searchOptions.emplace_back("телефон LIKE '%" + data.telephone + "%'");
+        searchOptions.emplace_back("телефон LIKE :telephone");
 
     if (!data.email.isEmpty())
-        searchOptions.emplace_back("LOWER(email) LIKE LOWER('%" + data.email + "%')");
+        searchOptions.emplace_back("email ILIKE :email");
 
     const size_t N = searchOptions.size();
     if (!searchOptions.empty())
@@ -96,7 +96,15 @@ void ManagerRepository::search(const ManagerModel &data)
             query += searchOptions[i] + " AND ";
         }
         query += searchOptions[N-1];
-        db.execWithDisplay(query);
+        db.prepare(query);
+
+        db.bindValue(":lastname", "%" + data.lastname + "%");
+        db.bindValue(":firstname", "%" + data.firstname + "%");
+        db.bindValue(":otchestvo", "%" + data.otchestvo + "%");
+        db.bindValue(":telephone", "%" + data.telephone + "%");
+        db.bindValue(":email", "%" + data.email + "%");
+
+        db.execWithDisplay();
     }
     else
     {

@@ -40,6 +40,7 @@ public:
     // эти методы - обертка методов объекта query (что-то типа декоратора)
     bool exec();
     bool exec(const QString &str);
+    bool execWithDisplay();
     bool execWithDisplay(const QString &str);
     bool execWithDisplayToOtherModel(const QString &str, std::shared_ptr<QSqlQueryModel> _model);
     bool first();

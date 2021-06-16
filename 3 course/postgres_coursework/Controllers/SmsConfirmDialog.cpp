@@ -1,6 +1,5 @@
 #include "SmsConfirmDialog.h"
 #include "../Views/ui_SmsConfirmDialog.h"
-#include <QDebug>
 #include <QMessageBox>
 
 SmsConfirmDialog::SmsConfirmDialog(QWidget *parent) :

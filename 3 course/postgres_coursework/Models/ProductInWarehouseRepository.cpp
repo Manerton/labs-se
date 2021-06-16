@@ -40,13 +40,13 @@ void ProductInWarehouseRepository::search(const ProductInWarehouseModel &data)
     QString query = "SELECT * FROM товар_на_складе_v WHERE ";
 
     if (data.id_product)
-        searchOptions.emplace_back("Товар = (SELECT Производитель || ' ' || Наименование FROM товар_v WHERE id_товар = " + QString::number(data.id_product) + ")");
+        searchOptions.emplace_back("Товар = (SELECT Производитель || ' ' || Наименование FROM товар_v WHERE id_товар = :id_product)");
 
     if (!data.production_date.isNull())
-        searchOptions.emplace_back("\"Дата изготовления\" = '" + data.production_date.toString(Qt::ISODate) + "'");
+        searchOptions.emplace_back("\"Дата изготовления\" = :production_date");
 
     if (data.count > 0)
-        searchOptions.emplace_back("cast(Количество as text) ILIKE '%" + QString::number(data.count) + "%'");
+        searchOptions.emplace_back("cast(Количество as text) ILIKE :count");
 
     const size_t N = searchOptions.size();
     if (!searchOptions.empty())
@@ -56,7 +56,13 @@ void ProductInWarehouseRepository::search(const ProductInWarehouseModel &data)
             query += searchOptions[i] + " AND ";
         }
         query += searchOptions[N-1];
-        db.execWithDisplay(query);
+        db.prepare(query);
+
+        db.bindValue(":id_product", data.id_product);
+        db.bindValue(":production_date", data.production_date);
+        db.bindValue(":count", "%" + QString::number(data.count) + "%");
+
+        db.execWithDisplay();
     }
     else this->read();
 }

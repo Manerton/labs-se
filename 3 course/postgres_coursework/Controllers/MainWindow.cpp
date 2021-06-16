@@ -4,7 +4,6 @@
 #include <memory>
 #include <QTableView>
 #include <QMessageBox>
-#include <QDebug>
 
 using namespace std;
 
