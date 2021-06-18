@@ -70,7 +70,7 @@ fragment SMALL : [a-z];
 fragment BIG : [A-Z];
 // числа
 fragment DIGIT : [0-9];
-INT : DIGIT+;
+INT : (PLUS | MINUS)? DIGIT+;
 EXPONENT : ('e' | 'E') (PLUS | MINUS)? INT;
 FLOAT : INT '.' INT (EXPONENT)?
       | INT EXPONENT

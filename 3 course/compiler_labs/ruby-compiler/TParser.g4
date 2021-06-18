@@ -32,39 +32,34 @@ array_definition_elements : ( expr ) ( COMMA ( expr ))* ;
 
 array_selector : ID L_SQBRACKET expr R_SQBRACKET;
 
-expr : ID
-       | LITERAL
-       | bool_t
-       | FLOAT
-       | INT
-       | GETS
+expr : ID                                                               #idExpr
+       | LITERAL                                                        #literalExpr
+       | (TRUE | FALSE)                                                 #boolExpr
+       | FLOAT                                                          #floatExpr
+       | INT                                                            #intExpr
+       | GETS                                                           #getsExpr
        // круглые скобки
-       | L_BRACKET expr R_BRACKET
+       | L_BRACKET expr R_BRACKET                                       #bracketsExpr
        // взятие индекса
-       | array_selector
+       | array_selector                                                 #arrSelExpr
        // логическое НЕ
-       | NOT expr
+       | NOT expr                                                       #logicExpr
        // умножение
-       | expr ( MUL | DIV | MOD ) expr
+       | expr op=( MUL | DIV | MOD ) expr                               #arifExpr
        // сложение
-       | expr ( PLUS | MINUS ) expr
+       | expr op=( PLUS | MINUS ) expr                                  #arifExpr
        // сравнение
-       | expr ( LESS | GREATER | LESS_EQUAL | GREATER_EQUAL ) expr
+       | expr op=( LESS | GREATER | LESS_EQUAL | GREATER_EQUAL ) expr   #compExpr
        // равенство / неравенство
-       | expr ( EQUAL | NOT_EQUAL ) expr
+       | expr op=( EQUAL | NOT_EQUAL ) expr                             #compExpr
        // логическое И
-       | expr AND expr
+       | expr AND expr                                                  #logicExpr
        // логическое ИЛИ
-       | expr OR expr
+       | expr OR expr                                                   #logicExpr
        // объявление массива
-       | array_definition
+       | array_definition                                               #arrDefExpr
        // присваивание
-       | assignment
-       // ввод с клавиатуры
-       ;
-
-bool_t : TRUE
-       | FALSE
+       | assignment                                                     #assignExpr
        ;
 
 puts : PUTS expr;

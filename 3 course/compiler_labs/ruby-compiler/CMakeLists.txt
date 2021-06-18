@@ -1,5 +1,7 @@
 # -*- mode:cmake -*-
 project(ruby-compiler LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(NOT UNIX)
   message(WARNING "Unsupported operating system")
@@ -8,9 +10,7 @@ endif()
 set(ruby-compiler-GENERATED_SRC
    ${PROJECT_SOURCE_DIR}/generated/TLexer.cpp
    ${PROJECT_SOURCE_DIR}/generated/TParser.cpp
-   ${PROJECT_SOURCE_DIR}/generated/TParserBaseListener.cpp
    ${PROJECT_SOURCE_DIR}/generated/TParserBaseVisitor.cpp
-   ${PROJECT_SOURCE_DIR}/generated/TParserListener.cpp
    ${PROJECT_SOURCE_DIR}/generated/TParserVisitor.cpp
  )
 
@@ -33,8 +33,8 @@ include_directories(
   )
 
 set(ruby-compiler_SRC
-  ${PROJECT_SOURCE_DIR}/src/main.cpp
-  ${ruby-compiler-GENERATED_SRC}
+  src/main.cpp
+  src/CodeGenerator.h src/CodeGenerator.cpp
   )
 
 if(NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -53,6 +53,7 @@ endforeach(src_file ${ruby-compiler_SRC})
 
 add_executable(ruby-compiler
   ${ruby-compiler_SRC}
+  ${ruby-compiler-GENERATED_SRC}
   )
 #add_precompiled_header(ruby-compiler ${PROJECT_SOURCE_DIR}/runtime/src/antlrcpp-Prefix.h)
 

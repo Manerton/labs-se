@@ -1,0 +1,8 @@
+puts -15
+puts 50000
+puts 100000
+puts 3.14
+puts 20 + 5
+puts "test"
+puts 'test'
+puts test

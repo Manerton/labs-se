@@ -7,6 +7,6 @@
 :: Download the ANLTR jar and place it in the same folder as this script (or adjust the LOCATION var accordingly).
 
 set LOCATION=antlr-4.9.2-complete.jar
-java -jar %LOCATION% -Dlanguage=Cpp -listener -visitor -o generated/ -package rubyCompiler TLexer.g4 TParser.g4
+java -jar %LOCATION% -Dlanguage=Cpp -visitor -no-listener -o generated/ -package rubyCompiler TLexer.g4 TParser.g4
 
 pause

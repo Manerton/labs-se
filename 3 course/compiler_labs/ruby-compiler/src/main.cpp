@@ -4,6 +4,7 @@
 #include "antlr4-runtime.h"
 #include "TLexer.h"
 #include "TParser.h"
+#include "CodeGenerator.h"
 
 using namespace rubyCompiler;
 using namespace antlr4;
@@ -19,13 +20,23 @@ int main(int , const char **) {
         CommonTokenStream tokens(&lexer);
 
         tokens.fill();
-        for (auto token : tokens.getTokens()) {
+
+        /*for (auto token : tokens.getTokens()) {
             cout << token->toString() << endl;
-        }
+        }*/
 
         TParser parser(&tokens);
         auto tree = parser.programm();
-        cout << tree->toStringTree(&parser, true) << endl;
+
+       // cout << tree->toStringTree(&parser, true) << endl;
+
+        CodeGenerator generator;
+        generator.generateCode(tree);
+
+        for (const auto &codeLine : generator.getCode())
+        {
+            cout << codeLine << endl;
+        }
     }
     system("pause");
     return 0;
