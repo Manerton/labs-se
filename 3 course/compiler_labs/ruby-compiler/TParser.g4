@@ -24,7 +24,9 @@ if_statement : IF expr
 
 while_statement : WHILE expr NEWLINE statement_list END;
 
-assignment : (ID | array_selector) op=ASSIGN expr;
+assignment : (ID | array_selector) ASSIGN expr;
+
+array_declaration : ARRAY_DECLARATION L_BRACKET expr COMMA expr R_BRACKET;
 
 array_definition : L_SQBRACKET array_definition_elements R_SQBRACKET;
 
@@ -33,11 +35,11 @@ array_definition_elements : ( expr ) ( COMMA ( expr ))* ;
 array_selector : ID L_SQBRACKET expr R_SQBRACKET;
 
 expr : ID                                                               #idExpr
-       | LITERAL                                                        #literalExpr
        | (TRUE | FALSE)                                                 #boolExpr
        | FLOAT                                                          #floatExpr
        | INT                                                            #intExpr
-       | GETS                                                           #getsExpr
+       | IGETS                                                          #igetsExpr
+       | FGETS                                                          #fgetsExpr
        // круглые скобки
        | L_BRACKET expr R_BRACKET                                       #bracketsExpr
        // взятие индекса
@@ -56,8 +58,10 @@ expr : ID                                                               #idExpr
        | expr AND expr                                                  #logicExpr
        // логическое ИЛИ
        | expr OR expr                                                   #logicExpr
-       // объявление массива
+       // определение массива
        | array_definition                                               #arrDefExpr
+       // объявление массива
+       | array_declaration                                              #arrDeclareExpr
        // присваивание
        | assignment                                                     #assignExpr
        ;

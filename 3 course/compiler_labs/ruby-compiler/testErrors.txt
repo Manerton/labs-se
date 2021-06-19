@@ -1,0 +1,10 @@
+#puts 5 + 3.14    # TypeError
+#puts 3.14 + 5    # TypeError
+#puts 3.14 * true # TypeError
+#puts true * 3.14 # TypeError
+#puts true * 5 	  # TypeError
+#puts 5 * true	  # TypeError
+#puts 3.14 % 3.14 # NoMethodError
+#puts true * true # NoMethodError
+#puts a		  # NameError
+a = b		  # NameError

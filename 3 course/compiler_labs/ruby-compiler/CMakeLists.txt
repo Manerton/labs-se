@@ -35,6 +35,7 @@ include_directories(
 set(ruby-compiler_SRC
   src/main.cpp
   src/CodeGenerator.h src/CodeGenerator.cpp
+  src/CompilerException.h
   )
 
 if(NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")

@@ -5,37 +5,51 @@
 #include "TLexer.h"
 #include "TParser.h"
 #include "CodeGenerator.h"
+#include "CompilerException.h"
 
 using namespace rubyCompiler;
 using namespace antlr4;
 using namespace std;
 
-int main(int , const char **) {
+int main(int argc, char* argv[]) {
     system("chcp 65001");
-    std::ifstream f("test.txt");
-    if (f.is_open())
+    if (argc > 0 /*1*/ )
     {
-        ANTLRInputStream input(f);
-        TLexer lexer(&input);
-        CommonTokenStream tokens(&lexer);
+        std::ifstream file(/*argv[1]*/ "test.txt");
 
-        tokens.fill();
-
-        /*for (auto token : tokens.getTokens()) {
-            cout << token->toString() << endl;
-        }*/
-
-        TParser parser(&tokens);
-        auto tree = parser.programm();
-
-       // cout << tree->toStringTree(&parser, true) << endl;
-
-        CodeGenerator generator;
-        generator.generateCode(tree);
-
-        for (const auto &codeLine : generator.getCode())
+        if (file)
         {
-            cout << codeLine << endl;
+            // входной файл
+            ANTLRInputStream input(file);
+
+            // лексер
+            TLexer lexer(&input);
+            CommonTokenStream tokens(&lexer);
+            tokens.fill();
+
+            // парсер
+            TParser parser(&tokens);
+            auto tree = parser.programm();
+
+            // генератор кода (паттерн Visitor по дереву АСД после парсера)
+            if (lexer.getNumberOfSyntaxErrors() == 0
+                    && parser.getNumberOfSyntaxErrors() == 0)
+            {
+                try
+                {
+                    CodeGenerator generator;
+                    generator.generateCode(tree);
+                    // вывод кода в буфер (консоль, файл)
+                    for (const auto &codeLine: generator.getCode())
+                    {
+                        cout << codeLine << endl;
+                    }
+                }
+                catch (CompilerException &c)
+                {
+                    cout << "test.txt" << ":" << c.what() << endl;
+                }
+            }
         }
     }
     system("pause");

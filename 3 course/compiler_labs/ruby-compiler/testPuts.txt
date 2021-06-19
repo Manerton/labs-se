@@ -3,6 +3,7 @@ puts 50000
 puts 100000
 puts 3.14
 puts 20 + 5
-puts "test"
-puts 'test'
+test = 155777
 puts test
+puts true
+puts false

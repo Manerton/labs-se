@@ -1,9 +1,5 @@
 lexer grammar TLexer;
 
-fragment ESCAPED_QUOTE : '\\"';
-LITERAL : '"' ( ESCAPED_QUOTE | ~('\n'|'\r') )* '"'
-        | '\'' ( ESCAPED_QUOTE | ~('\n'|'\r') )* '\'';
-
 COMMA : ',';
 SEMICOLON : ';';
 
@@ -51,7 +47,8 @@ L_SQBRACKET : '[';
 R_SQBRACKET : ']';
 
 // операция ввода-вывода
-GETS : 'gets';
+IGETS : 'igets';    // целые
+FGETS : 'fgets';    // дробные
 PUTS : 'puts';
 
 // перевод каретки и новая строка
@@ -77,3 +74,6 @@ FLOAT : INT '.' INT (EXPONENT)?
       ;
 // идентификатор
 ID : (SMALL | BIG | UNDERSCORE)(SMALL | BIG | UNDERSCORE | DIGIT)*;
+
+// объявление массива
+ARRAY_DECLARATION: 'Array.new';
