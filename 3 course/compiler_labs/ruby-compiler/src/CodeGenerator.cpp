@@ -3,42 +3,14 @@
 #include "antlr4-runtime.h"
 #include "TLexer.h"
 #include "TParser.h"
+#include "../thirdparty/SafeInt.hpp"
 #include "CompilerException.h"
 
 using namespace std;
 using namespace rubyCompiler;
 using namespace antlrcpp;
-
-const CodeGenerator::SourceCode& CodeGenerator::getCode() const
-{
-    return code;
-}
-
-void CodeGenerator::generateCode(antlr4::tree::ParseTree *tree)
-{
-    visit(tree);
-    // после того, как пройдемся по всему дереву и сгенерируем код
-    // поместим в начало кода - код для объявления служебных переменных
-    generateTempValues();
-    // последней строкой сгенерированного ASM кода будет эта строчка
-    code.push_back("end start");
-}
-
-CodeGenerator::Value::Type CodeGenerator::getTypeOfAny(const Any &any) const
-{
-    if (any.is<int>()) return Value::Type::integer_t;
-    if (any.is<float>()) return Value::Type::float_t;
-    if (any.is<bool>()) return Value::Type::boolean_t;
-    throw logic_error("Not Implemented");
-}
-
-string CodeGenerator::getStrOfType(Value::Type type) const
-{
-    if (type == Value::Type::integer_t) return "Integer";
-    if (type == Value::Type::float_t) return "Float";
-    if (type == Value::Type::boolean_t) return "Boolean";
-    return "Unknown";
-}
+using NIEError = NotImplementedException::error;
+using SafeInt64 = SafeInt<int64_t>;
 
 bool CodeGenerator::isInteger(const string& str) const
 {
@@ -78,20 +50,20 @@ void CodeGenerator::generateTempValues()
     }
 }
 
-Any CodeGenerator::visitProgramm(TParser::ProgrammContext *ctx)
+string CodeGenerator::getStrOfType(Type type) const
 {
-    code.push_back("start:");   // устанавливаем метку старта программы
-    return TParserBaseVisitor::visitProgramm(ctx);
+    if (type == Type::uint_t) return "Integer";
+    if (type == Type::int_t) return "Integer";
+    if (type == Type::float_t) return "Float";
+    if (type == Type::bool_t) return "Boolean";
+    return "Unknown";
 }
 
-Any CodeGenerator::visitPuts(TParser::PutsContext *ctx)
+void rubyCompiler::CodeGenerator::putsCompileTime(const Value &expr)
 {
-    // вычисляем expr
-    const Any expr = visit(ctx->expr());
-
-    if (expr.is<int>()) // если целое число
+    if (expr.type == Type::int_t || expr.type == Type::uint_t) // если целое число
     {
-        const int val = expr.as<int>();
+        const int64_t val = get<SafeInt64>(expr.value);
         const string valStr = to_string(val);
         // если число в диапазоне int16_t
         if (val >= numeric_limits<int16_t>::min() && val <= numeric_limits<int16_t>::max())
@@ -112,26 +84,97 @@ Any CodeGenerator::visitPuts(TParser::PutsContext *ctx)
         {
             const size_t val_i = tempValues.size();
             tempValues.push_back(valStr);
-            code.push_back("OUTMEMI val" + to_string(val_i));
+            if (isSignedOrNot(val) == Type::int_t)
+                code.push_back("OUTMEMI val" + to_string(val_i));
+
+            else if (isSignedOrNot(val) == Type::uint_t)
+                code.push_back("OUTMEMU val" + to_string(val_i));
         }
     }
-    else if (expr.is<float>()) // если дробное
+    else if (expr.type == Type::float_t) // если дробное
     {
-        const string valStr = to_string(expr.as<float>());
+        const string valStr = to_string(get<float>(expr.value));
         const size_t val_i = tempValues.size();
         tempValues.push_back(valStr);
         code.push_back("OUTMEMF val" + to_string(val_i));
     }
-    else if (expr.is<bool>()) // если булевая переменная
+    else if (expr.type == Type::bool_t) // если булевая переменная
     {
-        const string valStr = expr.as<bool>()? "1" : "0";
+        const string valStr = get<bool>(expr.value)? "1" : "0";
         code.push_back("LOADI " + valStr);
         code.push_back("OUTSTI");
         code.push_back("SAVEP temp");
     }
+}
+
+void CodeGenerator::putsRuntime(const Value &expr)
+{
+    if (expr.type == Type::int_t) // если целое число
+    {
+        code.push_back("INSTI");
+        code.push_back("OUTSTI");
+    }
+    else if (expr.type == Type::uint_t) // если беззнаковое целое число
+    {
+        code.push_back("INSTI");
+        code.push_back("OUTSTU");
+    }
+    else if (expr.type == Type::float_t) // если дробное
+    {
+        code.push_back("INSTF");
+        code.push_back("OUTSTF");
+    }
+    code.push_back("SAVEP temp");
+}
+
+CodeGenerator::Type CodeGenerator::isSignedOrNot(int64_t val)
+{
+    if (val >= numeric_limits<int32_t>::min() && val <= numeric_limits<int32_t>::max())
+        return Type::int_t;
+
+    if (val >= numeric_limits<uint32_t>::min() && val <= numeric_limits<uint32_t>::max())
+        return Type::uint_t;
+
+    throw out_of_range("cannot fit " + to_string(val) + " into Integer type");
+}
+
+const CodeGenerator::SourceCode& CodeGenerator::getCode() const
+{
+    return code;
+}
+
+void CodeGenerator::generateCode(antlr4::tree::ParseTree *tree)
+{
+    visit(tree);
+    // после того, как пройдемся по всему дереву и сгенерируем код
+    // поместим в начало кода - код для объявления служебных переменных
+    generateTempValues();
+    // последней строкой сгенерированного ASM кода будет эта строчка
+    code.push_back("end start");
+}
+
+Any CodeGenerator::visitProgramm(TParser::ProgrammContext *ctx)
+{
+    code.push_back("start:");   // устанавливаем метку старта программы
+    return TParserBaseVisitor::visitProgramm(ctx);
+}
+
+Any CodeGenerator::visitPuts(TParser::PutsContext *ctx)
+{
+    const Any anyExpr = visit(ctx->expr());
+    if (!anyExpr.is<Value>())
+        throw NotImplementedException("visitPuts", NIEError::exprIsNotValue);
+
+    // вычисляем expr
+    const Value expr = anyExpr;
+
+    if (!expr.runtime)
+    {
+        putsCompileTime(expr);
+    }
     else
     {
-        throw logic_error("Not Implemented");
+        putsRuntime(expr);
     }
 
     return defaultResult();
@@ -139,86 +182,86 @@ Any CodeGenerator::visitPuts(TParser::PutsContext *ctx)
 
 Any CodeGenerator::visitArifExpr(TParser::ArifExprContext *ctx)
 {
-    Any left = visit(ctx->expr(0));
-    Any right = visit(ctx->expr(1));
-    if (getTypeOfAny(left) != getTypeOfAny(right))
+    const Any anyLeft = visit(ctx->expr(0));
+    const Any anyRight = visit(ctx->expr(1));
+
+    if (!anyLeft.is<Value>() || !anyRight.is<Value>())
+        throw NotImplementedException("visitArifExpr", NIEError::exprIsNotValue);
+
+    Value left = anyLeft;
+    Value right = anyRight;
+
+    if (left.type != right.type)
     {
         throw TypeError(ctx->start->getLine(),
-                        getStrOfType(getTypeOfAny(right)),
-                        getStrOfType(getTypeOfAny(left)));
+                        getStrOfType(left.type),
+                        getStrOfType(right.type)
+                        );
     }
 
     const char op = ctx->op->getText()[0];
-    const bool intOp = (left.is<int>() && right.is<int>());
-    const bool floatOp = (left.is<float>() && right.is<float>());
+    const bool intOp = ((left.type == Type::int_t || left.type == Type::uint_t) && (right.type == left.type));
+    const bool floatOp = ((left.type == Type::float_t) && (right.type == left.type));
     switch (op)
     {
     case '+':
     {
-        if (intOp) return left.as<int>() + right.as<int>();
-        if (floatOp) return left.as<float>() + right.as<float>();
+        if (intOp)
+        {
+            auto res = get<SafeInt64>(left.value) + get<SafeInt64>(right.value);
+            return Value{false, isSignedOrNot(res), res};
+        }
+        if (floatOp) return Value{false, left.type, get<float>(left.value) + get<float>(right.value)};
         break;
     }
     case '-':
     {
-        if (intOp) return left.as<int>() - right.as<int>();
-        if (floatOp) return left.as<float>() - right.as<float>();
+        if (intOp)
+        {
+            auto res = get<SafeInt64>(left.value) - get<SafeInt64>(right.value);
+            return Value{false, isSignedOrNot(res), res};
+        }
+        if (floatOp) return Value{false, left.type, get<float>(left.value) - get<float>(right.value)};
         break;
     }
     case '*':
     {
-        if (intOp) return left.as<int>() * right.as<int>();
-        if (floatOp) return left.as<float>() * right.as<float>();
+        if (intOp)
+        {
+            auto res = get<SafeInt64>(left.value) * get<SafeInt64>(right.value);
+            return Value{false, isSignedOrNot(res), res};
+        }
+        if (floatOp) return Value{false, left.type, get<float>(left.value) * get<float>(right.value)};
         break;
     }
     case '/':
     {
-        if (intOp) return left.as<int>() / right.as<int>();
-        if (floatOp) return left.as<float>() / right.as<float>();
+        if (intOp)
+        {
+            auto res = get<SafeInt64>(left.value) / get<SafeInt64>(right.value);
+            return Value{false, isSignedOrNot(res), res};
+        }
+        if (floatOp) return Value{false, left.type, get<float>(left.value) / get<float>(right.value)};
         break;
     }
     case '%':
     {
-        if (intOp) return left.as<int>() % right.as<int>();
+        if (intOp)
+        {
+            auto res = get<SafeInt64>(left.value) % get<SafeInt64>(right.value);
+            return Value{false, isSignedOrNot(res), res};
+        }
         break;
     }
     default:
-        throw logic_error("Not Implemented");
+        throw NotImplementedException("visitArifExpr", NIEError::unknownArifOp);
         break;
     }
 
     throw NoMethodError(ctx->start->getLine(),
                         ctx->op->getText(),
-                        getStrOfType(getTypeOfAny(left))
+                        getStrOfType(left.type)
                         );
-}
-
-Any CodeGenerator::visitIntExpr(TParser::IntExprContext *ctx)
-{
-    // возвращаем целое
-    return Value{false, Value::Type::integer_t, stoi(ctx->INT()->toString())};
-}
-
-Any CodeGenerator::visitFloatExpr(TParser::FloatExprContext *ctx)
-{
-    // возвращаем дробное
-    return Value{false, Value::Type::float_t, stof(ctx->FLOAT()->toString())};
-}
-
-Any CodeGenerator::visitBoolExpr(TParser::BoolExprContext *ctx)
-{
-    // возвращаем булеву
-    return Value{false, Value::Type::boolean_t, (ctx->TRUE() != nullptr)};
-}
-
-CodeGenerator::Any CodeGenerator::visitIgetsExpr(TParser::IgetsExprContext *ctx)
-{
-    throw logic_error("Not Implemented igets");
-}
-
-Any CodeGenerator::visitBracketsExpr(TParser::BracketsExprContext *ctx)
-{
-    return visit(ctx->expr()); // возвращаем expr внутри скобок
 }
 
 Any CodeGenerator::visitIdExpr(TParser::IdExprContext *ctx)
@@ -226,34 +269,76 @@ Any CodeGenerator::visitIdExpr(TParser::IdExprContext *ctx)
     const string ID = ctx->ID()->toString();
 
     if (varTable.find(ID) != varTable.end())
-        return varTable[ID].value;
+        return varTable[ID];
 
     throw NameError(ctx->start->getLine(),
                     ctx->ID()->toString()
                     );
 }
 
+Any CodeGenerator::visitBoolExpr(TParser::BoolExprContext *ctx)
+{
+    // возвращаем булеву
+    return Value{false, Type::bool_t, (ctx->TRUE() != nullptr)};
+}
+
+Any CodeGenerator::visitFloatExpr(TParser::FloatExprContext *ctx)
+{
+    // возвращаем дробное
+    return Value{false, Type::float_t, stof(ctx->FLOAT()->toString())};
+}
+
+Any CodeGenerator::visitIntExpr(TParser::IntExprContext *ctx)
+{
+    auto str = ctx->INT()->toString();
+    str.erase(remove(str.begin(), str.end(), '_'), str.end());
+    int64_t val = stoll(str);
+
+    return Value{false, isSignedOrNot(val), SafeInt<int64_t>(val)};
+}
+
+CodeGenerator::Any CodeGenerator::visitIgetsExpr(TParser::IgetsExprContext *)
+{
+    return Value{true, Type::int_t, {}};
+}
+
+CodeGenerator::Any CodeGenerator::visitFgetsExpr(TParser::FgetsExprContext *)
+{
+    return Value{true, Type::float_t, {}};
+}
+
 CodeGenerator::Any CodeGenerator::visitAssignment(TParser::AssignmentContext *ctx)
 {
     // вычисляем expr
-    const Any expr = visit(ctx->expr());
+    const Any anyExpr = visit(ctx->expr());
+    if (!anyExpr.is<Value>())
+        throw NotImplementedException("visitAssignment", NIEError::exprIsNotValue);
+
+    const Value expr = anyExpr;
     const string ID = ctx->ID()->toString();
-    varTable[ID] = Value{getTypeOfAny(expr), expr};
-    return expr;
+    return varTable[ID] = expr;
+}
+
+Any CodeGenerator::visitBracketsExpr(TParser::BracketsExprContext *ctx)
+{
+    return visit(ctx->expr()); // возвращаем expr внутри скобок
 }
 
 Any rubyCompiler::CodeGenerator::visitIf_statement(TParser::If_statementContext *ctx)
 {
     // вычисляем expr
-    const Any expr = visit(ctx->expr());
-    auto exprType = getTypeOfAny(expr);
-    if (exprType == Value::Type::boolean_t)
+    const Any anyExpr = visit(ctx->expr());
+    if (!anyExpr.is<Value>())
+        throw NotImplementedException("visitIf_statement", NIEError::exprIsNotValue);
+
+    const Value expr = anyExpr;
+    if (expr.type == Type::bool_t)
     {
-        if (expr.as<bool>())
+        if (get<bool>(expr.value))
         {
             visit(ctx->statement_list(0));
         }
-        else if (!expr.as<bool>() && ctx->statement_list(1))
+        else if (!get<bool>(expr.value) && ctx->statement_list(1))
         {
             visit(ctx->statement_list(1));
         }
@@ -261,8 +346,8 @@ Any rubyCompiler::CodeGenerator::visitIf_statement(TParser::If_statementContext 
     else
     {
         throw TypeError(ctx->start->getLine(),
-                        getStrOfType(exprType),
-                        getStrOfType(Value::Type::boolean_t)
+                        getStrOfType(expr.type),
+                        getStrOfType(Type::bool_t)
                         );
     }
     return defaultResult();

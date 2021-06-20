@@ -5,6 +5,38 @@
 
 namespace rubyCompiler
 {
+// ошибки самого компилятора (в реализации компилятора)
+class NotImplementedException: public std::logic_error
+{
+public:
+    enum class error : uint8_t
+    {
+        exprIsNotValue,
+        unknownArifOp
+    };
+
+    std::string getMsg(error err) const
+    {
+        std::string str = "[Not implemented] ";
+        switch (err)
+        {
+        case error::exprIsNotValue:
+            str += "Type of expr is not Value in ";
+            break;
+        case error::unknownArifOp:
+            str += "Unknown ArifOp in ";
+            break;
+        }
+        return str;
+    }
+    NotImplementedException(const std::string& method_name, error err)
+        : std::logic_error(getMsg(err) + method_name)
+    {}
+
+    virtual ~NotImplementedException() {}
+};
+
+// ошибки, возникающие при компиляции (ошибки в коде программы пользователя)
 class CompilerException: public std::exception
 {
 protected:
@@ -15,6 +47,7 @@ public:
     virtual ~CompilerException() {}
 };
 
+// неизвестная переменная
 class NameError: public CompilerException
 {
 public:
@@ -25,6 +58,7 @@ public:
     virtual ~NameError() {}
 };
 
+// ошибка приведения типов
 class TypeError: public CompilerException
 {
 public:
@@ -35,6 +69,7 @@ public:
     virtual ~TypeError() {}
 };
 
+// неизвестная операция или метод для данного типа
 class NoMethodError: public CompilerException
 {
 public:

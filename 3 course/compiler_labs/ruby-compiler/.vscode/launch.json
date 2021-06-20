@@ -5,7 +5,7 @@
             "name": "Debug ANTLR4 grammar",
             "type": "antlr-debug",
             "request": "launch",
-            "input": "test.txt",
+            "input": "testPuts.txt",
             "grammar": "TParser.g4",
             "startRule": "programm",
             "printParseTree": true,
