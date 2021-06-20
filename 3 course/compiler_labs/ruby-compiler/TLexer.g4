@@ -22,7 +22,6 @@ PLUS : '+';
 MINUS : '-';
 MUL : '*';
 DIV : '/';
-MOD : '%';
 
 // сравнения
 EQUAL : '==';
@@ -47,6 +46,7 @@ L_SQBRACKET : '[';
 R_SQBRACKET : ']';
 
 // операция ввода-вывода
+UGETS : 'ugets';    // беззнаковые целые
 IGETS : 'igets';    // целые
 FGETS : 'fgets';    // дробные
 PUTS : 'puts';
@@ -67,7 +67,7 @@ fragment SMALL : [a-z];
 fragment BIG : [A-Z];
 // числа
 fragment DIGIT : [0-9];
-INT : (PLUS | MINUS)? (DIGIT UNDERSCORE?)+;
+INT : (DIGIT UNDERSCORE?)+;
 EXPONENT : ('e' | 'E') (PLUS | MINUS)? INT;
 FLOAT : INT '.' INT (EXPONENT)?
       | INT EXPONENT

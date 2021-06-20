@@ -109,22 +109,22 @@ void rubyCompiler::CodeGenerator::putsCompileTime(const Value &expr)
 
 void CodeGenerator::putsRuntime(const Value &expr)
 {
+    const auto& name = get<internalVarName>(expr.value);
     if (expr.type == Type::int_t) // если целое число
     {
-        code.push_back("INSTI");
-        code.push_back("OUTSTI");
+        if (name == "stack") code.push_back("OUTSTI");
+        else code.push_back("OUTMEMI " + name);
     }
     else if (expr.type == Type::uint_t) // если беззнаковое целое число
     {
-        code.push_back("INSTI");
-        code.push_back("OUTSTU");
+        if (name == "stack") code.push_back("OUTSTU");
+        else code.push_back("OUTMEMU " + name);
     }
     else if (expr.type == Type::float_t) // если дробное
     {
-        code.push_back("INSTF");
-        code.push_back("OUTSTF");
+        if (name == "stack") code.push_back("OUTSTF");
+        else code.push_back("OUTMEMF " + name);
     }
-    code.push_back("SAVEP temp");
 }
 
 CodeGenerator::Type CodeGenerator::isSignedOrNot(int64_t val)
@@ -168,7 +168,7 @@ Any CodeGenerator::visitPuts(TParser::PutsContext *ctx)
     // вычисляем expr
     const Value expr = anyExpr;
 
-    if (!expr.runtime)
+    if (!holds_alternative<internalVarName>(expr.value))
     {
         putsCompileTime(expr);
     }
@@ -178,6 +178,131 @@ Any CodeGenerator::visitPuts(TParser::PutsContext *ctx)
     }
 
     return defaultResult();
+}
+
+CodeGenerator::Value CodeGenerator::arifExprCompileTime(const char op, Value left, Value right)
+{
+    const bool intOp = ((left.type == Type::int_t || left.type == Type::uint_t) && (right.type == left.type));
+    const bool floatOp = ((left.type == Type::float_t) && (right.type == left.type));
+
+    switch (op)
+    {
+    case '+':
+    {
+        if (intOp)
+        {
+            auto res = get<SafeInt64>(left.value) + get<SafeInt64>(right.value);
+            return Value{isSignedOrNot(res), res};
+        }
+        if (floatOp) return Value{left.type, get<float>(left.value) + get<float>(right.value)};
+        break;
+    }
+    case '-':
+    {
+        if (intOp)
+        {
+            auto res = get<SafeInt64>(left.value) - get<SafeInt64>(right.value);
+            return Value{isSignedOrNot(res), res};
+        }
+        if (floatOp) return Value{left.type, get<float>(left.value) - get<float>(right.value)};
+        break;
+    }
+    case '*':
+    {
+        if (intOp)
+        {
+            auto res = get<SafeInt64>(left.value) * get<SafeInt64>(right.value);
+            return Value{isSignedOrNot(res), res};
+        }
+        if (floatOp) return Value{left.type, get<float>(left.value) * get<float>(right.value)};
+        break;
+    }
+    case '/':
+    {
+        if (intOp)
+        {
+            auto res = get<SafeInt64>(left.value) / get<SafeInt64>(right.value);
+            return Value{isSignedOrNot(res), res};
+        }
+        if (floatOp) return Value{left.type, get<float>(left.value) / get<float>(right.value)};
+        break;
+    }
+    default: // и выбросится исключение ниже
+        break;
+    }
+    throw NotImplementedException("visitArifExpr", NIEError::unknownArifOp);
+}
+
+CodeGenerator::Value CodeGenerator::createRuntimeVar(const Value &val)
+{
+    const size_t val_i = tempValues.size();
+
+    if (val.type == Type::int_t || val.type == Type::uint_t)
+    {
+        tempValues.push_back(to_string(int64_t(get<SafeInt64>(val.value))));
+    }
+    else if (val.type == Type::float_t)
+    {
+        tempValues.push_back(to_string(get<float>(val.value)));
+    }
+
+    internalVarName name = "val" + to_string(val_i);
+    return Value{val.type, name};
+}
+
+CodeGenerator::Value CodeGenerator::arifExprRuntime(const char op, Value left, Value right)
+{
+    const bool intOp = ((left.type == Type::int_t || left.type == Type::uint_t)
+                        && (right.type == left.type));
+    const bool floatOp = ((left.type == Type::float_t) && (right.type == left.type));
+
+    if (!holds_alternative<internalVarName>(left.value))
+        left = createRuntimeVar(left);
+    if (!holds_alternative<internalVarName>(right.value))
+        right = createRuntimeVar(right);
+    if (get<internalVarName>(left.value) != "stack")
+    {
+        code.push_back("LOAD " + get<internalVarName>(left.value));
+    }
+    if (get<internalVarName>(right.value) == "stack")
+    {
+        code.push_back("SAVEP temp");
+        right.value = internalVarName("temp");
+    }
+
+    const internalVarName &rightVarName = get<internalVarName>(right.value);
+
+    switch (op)
+    {
+    case '+':
+    {
+        if (intOp) code.push_back("IADD " + rightVarName);
+        if (floatOp) code.push_back("FADD " + rightVarName);
+        break;
+    }
+    case '-':
+    {
+        if (intOp) code.push_back("ISUB " + rightVarName);
+        if (floatOp) code.push_back("FSUB " + rightVarName);
+        break;
+    }
+    case '*':
+    {
+        if (intOp) code.push_back("IMUL " + rightVarName);
+        if (floatOp) code.push_back("FMUL " + rightVarName);
+        break;
+    }
+    case '/':
+    {
+        if (intOp) code.push_back("IDIV " + rightVarName);
+        if (floatOp) code.push_back("FDIV " + rightVarName);
+        break;
+    }
+    default:
+        throw NotImplementedException("arifExprRuntime", NIEError::unknownArifOp);
+        break;
+    }
+    return Value{left.type, internalVarName("stack")};
 }
 
 Any CodeGenerator::visitArifExpr(TParser::ArifExprContext *ctx)
@@ -190,7 +315,6 @@ Any CodeGenerator::visitArifExpr(TParser::ArifExprContext *ctx)
 
     Value left = anyLeft;
     Value right = anyRight;
-
     if (left.type != right.type)
     {
         throw TypeError(ctx->start->getLine(),
@@ -200,63 +324,13 @@ Any CodeGenerator::visitArifExpr(TParser::ArifExprContext *ctx)
     }
 
     const char op = ctx->op->getText()[0];
-    const bool intOp = ((left.type == Type::int_t || left.type == Type::uint_t) && (right.type == left.type));
-    const bool floatOp = ((left.type == Type::float_t) && (right.type == left.type));
-    switch (op)
+
+    if (!holds_alternative<internalVarName>(left.value)
+            && !holds_alternative<internalVarName>(right.value))
     {
-    case '+':
-    {
-        if (intOp)
-        {
-            auto res = get<SafeInt64>(left.value) + get<SafeInt64>(right.value);
-            return Value{false, isSignedOrNot(res), res};
-        }
-        if (floatOp) return Value{false, left.type, get<float>(left.value) + get<float>(right.value)};
-        break;
+        return arifExprCompileTime(op,left,right);
     }
-    case '-':
-    {
-        if (intOp)
-        {
-            auto res = get<SafeInt64>(left.value) - get<SafeInt64>(right.value);
-            return Value{false, isSignedOrNot(res), res};
-        }
-        if (floatOp) return Value{false, left.type, get<float>(left.value) - get<float>(right.value)};
-        break;
-    }
-    case '*':
-    {
-        if (intOp)
-        {
-            auto res = get<SafeInt64>(left.value) * get<SafeInt64>(right.value);
-            return Value{false, isSignedOrNot(res), res};
-        }
-        if (floatOp) return Value{false, left.type, get<float>(left.value) * get<float>(right.value)};
-        break;
-    }
-    case '/':
-    {
-        if (intOp)
-        {
-            auto res = get<SafeInt64>(left.value) / get<SafeInt64>(right.value);
-            return Value{false, isSignedOrNot(res), res};
-        }
-        if (floatOp) return Value{false, left.type, get<float>(left.value) / get<float>(right.value)};
-        break;
-    }
-    case '%':
-    {
-        if (intOp)
-        {
-            auto res = get<SafeInt64>(left.value) % get<SafeInt64>(right.value);
-            return Value{false, isSignedOrNot(res), res};
-        }
-        break;
-    }
-    default:
-        throw NotImplementedException("visitArifExpr", NIEError::unknownArifOp);
-        break;
-    }
+    return arifExprRuntime(op,left,right);
 
     throw NoMethodError(ctx->start->getLine(),
                         ctx->op->getText(),
@@ -279,13 +353,13 @@ Any CodeGenerator::visitIdExpr(TParser::IdExprContext *ctx)
 Any CodeGenerator::visitBoolExpr(TParser::BoolExprContext *ctx)
 {
     // возвращаем булеву
-    return Value{false, Type::bool_t, (ctx->TRUE() != nullptr)};
+    return Value{Type::bool_t, (ctx->TRUE() != nullptr)};
 }
 
 Any CodeGenerator::visitFloatExpr(TParser::FloatExprContext *ctx)
 {
     // возвращаем дробное
-    return Value{false, Type::float_t, stof(ctx->FLOAT()->toString())};
+    return Value{Type::float_t, stof(ctx->FLOAT()->toString())};
 }
 
 Any CodeGenerator::visitIntExpr(TParser::IntExprContext *ctx)
@@ -294,17 +368,34 @@ Any CodeGenerator::visitIntExpr(TParser::IntExprContext *ctx)
     str.erase(remove(str.begin(), str.end(), '_'), str.end());
     int64_t val = stoll(str);
 
-    return Value{false, isSignedOrNot(val), SafeInt<int64_t>(val)};
+    return Value{isSignedOrNot(val), SafeInt<int64_t>(val)};
 }
 
 CodeGenerator::Any CodeGenerator::visitIgetsExpr(TParser::IgetsExprContext *)
 {
-    return Value{true, Type::int_t, {}};
+    const size_t val_i = tempValues.size();
+    tempValues.emplace_back("0");
+    internalVarName name = "val" + to_string(val_i);
+    code.push_back("INMEMI " + name);
+    return Value{Type::int_t, name};
+}
+
+CodeGenerator::Any CodeGenerator::visitUgetsExpr(TParser::UgetsExprContext *)
+{
+    const size_t val_i = tempValues.size();
+    tempValues.emplace_back("0");
+    internalVarName name = "val" + to_string(val_i);
+    code.push_back("INMEMI " + name);
+    return Value{Type::uint_t, name};
 }
 
 CodeGenerator::Any CodeGenerator::visitFgetsExpr(TParser::FgetsExprContext *)
 {
-    return Value{true, Type::float_t, {}};
+    const size_t val_i = tempValues.size();
+    tempValues.emplace_back("0.0");
+    internalVarName name = "val" + to_string(val_i);
+    code.push_back("INMEMF " + name);
+    return Value{Type::float_t, name};
 }
 
 CodeGenerator::Any CodeGenerator::visitAssignment(TParser::AssignmentContext *ctx)
@@ -317,6 +408,33 @@ CodeGenerator::Any CodeGenerator::visitAssignment(TParser::AssignmentContext *ct
     const Value expr = anyExpr;
     const string ID = ctx->ID()->toString();
     return varTable[ID] = expr;
+}
+
+CodeGenerator::Any CodeGenerator::visitUnaryMinusExpr(TParser::UnaryMinusExprContext *ctx)
+{
+    // вычисляем expr
+    const Any anyExpr = visit(ctx->expr());
+    if (!anyExpr.is<Value>())
+        throw NotImplementedException("visitUnaryMinusExpr", NIEError::exprIsNotValue);
+
+    Value expr = anyExpr;
+    if (expr.type == Type::int_t || expr.type == Type::uint_t)
+    {
+        expr.value = SafeInt64(-get<SafeInt64>(expr.value));
+        expr.type = isSignedOrNot(get<SafeInt64>(expr.value));
+    }
+    else if (expr.type == Type::float_t)
+    {
+        expr.value = float(-get<float>(expr.value));
+    }
+    else
+    {
+        throw NoMethodError(ctx->start->getLine(),
+                            "unary -",
+                            getStrOfType(expr.type));
+    }
+
+    return expr;
 }
 
 Any CodeGenerator::visitBracketsExpr(TParser::BracketsExprContext *ctx)

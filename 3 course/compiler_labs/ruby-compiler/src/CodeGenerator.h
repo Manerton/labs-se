@@ -17,6 +17,7 @@ class CodeGenerator : public TParserBaseVisitor
     using Any = antlrcpp::Any;
     using CodeLine = string;
     using SourceCode = std::list<CodeLine>;
+    using internalVarName = std::string;
 
     struct Value
     {
@@ -24,25 +25,23 @@ class CodeGenerator : public TParserBaseVisitor
         {
             uint_t,   // беззнаковое целое
             int_t,    // знаковое целое
-            float_t,      // дробное
-            bool_t     // булева
+            float_t,  // дробное
+            bool_t    // булева
         };
 
-        bool runtime = false; // значение известно на этапе компиляции
-                              // или на рантайме?
-
         Type type;            // тип
-        std::variant<std::monostate, SafeInt<int64_t>, float, bool> value;  // значение
+        std::variant<internalVarName, SafeInt<int64_t>, float, bool> value;  // значение
     };
 
     using Type = CodeGenerator::Value::Type;
-private:
-    // поля
-    SourceCode code;                    // сгенерированный код ассемблера
-    std::vector<string> tempValues;     // метки со служебными значениями в памяти ВМ
-    std::map<string, Value> varTable;   // таблица переменных
 
-    // методы
+// поля
+    SourceCode code;                            // сгенерированный код ассемблера
+    std::vector<internalVarName> tempValues;    // метки со служебными значениями в памяти ВМ
+    std::map<string, Value> varTable;           // таблица переменных
+    uint8_t stack_i = 0;                        // счетчик стека ВМ
+
+// методы
     bool isInteger(const string &str) const;
     bool isFloat(const string &str) const;
     void generateTempValues();
@@ -50,6 +49,9 @@ private:
     void putsCompileTime(const Value &expr);
     void putsRuntime(const Value &expr);
     Type isSignedOrNot(int64_t val);
+    Value arifExprCompileTime(const char op, Value left, Value right);
+    Value arifExprRuntime(const char op, Value left, Value right);
+    Value createRuntimeVar(const Value &val);
 public:
     const SourceCode& getCode() const;
 
@@ -64,11 +66,14 @@ public:
     virtual Any visitFloatExpr(TParser::FloatExprContext *ctx) override;
     virtual Any visitIntExpr(TParser::IntExprContext *ctx) override;
     virtual Any visitIgetsExpr(TParser::IgetsExprContext *) override;
+    virtual Any visitUgetsExpr(TParser::UgetsExprContext *ctx) override;
     virtual Any visitFgetsExpr(TParser::FgetsExprContext *) override;
     virtual Any visitAssignment(TParser::AssignmentContext *ctx) override;
+    virtual Any visitUnaryMinusExpr(TParser::UnaryMinusExprContext *context) override;
     // -------------------------------------->
     virtual Any visitBracketsExpr(TParser::BracketsExprContext *ctx) override;
     virtual Any visitIf_statement(TParser::If_statementContext *ctx) override;
+
 };
 }
 #endif // CODEGENERATOR_H

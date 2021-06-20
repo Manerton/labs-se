@@ -7,3 +7,8 @@ test = 155777
 puts test
 puts true
 puts false
+a = 33 + 158 * 224 * (5 + 13) / 10
+puts a
+#тест рантайм вывода
+a = igets; b = igets; c = 10; d = igets; e = igets
+puts (a + b + c) + (d + (a + e) + (c + (a + a)))

@@ -38,8 +38,10 @@ expr : ID                                                               #idExpr
        | (TRUE | FALSE)                                                 #boolExpr
        | FLOAT                                                          #floatExpr
        | INT                                                            #intExpr
+       | UGETS                                                          #ugetsExpr
        | IGETS                                                          #igetsExpr
        | FGETS                                                          #fgetsExpr
+       | MINUS expr                                                     #unaryMinusExpr
        // круглые скобки
        | L_BRACKET expr R_BRACKET                                       #bracketsExpr
        // взятие индекса
@@ -47,7 +49,7 @@ expr : ID                                                               #idExpr
        // логическое НЕ
        | NOT expr                                                       #logicExpr
        // умножение
-       | expr op=( MUL | DIV | MOD ) expr                               #arifExpr
+       | expr op=( MUL | DIV ) expr                               #arifExpr
        // сложение
        | expr op=( PLUS | MINUS ) expr                                  #arifExpr
        // сравнение
