@@ -4,6 +4,15 @@
 #include <memory>
 #include <string>
 
+// исключение - недопустимое число
+class illInteger : public std::exception
+{
+public:
+    const char *what() const noexcept {
+        return "Illegal integer";
+    }
+};
+
 // абстрактный класс математического выражения
 class MathExpression
 {
@@ -86,6 +95,7 @@ public:
     };
 
 };
+
 // деление по модулю
 class ModExpression : public NonTermExpression
 {
@@ -103,7 +113,11 @@ public:
     UnaryExpression(const sharedPtrExp &_operand)
         : operand(_operand) {}
     Value eval (Context& context) override
-    { return -(operand->eval(context)); }
+    {
+        int64_t temp = -static_cast<int64_t>((operand->eval(context)));
+        if (temp < std::numeric_limits<int32_t>::min()) throw illInteger();
+        return static_cast<Value>(temp);
+    }
 };
 
 #endif // MATHEXPRESSION_H

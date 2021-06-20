@@ -197,17 +197,20 @@ shared_ptr<MathExpression> MathParser::buildExpressionTree(const Tokens &rpnToke
 
 MathParser::Value MathParser::StrToInt(const string &str)
 {
-    int res = 0;
+    int64_t res = 0;
     if(str[0] == '0')
     {
         // двоичная система
-        if(str[1] == 'b' || str[1] == 'B' )
+        if(str[1] == 'b' || str[1] == 'B')
         {
-            res = stoi(str.substr(2), nullptr, 2);
+            res = stoll(str.substr(2), nullptr, 2);
         }
-        else res = stoi(str, nullptr, 0);
+        else res = stoll(str, nullptr, 0);
     }
-    else res = stoi(str, nullptr, 10);
+    else res = stoll(str, nullptr, 10);
+
+    if ((res < numeric_limits<int32_t>::min()) ||
+            (res > numeric_limits<uint32_t>::max())) throw illInteger();
     return static_cast<Value>(res);
 }
 

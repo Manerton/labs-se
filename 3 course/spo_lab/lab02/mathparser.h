@@ -67,13 +67,6 @@ public:
             return "Undefined label";
         }
     };
-    class illInteger : public std::exception
-    {
-    public:
-        const char *what() const noexcept {
-            return "Illegal integer";
-        }
-    };
     class WrongBuildExpTree : public std::exception
     {
     public:
@@ -81,7 +74,6 @@ public:
             return "Wrong building expression tree";
         }
     };
-
 };
 
 #endif // MATHPARSER_H
