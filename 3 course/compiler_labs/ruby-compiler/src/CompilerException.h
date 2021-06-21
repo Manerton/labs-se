@@ -80,6 +80,17 @@ public:
     virtual ~NoMethodError() {}
 };
 
+// переполнение стека ВМ
+class StackOverflowError: public CompilerException
+{
+public:
+    StackOverflowError(size_t line) : CompilerException(line)
+    {
+        msg += " stack overflow (nesting > 32) (StackOverflowError)";
+    }
+    virtual ~StackOverflowError() {}
+};
+
 }
 
 #endif // COMPILEREXCEPTION_H

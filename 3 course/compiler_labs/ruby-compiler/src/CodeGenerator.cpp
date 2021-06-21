@@ -110,20 +110,28 @@ void rubyCompiler::CodeGenerator::putsCompileTime(const Value &expr)
 void CodeGenerator::putsRuntime(const Value &expr)
 {
     const auto& name = get<internalVarName>(expr.value);
+    string action;
     if (expr.type == Type::int_t) // если целое число
     {
-        if (name == "stack") code.push_back("OUTSTI");
-        else code.push_back("OUTMEMI " + name);
+        if (name == "stack") action = "OUTSTI";
+        else action = "OUTMEMI " + name;
     }
     else if (expr.type == Type::uint_t) // если беззнаковое целое число
     {
-        if (name == "stack") code.push_back("OUTSTU");
-        else code.push_back("OUTMEMU " + name);
+        if (name == "stack") action = "OUTSTU";
+        else action = "OUTMEMU " + name;
     }
     else if (expr.type == Type::float_t) // если дробное
     {
-        if (name == "stack") code.push_back("OUTSTF");
-        else code.push_back("OUTMEMF " + name);
+        if (name == "stack") action = "OUTSTF";
+        else action = "OUTMEMF " + name;
+    }
+    code.push_back(action);
+
+    if (name == "stack")
+    {
+        code.push_back("SAVEP temp");
+        --stack_i;
     }
 }
 
@@ -180,14 +188,14 @@ Any CodeGenerator::visitPuts(TParser::PutsContext *ctx)
     return defaultResult();
 }
 
-CodeGenerator::Value CodeGenerator::arifExprCompileTime(const char op, Value left, Value right)
+CodeGenerator::Value CodeGenerator::arifExprCompileTime(TParser::ArifExprContext *ctx, Value left, Value right)
 {
     const bool intOp = ((left.type == Type::int_t || left.type == Type::uint_t) && (right.type == left.type));
     const bool floatOp = ((left.type == Type::float_t) && (right.type == left.type));
 
-    switch (op)
+    switch (ctx->op->getType())
     {
-    case '+':
+    case TParser::PLUS:
     {
         if (intOp)
         {
@@ -197,7 +205,7 @@ CodeGenerator::Value CodeGenerator::arifExprCompileTime(const char op, Value lef
         if (floatOp) return Value{left.type, get<float>(left.value) + get<float>(right.value)};
         break;
     }
-    case '-':
+    case TParser::MINUS:
     {
         if (intOp)
         {
@@ -207,7 +215,7 @@ CodeGenerator::Value CodeGenerator::arifExprCompileTime(const char op, Value lef
         if (floatOp) return Value{left.type, get<float>(left.value) - get<float>(right.value)};
         break;
     }
-    case '*':
+    case TParser::MUL:
     {
         if (intOp)
         {
@@ -217,7 +225,7 @@ CodeGenerator::Value CodeGenerator::arifExprCompileTime(const char op, Value lef
         if (floatOp) return Value{left.type, get<float>(left.value) * get<float>(right.value)};
         break;
     }
-    case '/':
+    case TParser::DIV:
     {
         if (intOp)
         {
@@ -227,10 +235,14 @@ CodeGenerator::Value CodeGenerator::arifExprCompileTime(const char op, Value lef
         if (floatOp) return Value{left.type, get<float>(left.value) / get<float>(right.value)};
         break;
     }
-    default: // и выбросится исключение ниже
+    default:
+        throw NotImplementedException("visitArifExpr -> " + ctx->op->getText(), NIEError::unknownArifOp);
         break;
     }
-    throw NotImplementedException("visitArifExpr", NIEError::unknownArifOp);
+    throw NoMethodError(ctx->start->getLine(),
+                        ctx->op->getText(),
+                        getStrOfType(left.type)
+                        );
 }
 
 CodeGenerator::Value CodeGenerator::createRuntimeVar(const Value &val)
@@ -250,7 +262,7 @@ CodeGenerator::Value CodeGenerator::createRuntimeVar(const Value &val)
     return Value{val.type, name};
 }
 
-CodeGenerator::Value CodeGenerator::arifExprRuntime(const char op, Value left, Value right)
+CodeGenerator::Value CodeGenerator::arifExprRuntime(TParser::ArifExprContext *ctx, Value left, Value right)
 {
     const bool intOp = ((left.type == Type::int_t || left.type == Type::uint_t)
                         && (right.type == left.type));
@@ -263,46 +275,292 @@ CodeGenerator::Value CodeGenerator::arifExprRuntime(const char op, Value left, V
     if (get<internalVarName>(left.value) != "stack")
     {
         code.push_back("LOAD " + get<internalVarName>(left.value));
+        ++stack_i;
+        if (stack_i > stack_size) throw StackOverflowError(ctx->start->getLine());
     }
     if (get<internalVarName>(right.value) == "stack")
     {
         code.push_back("SAVEP temp");
+        --stack_i;
         right.value = internalVarName("temp");
     }
 
     const internalVarName &rightVarName = get<internalVarName>(right.value);
 
-    switch (op)
+    switch (ctx->op->getType())
     {
-    case '+':
+    case TParser::PLUS:
     {
-        if (intOp) code.push_back("IADD " + rightVarName);
-        if (floatOp) code.push_back("FADD " + rightVarName);
+        if (intOp || floatOp)
+        {
+            if (intOp) code.push_back("IADD " + rightVarName);
+            else if (floatOp) code.push_back("FADD " + rightVarName);
+            return Value{left.type, internalVarName("stack")};
+        }
         break;
     }
-    case '-':
+    case TParser::MINUS:
     {
-        if (intOp) code.push_back("ISUB " + rightVarName);
-        if (floatOp) code.push_back("FSUB " + rightVarName);
+        if (intOp || floatOp)
+        {
+            if (intOp) code.push_back("ISUB " + rightVarName);
+            else if (floatOp) code.push_back("FSUB " + rightVarName);
+            return Value{left.type, internalVarName("stack")};
+        }
         break;
     }
-    case '*':
+    case TParser::MUL:
     {
-        if (intOp) code.push_back("IMUL " + rightVarName);
-        if (floatOp) code.push_back("FMUL " + rightVarName);
+        if (intOp || floatOp)
+        {
+            if (intOp) code.push_back("IMUL " + rightVarName);
+            else if (floatOp) code.push_back("FMUL " + rightVarName);
+            return Value{left.type, internalVarName("stack")};
+        }
         break;
     }
-    case '/':
+    case TParser::DIV:
     {
-        if (intOp) code.push_back("IDIV " + rightVarName);
-        if (floatOp) code.push_back("FDIV " + rightVarName);
+        if (intOp || floatOp)
+        {
+            if (intOp) code.push_back("IDIV " + rightVarName);
+            else if (floatOp) code.push_back("FDIV " + rightVarName);
+            return Value{left.type, internalVarName("stack")};
+        }
         break;
     }
     default:
         throw NotImplementedException("arifExprRuntime", NIEError::unknownArifOp);
         break;
     }
-    return Value{left.type, internalVarName("stack")};
+    throw NoMethodError(ctx->start->getLine(),
+                        ctx->op->getText(),
+                        getStrOfType(left.type)
+                        );
+}
+
+CodeGenerator::Value CodeGenerator::compExprCompileTime(TParser::CompExprContext *ctx, Value left, Value right)
+{
+    const bool intOp = ((left.type == Type::int_t || left.type == Type::uint_t) && (right.type == left.type));
+    const bool floatOp = ((left.type == Type::float_t) && (right.type == left.type));
+
+    switch (ctx->op->getType())
+    {
+    case TParser::GREATER:
+    {
+        if (intOp || floatOp)
+        {
+            bool res = false;
+            if (intOp)
+                res = get<SafeInt64>(left.value) > get<SafeInt64>(right.value);
+            else if (floatOp)
+                res = get<float>(left.value) > get<float>(right.value);
+            return Value{Type::bool_t, res};
+        }
+        break;
+    }
+    case TParser::GREATER_EQUAL:
+    {
+        if (intOp || floatOp)
+        {
+            bool res = false;
+            if (intOp)
+                res = get<SafeInt64>(left.value) >= get<SafeInt64>(right.value);
+            else if (floatOp)
+                res = get<float>(left.value) >= get<float>(right.value);
+            return Value{Type::bool_t, res};
+        }
+        break;
+    }
+    case TParser::LESS:
+    {
+        if (intOp || floatOp)
+        {
+            bool res = false;
+            if (intOp)
+                res = get<SafeInt64>(left.value) < get<SafeInt64>(right.value);
+            else if (floatOp)
+                res = get<float>(left.value) < get<float>(right.value);
+            return Value{Type::bool_t, res};
+        }
+        break;
+    }
+    case TParser::LESS_EQUAL:
+    {
+        if (intOp || floatOp)
+        {
+            bool res = false;
+            if (intOp)
+                res = get<SafeInt64>(left.value) <= get<SafeInt64>(right.value);
+            else if (floatOp)
+                res = get<float>(left.value) <= get<float>(right.value);
+            return Value{Type::bool_t, res};
+        }
+        break;
+    }
+    case TParser::EQUAL:
+    {
+        if (intOp || floatOp)
+        {
+            bool res = false;
+            if (intOp)
+                res = get<SafeInt64>(left.value) == get<SafeInt64>(right.value);
+            else if (floatOp)
+                res = fabsf(get<float>(left.value) - get<float>(right.value)) <= numeric_limits<float>::epsilon();
+            return Value{Type::bool_t, res};
+        }
+        break;
+    }
+    case TParser::NOT_EQUAL:
+    {
+        if (intOp || floatOp)
+        {
+            bool res = false;
+            if (intOp)
+                res = get<SafeInt64>(left.value) != get<SafeInt64>(right.value);
+            else if (floatOp)
+                res = fabsf(get<float>(left.value) - get<float>(right.value)) > numeric_limits<float>::epsilon();
+            return Value{Type::bool_t, res};
+        }
+        break;
+    }
+
+    default:
+        throw NotImplementedException("compExprCompileTime -> " + ctx->op->getText(), NIEError::unknownArifOp);
+        break;
+    }
+
+    throw NoMethodError(ctx->start->getLine(),
+                        ctx->op->getText(),
+                        getStrOfType(left.type)
+                        );
+}
+
+CodeGenerator::Value CodeGenerator::compExprRuntime(TParser::CompExprContext *ctx, Value left, Value right)
+{
+    const bool intOp = ((left.type == Type::int_t || left.type == Type::uint_t)
+                        && (right.type == left.type));
+    const bool floatOp = ((left.type == Type::float_t) && (right.type == left.type));
+
+    if (!holds_alternative<internalVarName>(left.value))
+        left = createRuntimeVar(left);
+    if (!holds_alternative<internalVarName>(right.value))
+        right = createRuntimeVar(right);
+    if (get<internalVarName>(left.value) != "stack")
+    {
+        code.push_back("LOAD " + get<internalVarName>(left.value));
+        ++stack_i;
+        if (stack_i > stack_size) throw StackOverflowError(ctx->start->getLine());
+    }
+    if (get<internalVarName>(right.value) == "stack")
+    {
+        code.push_back("SAVEP temp");
+        --stack_i;
+        right.value = internalVarName("temp");
+    }
+
+    const internalVarName &rightVarName = get<internalVarName>(right.value);
+
+    switch (ctx->op->getType())
+    {
+    case TParser::GREATER:
+    {
+        if (intOp || floatOp)
+        {
+            // вычитаем, с целью установить флаги в ВМ
+            if (intOp) code.push_back("ISUB " + rightVarName);
+            else if (floatOp) code.push_back("FSUB " + rightVarName);
+            // убираем ненужное значение в стеке
+            code.push_back("SAVEP temp");
+            string label_i = to_string(asmLabel_i);
+            code.push_back("JNSF ifgreater" + label_i);
+            code.push_back("JSF else" + label_i);
+            // if
+            code.push_back("ifgreater" + label_i + ": LOADI 1");
+            code.push_back("JMP end" + label_i);
+            // else
+            code.push_back("else" + label_i + ": LOADI 0");
+            code.push_back("JMP end" + label_i);
+            // end
+            code.push_back("end" + label_i + ": ");
+            ++asmLabel_i;
+            return Value{Type::bool_t, internalVarName("stack")};
+        }
+        break;
+    }
+    case TParser::GREATER_EQUAL:
+    {
+        if (intOp || floatOp)
+        {
+            bool res = false;
+            if (intOp)
+                res = get<SafeInt64>(left.value) >= get<SafeInt64>(right.value);
+            else if (floatOp)
+                res = get<float>(left.value) >= get<float>(right.value);
+            return Value{Type::bool_t, res};
+        }
+        break;
+    }
+    case TParser::LESS:
+    {
+        if (intOp || floatOp)
+        {
+            bool res = false;
+            if (intOp)
+                res = get<SafeInt64>(left.value) < get<SafeInt64>(right.value);
+            else if (floatOp)
+                res = get<float>(left.value) < get<float>(right.value);
+            return Value{Type::bool_t, res};
+        }
+        break;
+    }
+    case TParser::LESS_EQUAL:
+    {
+        if (intOp || floatOp)
+        {
+            bool res = false;
+            if (intOp)
+                res = get<SafeInt64>(left.value) <= get<SafeInt64>(right.value);
+            else if (floatOp)
+                res = get<float>(left.value) <= get<float>(right.value);
+            return Value{Type::bool_t, res};
+        }
+        break;
+    }
+    case TParser::EQUAL:
+    {
+        if (intOp || floatOp)
+        {
+            bool res = false;
+            if (intOp)
+                res = get<SafeInt64>(left.value) == get<SafeInt64>(right.value);
+            else if (floatOp)
+                res = fabsf(get<float>(left.value) - get<float>(right.value)) <= numeric_limits<float>::epsilon();
+            return Value{Type::bool_t, res};
+        }
+        break;
+    }
+    case TParser::NOT_EQUAL:
+    {
+        if (intOp || floatOp)
+        {
+            bool res = false;
+            if (intOp)
+                res = get<SafeInt64>(left.value) != get<SafeInt64>(right.value);
+            else if (floatOp)
+                res = fabsf(get<float>(left.value) - get<float>(right.value)) > numeric_limits<float>::epsilon();
+            return Value{Type::bool_t, res};
+        }
+        break;
+    }
+    default:
+        throw NotImplementedException("compExprRuntime -> " + ctx->op->getText(), NIEError::unknownArifOp);
+        break;
+    }
+    throw NoMethodError(ctx->start->getLine(),
+                        ctx->op->getText(),
+                        getStrOfType(left.type)
+                        );
 }
 
 Any CodeGenerator::visitArifExpr(TParser::ArifExprContext *ctx)
@@ -318,24 +576,43 @@ Any CodeGenerator::visitArifExpr(TParser::ArifExprContext *ctx)
     if (left.type != right.type)
     {
         throw TypeError(ctx->start->getLine(),
-                        getStrOfType(left.type),
-                        getStrOfType(right.type)
+                        getStrOfType(right.type),
+                        getStrOfType(left.type)
                         );
     }
-
-    const char op = ctx->op->getText()[0];
 
     if (!holds_alternative<internalVarName>(left.value)
             && !holds_alternative<internalVarName>(right.value))
     {
-        return arifExprCompileTime(op,left,right);
+        return arifExprCompileTime(ctx, left,right);
     }
-    return arifExprRuntime(op,left,right);
+    return arifExprRuntime(ctx,left,right);
+}
 
-    throw NoMethodError(ctx->start->getLine(),
-                        ctx->op->getText(),
+CodeGenerator::Any CodeGenerator::visitCompExpr(TParser::CompExprContext *ctx)
+{
+    const Any anyLeft = visit(ctx->expr(0));
+    const Any anyRight = visit(ctx->expr(1));
+
+    if (!anyLeft.is<Value>() || !anyRight.is<Value>())
+        throw NotImplementedException("visitCompExpr", NIEError::exprIsNotValue);
+
+    Value left = anyLeft;
+    Value right = anyRight;
+    if (left.type != right.type)
+    {
+        throw TypeError(ctx->start->getLine(),
+                        getStrOfType(right.type),
                         getStrOfType(left.type)
                         );
+    }
+
+    if (!holds_alternative<internalVarName>(left.value)
+            && !holds_alternative<internalVarName>(right.value))
+    {
+        return compExprCompileTime(ctx,left,right);
+    }
+    return compExprRuntime(ctx,left,right);
 }
 
 Any CodeGenerator::visitIdExpr(TParser::IdExprContext *ctx)
@@ -405,9 +682,34 @@ CodeGenerator::Any CodeGenerator::visitAssignment(TParser::AssignmentContext *ct
     if (!anyExpr.is<Value>())
         throw NotImplementedException("visitAssignment", NIEError::exprIsNotValue);
 
-    const Value expr = anyExpr;
+    Value expr = anyExpr;
     const string ID = ctx->ID()->toString();
+
+    if (holds_alternative<internalVarName>(expr.value))
+    {
+        const auto &name = get<internalVarName>(expr.value);
+        const size_t val_i = tempValues.size();
+        tempValues.emplace_back("0");
+        if (name == "stack")
+        {
+            code.push_back("SAVEP val" + to_string(val_i));
+            --stack_i;
+        }
+        else
+        {
+            code.push_back("LOAD " + name);
+            code.push_back("SAVEP val" + to_string(val_i));
+        }
+        expr.value = internalVarName("val" + to_string(val_i));
+    }
+
+    varTable[ID] = expr;
     return varTable[ID] = expr;
+}
+
+CodeGenerator::Any CodeGenerator::visitAssignExpr(TParser::AssignExprContext *ctx)
+{
+    return visitAssignment(ctx->assignment());
 }
 
 CodeGenerator::Any CodeGenerator::visitUnaryMinusExpr(TParser::UnaryMinusExprContext *ctx)
@@ -452,11 +754,46 @@ Any rubyCompiler::CodeGenerator::visitIf_statement(TParser::If_statementContext 
     const Value expr = anyExpr;
     if (expr.type == Type::bool_t)
     {
-        if (get<bool>(expr.value))
+        // если булева в рантайме
+        if (holds_alternative<internalVarName>(expr.value))
+        {
+            // сейчас в стеке лежит вычисленное булево значение условия
+            // выгружаем его в temp
+            code.push_back("SAVEP temp");
+            --stack_i;
+            // загружаем в стек значение true (1)
+            code.push_back("LOADI 1");
+            // вычитаем, с целью установить флаги в ВМ
+            code.push_back("ISUB temp");
+            // убираем ненужное значение в стеке
+            code.push_back("SAVEP temp");
+
+            string label_i = to_string(++asmLabel_i);
+            // готовим прыжки
+            code.push_back("JZF if" + label_i);
+            if (ctx->ELSE()) code.push_back("JNZF else" + label_i);
+
+            // if
+            code.push_back("if" + label_i + ":");
+            visit(ctx->statement_list(0));
+            code.push_back("JMP end" + label_i);
+
+            // else
+            if (ctx->ELSE())
+            {
+                code.push_back("else" + label_i + ":");
+                visit(ctx->statement_list(1));
+                code.push_back("JMP end" + label_i);
+            }
+            // end
+            code.push_back("end" + label_i + ": ");
+        }
+        // если константа
+        else if (get<bool>(expr.value))
         {
             visit(ctx->statement_list(0));
         }
-        else if (!get<bool>(expr.value) && ctx->statement_list(1))
+        else if (!get<bool>(expr.value) && ctx->ELSE())
         {
             visit(ctx->statement_list(1));
         }

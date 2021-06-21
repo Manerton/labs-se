@@ -14,12 +14,8 @@ statement : if_statement
           | expr
           ;
 
-elsif_statement : ELSIF expr
-                  NEWLINE statement_list;
-
 if_statement : IF expr
                NEWLINE statement_list
-               NEWLINE (elsif_statement NEWLINE)*
                (ELSE NEWLINE statement_list)? END;
 
 while_statement : WHILE expr NEWLINE statement_list END;
@@ -49,7 +45,7 @@ expr : ID                                                               #idExpr
        // логическое НЕ
        | NOT expr                                                       #logicExpr
        // умножение
-       | expr op=( MUL | DIV ) expr                               #arifExpr
+       | expr op=( MUL | DIV ) expr                                     #arifExpr
        // сложение
        | expr op=( PLUS | MINUS ) expr                                  #arifExpr
        // сравнение
