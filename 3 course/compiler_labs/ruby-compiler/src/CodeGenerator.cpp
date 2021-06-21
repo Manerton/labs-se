@@ -436,16 +436,27 @@ CodeGenerator::Value CodeGenerator::compExprCompileTime(TParser::CompExprContext
                         );
 }
 
-CodeGenerator::Value CodeGenerator::compExprRuntime(TParser::CompExprContext *ctx, Value left, Value right)
+CodeGenerator::Value CodeGenerator::compExprRuntime(TParser::CompExprContext *ctx, size_t _label_i, Value left, Value right)
 {
+    string label_i = to_string(_label_i);
+
     const bool intOp = ((left.type == Type::int_t || left.type == Type::uint_t)
                         && (right.type == left.type));
     const bool floatOp = ((left.type == Type::float_t) && (right.type == left.type));
+
+    if (!intOp && !floatOp)
+    {
+        throw NoMethodError(ctx->start->getLine(),
+                            ctx->op->getText(),
+                            getStrOfType(left.type)
+                            );
+    }
 
     if (!holds_alternative<internalVarName>(left.value))
         left = createRuntimeVar(left);
     if (!holds_alternative<internalVarName>(right.value))
         right = createRuntimeVar(right);
+
     if (get<internalVarName>(left.value) != "stack")
     {
         code.push_back("LOAD " + get<internalVarName>(left.value));
@@ -461,106 +472,66 @@ CodeGenerator::Value CodeGenerator::compExprRuntime(TParser::CompExprContext *ct
 
     const internalVarName &rightVarName = get<internalVarName>(right.value);
 
+    // вычитаем, с целью установить флаги в ВМ
+    if (intOp) code.push_back("ISUB " + rightVarName);
+    else if (floatOp) code.push_back("FSUB " + rightVarName);
+    // убираем ненужное значение в стеке
+    code.push_back("SAVEP temp");
+
     switch (ctx->op->getType())
     {
     case TParser::GREATER:
     {
-        if (intOp || floatOp)
-        {
-            // вычитаем, с целью установить флаги в ВМ
-            if (intOp) code.push_back("ISUB " + rightVarName);
-            else if (floatOp) code.push_back("FSUB " + rightVarName);
-            // убираем ненужное значение в стеке
-            code.push_back("SAVEP temp");
-            string label_i = to_string(asmLabel_i);
-            code.push_back("JNSF ifgreater" + label_i);
-            code.push_back("JSF else" + label_i);
-            // if
-            code.push_back("ifgreater" + label_i + ": LOADI 1");
-            code.push_back("JMP end" + label_i);
-            // else
-            code.push_back("else" + label_i + ": LOADI 0");
-            code.push_back("JMP end" + label_i);
-            // end
-            code.push_back("end" + label_i + ": ");
-            ++asmLabel_i;
-            return Value{Type::bool_t, internalVarName("stack")};
-        }
+        code.push_back("JSF else" + label_i);
+        code.push_back("JZF else" + label_i);
+        code.push_back("JNSF then" + label_i);
         break;
     }
     case TParser::GREATER_EQUAL:
     {
-        if (intOp || floatOp)
-        {
-            bool res = false;
-            if (intOp)
-                res = get<SafeInt64>(left.value) >= get<SafeInt64>(right.value);
-            else if (floatOp)
-                res = get<float>(left.value) >= get<float>(right.value);
-            return Value{Type::bool_t, res};
-        }
+        code.push_back("JSF else" + label_i);
+        code.push_back("JNSF then" + label_i);
         break;
     }
     case TParser::LESS:
     {
-        if (intOp || floatOp)
-        {
-            bool res = false;
-            if (intOp)
-                res = get<SafeInt64>(left.value) < get<SafeInt64>(right.value);
-            else if (floatOp)
-                res = get<float>(left.value) < get<float>(right.value);
-            return Value{Type::bool_t, res};
-        }
+        code.push_back("JNSF else" + label_i);
+        code.push_back("JSF then" + label_i);
         break;
     }
     case TParser::LESS_EQUAL:
     {
-        if (intOp || floatOp)
-        {
-            bool res = false;
-            if (intOp)
-                res = get<SafeInt64>(left.value) <= get<SafeInt64>(right.value);
-            else if (floatOp)
-                res = get<float>(left.value) <= get<float>(right.value);
-            return Value{Type::bool_t, res};
-        }
+        code.push_back("JSF then" + label_i);
+        code.push_back("JZF then" + label_i);
+        code.push_back("JNSF else" + label_i);
         break;
     }
     case TParser::EQUAL:
     {
-        if (intOp || floatOp)
-        {
-            bool res = false;
-            if (intOp)
-                res = get<SafeInt64>(left.value) == get<SafeInt64>(right.value);
-            else if (floatOp)
-                res = fabsf(get<float>(left.value) - get<float>(right.value)) <= numeric_limits<float>::epsilon();
-            return Value{Type::bool_t, res};
-        }
+        code.push_back("JZF then" + label_i);
+        code.push_back("JNZF else" + label_i);
         break;
     }
     case TParser::NOT_EQUAL:
     {
-        if (intOp || floatOp)
-        {
-            bool res = false;
-            if (intOp)
-                res = get<SafeInt64>(left.value) != get<SafeInt64>(right.value);
-            else if (floatOp)
-                res = fabsf(get<float>(left.value) - get<float>(right.value)) > numeric_limits<float>::epsilon();
-            return Value{Type::bool_t, res};
-        }
+        code.push_back("JNZF then" + label_i);
+        code.push_back("JZF else" + label_i);
         break;
     }
     default:
         throw NotImplementedException("compExprRuntime -> " + ctx->op->getText(), NIEError::unknownArifOp);
         break;
     }
-    throw NoMethodError(ctx->start->getLine(),
-                        ctx->op->getText(),
-                        getStrOfType(left.type)
-                        );
+
+    // then
+    code.push_back("then" + label_i + ": LOADI 1");
+    code.push_back("JMP end" + label_i);
+    // else
+    code.push_back("else" + label_i + ": LOADI 0");
+    code.push_back("JMP end" + label_i);
+    // end
+    code.push_back("end" + label_i + ": ");
+    return Value{Type::bool_t, internalVarName("stack")};
 }
 
 Any CodeGenerator::visitArifExpr(TParser::ArifExprContext *ctx)
@@ -591,6 +562,9 @@ Any CodeGenerator::visitArifExpr(TParser::ArifExprContext *ctx)
 
 CodeGenerator::Any CodeGenerator::visitCompExpr(TParser::CompExprContext *ctx)
 {
+    size_t label_i = ++asmLabel_i;
+    code.push_back("comp" + to_string(label_i) + ":");
+
     const Any anyLeft = visit(ctx->expr(0));
     const Any anyRight = visit(ctx->expr(1));
 
@@ -607,12 +581,22 @@ CodeGenerator::Any CodeGenerator::visitCompExpr(TParser::CompExprContext *ctx)
                         );
     }
 
+    if (runtimeThisCompExpr)
+    {
+        if (!holds_alternative<internalVarName>(left.value))
+        {
+            left = createRuntimeVar(left);
+        }
+        if (!holds_alternative<internalVarName>(right.value))
+            right = createRuntimeVar(right);
+    }
+
     if (!holds_alternative<internalVarName>(left.value)
             && !holds_alternative<internalVarName>(right.value))
     {
         return compExprCompileTime(ctx,left,right);
     }
-    return compExprRuntime(ctx,left,right);
+    return compExprRuntime(ctx,label_i,left,right);
 }
 
 Any CodeGenerator::visitIdExpr(TParser::IdExprContext *ctx)
@@ -685,9 +669,30 @@ CodeGenerator::Any CodeGenerator::visitAssignment(TParser::AssignmentContext *ct
     Value expr = anyExpr;
     const string ID = ctx->ID()->toString();
 
-    if (holds_alternative<internalVarName>(expr.value))
+    // если уже есть такая переменная и тип совпадает
+    if (varTable.find(ID) != varTable.end()
+            && varTable[ID].type == expr.type
+            && holds_alternative<internalVarName>(varTable[ID].value))
+    {
+        const auto &varName = get<internalVarName>(varTable[ID].value);
+        // новое значение - не рантайм переменная
+        if (!holds_alternative<internalVarName>(expr.value))
+        {
+            expr = createRuntimeVar(expr);
+        }
+        const auto &name = get<internalVarName>(expr.value);
+        if (name != "stack") code.push_back("LOAD " + name);
+        code.push_back("SAVEP " + varName);
+
+        return varTable[ID];
+    }
+
+    // если значение - рантайм переменная (и не массив)
+    if (holds_alternative<internalVarName>(expr.value) &&
+            arrTable.find(get<internalVarName>(expr.value)) == arrTable.end())
     {
         const auto &name = get<internalVarName>(expr.value);
+
         const size_t val_i = tempValues.size();
         tempValues.emplace_back("0");
         if (name == "stack")
@@ -701,9 +706,27 @@ CodeGenerator::Any CodeGenerator::visitAssignment(TParser::AssignmentContext *ct
             code.push_back("SAVEP val" + to_string(val_i));
         }
         expr.value = internalVarName("val" + to_string(val_i));
+
     }
 
-    varTable[ID] = expr;
+    if (!holds_alternative<internalVarName>(expr.value))
+    {
+        const size_t val_i = tempValues.size();
+        string valStr;
+        if (expr.type == Type::uint_t || expr.type == Type::int_t || expr.type == Type::bool_t)
+        {
+            const int64_t val = get<SafeInt64>(expr.value);
+            valStr = to_string(val);
+        }
+        else if (expr.type == Type::float_t)
+        {
+            const float val = get<float>(expr.value);
+            valStr = to_string(val);
+        }
+        tempValues.emplace_back(valStr);
+        expr.value = internalVarName("val" + to_string(val_i));
+    }
+
     return varTable[ID] = expr;
 }
 
@@ -806,4 +829,136 @@ Any rubyCompiler::CodeGenerator::visitIf_statement(TParser::If_statementContext 
                         );
     }
     return defaultResult();
+}
+
+CodeGenerator::Any CodeGenerator::visitWhile_statement(TParser::While_statementContext *ctx)
+{
+    // вычисляем expr
+
+    runtimeThisCompExpr = true;
+    const Any anyExpr = visit(ctx->expr());
+    runtimeThisCompExpr = false;
+    if (!anyExpr.is<Value>())
+        throw NotImplementedException("visitWhile_statement", NIEError::exprIsNotValue);
+
+    const Value expr = anyExpr;
+    if (expr.type == Type::bool_t)
+    {
+
+        string label_i = to_string(asmLabel_i);
+        // над этим АСМ кодом располагается АСМ код условия под меткой comp{label_i}
+        // мы уже его прошли и поэтому сейчас в стеке лежит вычисленное булево значение условия
+        // выгружаем его в temp
+        code.push_back("SAVEP temp");
+        --stack_i;
+        // загружаем в стек значение true (1)
+        code.push_back("LOADI 1");
+        // вычитаем, с целью установить флаги в ВМ
+        code.push_back("ISUB temp");
+        // убираем ненужное значение в стеке
+        code.push_back("SAVEP temp");
+
+        // готовим прыжки
+        code.push_back("JZF loop" + label_i);
+        code.push_back("JNZF endloop" + label_i);
+
+        // loopBody
+        code.push_back("loop" + label_i + ":");
+        visit(ctx->statement_list());
+        code.push_back("JMP comp" + label_i);
+
+        // end
+        code.push_back("endloop" + label_i + ": ");
+
+        /*// если константа
+        else if (get<bool>(expr.value))
+        {
+            string label_i = to_string(asmLabel_i);
+            // loopBody
+            code.push_back("loop" + label_i + ":");
+            visit(ctx->statement_list());
+            code.push_back("JMP loop" + label_i);
+        }*/
+    }
+    else
+    {
+        throw TypeError(ctx->start->getLine(),
+                        getStrOfType(expr.type),
+                        getStrOfType(Type::bool_t)
+                        );
+    }
+    return defaultResult();
+}
+
+CodeGenerator::Any CodeGenerator::visitArrDefExpr(TParser::ArrDefExprContext *ctx)
+{
+    return visitArray_definition(ctx->array_definition());
+}
+
+CodeGenerator::Any CodeGenerator::visitArray_definition(TParser::Array_definitionContext *ctx)
+{
+    return visitArray_definition_elements(ctx->array_definition_elements());
+}
+
+CodeGenerator::Any CodeGenerator::visitArray_definition_elements(TParser::Array_definition_elementsContext *ctx)
+{
+    size_t count = ctx->expr().size();
+    Type typeOfArr;
+
+    const Any anyFirstElem = visit(ctx->expr(0));
+    if (!anyFirstElem.is<Value>())
+        throw NotImplementedException("visitArray_definition_elements", NIEError::exprIsNotValue);
+
+    Value firstElem = anyFirstElem;
+    firstElem = createRuntimeVar(firstElem);
+    typeOfArr = firstElem.type;
+    for (size_t i = 1; i < count; ++i)
+    {
+        const Any anyExpr = visit(ctx->expr(i));
+        if (!anyExpr.is<Value>())
+            throw NotImplementedException("visitArray_definition_elements", NIEError::exprIsNotValue);
+        Value elem = anyExpr;
+        // проверяем тип
+        if (elem.type != typeOfArr)
+        {
+            throw TypeError(ctx->start->getLine(),
+                            getStrOfType(elem.type),
+                            getStrOfType(typeOfArr)
+                            );
+        }
+        elem = createRuntimeVar(elem);
+    }
+    arrTable[get<internalVarName>(firstElem.value)] = firstElem;
+    return firstElem;
+}
+
+CodeGenerator::Any CodeGenerator::visitArrSelExpr(TParser::ArrSelExprContext *ctx)
+{
+    return visitArray_selector(ctx->array_selector());
+}
+
+CodeGenerator::Any CodeGenerator::visitArray_selector(TParser::Array_selectorContext *ctx)
+{
+    // вычисляем expr
+    const Any anyExpr = visit(ctx->expr());
+    if (!anyExpr.is<Value>())
+        throw NotImplementedException("visitArray_selector", NIEError::exprIsNotValue);
+    Value indexExpr = anyExpr;
+    if (indexExpr.type != Type::int_t && indexExpr.type != Type::uint_t)
+    {
+        throw TypeError(ctx->start->getLine(),
+                        getStrOfType(indexExpr.type),
+                        getStrOfType(Type::uint_t));
+    }
+    string index = get<internalVarName>(indexExpr.value);
+    Value var = varTable[ctx->ID()->toString()];
+    const auto &varName = get<internalVarName>(var.value);
+    code.push_back("LOADI 4");
+    code.push_back("IMUL " + index);
+    code.push_back("IADD " + varName);
+    const size_t val_i = tempValues.size();
+    tempValues.emplace_back("0");
+    const string resultName = "val" + to_string(val_i);
+    code.push_back("DEREF " + resultName);
+    return Value{var.type, internalVarName(resultName)};
 }

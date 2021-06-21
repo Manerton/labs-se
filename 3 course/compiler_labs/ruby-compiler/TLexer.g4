@@ -8,7 +8,6 @@ END : 'end';
 // условия
 IF: 'if';
 ELSE : 'else';
-ELSIF : 'elsif';
 
 // цикл
 WHILE : 'while';
@@ -33,11 +32,6 @@ GREATER_EQUAL : '>=';
 
 // присваивание
 ASSIGN : '=';
-
-// логические операции
-AND : '&&';
-OR : '||';
-NOT : '!';
 
 // скобки
 L_BRACKET : '(';
@@ -74,6 +68,3 @@ FLOAT : INT '.' INT (EXPONENT)?
       ;
 // идентификатор
 ID : (SMALL | BIG | UNDERSCORE)(SMALL | BIG | UNDERSCORE | DIGIT)*;
-
-// объявление массива
-ARRAY_DECLARATION: 'Array.new';

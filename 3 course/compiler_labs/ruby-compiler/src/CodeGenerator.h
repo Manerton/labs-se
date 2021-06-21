@@ -39,9 +39,11 @@ class CodeGenerator : public TParserBaseVisitor
     SourceCode code;                            // сгенерированный код ассемблера
     std::vector<internalVarName> tempValues;    // метки со служебными значениями в памяти ВМ
     std::map<string, Value> varTable;           // таблица переменных
+    std::map<string, Value> arrTable;           // таблица с переменными, который являются первыми элементами массивов
     uint8_t stack_i = 0;                        // счетчик стека ВМ
     static constexpr uint8_t stack_size = 32;   // размер стека ВМ
     size_t asmLabel_i = 0;                      // счетчик меток в ВМ (для условий)
+    bool runtimeThisCompExpr = false;           // для циклов, принудительный расчет условия в рантайме
 
 // методы
     bool isInteger(const string &str) const;
@@ -54,7 +56,7 @@ class CodeGenerator : public TParserBaseVisitor
     Value arifExprCompileTime(TParser::ArifExprContext *ctx, Value left, Value right);
     Value arifExprRuntime(TParser::ArifExprContext *ctx, Value left, Value right);
     Value compExprCompileTime(TParser::CompExprContext *ctx, Value left, Value right);
-    Value compExprRuntime(TParser::CompExprContext *ctx, Value left, Value right);
+    Value compExprRuntime(TParser::CompExprContext *ctx, size_t label_i, Value left, Value right);
     Value createRuntimeVar(const Value &val);
 public:
     const SourceCode& getCode() const;
@@ -75,10 +77,18 @@ public:
     virtual Any visitFgetsExpr(TParser::FgetsExprContext *) override;
     virtual Any visitAssignment(TParser::AssignmentContext *ctx) override;
     virtual Any visitAssignExpr(TParser::AssignExprContext *ctx) override;
-    virtual Any visitUnaryMinusExpr(TParser::UnaryMinusExprContext *context) override;
+    virtual Any visitUnaryMinusExpr(TParser::UnaryMinusExprContext *ctx) override;
     // -------------------------------------->
     virtual Any visitBracketsExpr(TParser::BracketsExprContext *ctx) override;
     virtual Any visitIf_statement(TParser::If_statementContext *ctx) override;
+    virtual Any visitWhile_statement(TParser::While_statementContext *ctx) override;
+    Any visitRuntimeCompExpr(TParser::CompExprContext *ctx);
+    virtual Any visitArrDefExpr(TParser::ArrDefExprContext *ctx) override;
+    virtual Any visitArray_definition(TParser::Array_definitionContext *ctx) override;
+    virtual Any visitArray_definition_elements(TParser::Array_definition_elementsContext *ctx) override;
+    virtual Any visitArrSelExpr(TParser::ArrSelExprContext *ctx) override;
+    virtual Any visitArray_selector(TParser::Array_selectorContext *ctx) override;
+
 };
 }
 #endif // CODEGENERATOR_H

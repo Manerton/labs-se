@@ -22,15 +22,14 @@ while_statement : WHILE expr NEWLINE statement_list END;
 
 assignment : (ID | array_selector) ASSIGN expr;
 
-array_declaration : ARRAY_DECLARATION L_BRACKET expr COMMA expr R_BRACKET;
-
 array_definition : L_SQBRACKET array_definition_elements R_SQBRACKET;
 
 array_definition_elements : ( expr ) ( COMMA ( expr ))* ;
 
 array_selector : ID L_SQBRACKET expr R_SQBRACKET;
 
-expr : ID                                                               #idExpr
+expr : array_selector /* взятие индекса */                              #arrSelExpr
+       | ID                                                             #idExpr
        | (TRUE | FALSE)                                                 #boolExpr
        | FLOAT                                                          #floatExpr
        | INT                                                            #intExpr
@@ -40,10 +39,6 @@ expr : ID                                                               #idExpr
        | MINUS expr                                                     #unaryMinusExpr
        // круглые скобки
        | L_BRACKET expr R_BRACKET                                       #bracketsExpr
-       // взятие индекса
-       | array_selector                                                 #arrSelExpr
-       // логическое НЕ
-       | NOT expr                                                       #logicExpr
        // умножение
        | expr op=( MUL | DIV ) expr                                     #arifExpr
        // сложение
@@ -52,14 +47,8 @@ expr : ID                                                               #idExpr
        | expr op=( LESS | GREATER | LESS_EQUAL | GREATER_EQUAL ) expr   #compExpr
        // равенство / неравенство
        | expr op=( EQUAL | NOT_EQUAL ) expr                             #compExpr
-       // логическое И
-       | expr AND expr                                                  #logicExpr
-       // логическое ИЛИ
-       | expr OR expr                                                   #logicExpr
        // определение массива
        | array_definition                                               #arrDefExpr
-       // объявление массива
-       | array_declaration                                              #arrDeclareExpr
        // присваивание
        | assignment                                                     #assignExpr
        ;

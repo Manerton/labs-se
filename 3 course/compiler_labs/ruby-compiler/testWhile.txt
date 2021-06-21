@@ -1,0 +1,6 @@
+i = igets
+
+while (i <= 2 * 10 + 5)
+	puts i * i
+	i = i + 1
+end

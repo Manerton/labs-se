@@ -3,7 +3,10 @@ b = -5
 
 if (a > b)
 	puts 3_000_000_000
-else
-	puts b - a
-	puts a - b
+else 
+	if (a == b)
+		puts 0
+	else
+		puts a - b
+	end
 end
