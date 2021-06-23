@@ -1,0 +1,55 @@
+﻿@page "/ToDoList/{listId}/Create"
+@attribute [Authorize]
+
+@using Lab4.Client.Services
+@using Lab4.Shared.DTO
+@using Microsoft.AspNetCore.Authorization
+
+@inject NavigationManager Navigation
+@inject ToDoListService ToDoListService
+@inject ToDoListItemService ToDoListItemService
+
+<div class="text-center">
+    <h1 class="display-4">Добавление нового дела в список - @listName</h1>
+    <EditForm Model="item">
+        <p>
+            <label for="Name"><b>Название:</b></label><br>
+            <InputText name="Name" id="Name" class="w-100" @bind-Value="@item.Name" required />
+        </p>
+        <p>
+            <label for="Done"><b>Выполнено?:</b></label><br>
+            <InputCheckbox name="Done" id="Done" @bind-Value="@item.Done" />
+        </p>
+        <input type="submit" class="btn btn-success" value="Добавить" @onclick="() => Create(item)">
+        <a class="btn btn-danger" href="/ToDoList/@listId">Назад</a>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public string listId { get; set; }
+    private string listName { get; set; }
+    private CreateToDoListItemDTO item { get; set; }
+        = new CreateToDoListItemDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        listName = await ToDoListService.GetNameOfList(listId);
+    }
+
+    private async Task Create(CreateToDoListItemDTO item)
+    {
+        if (!String.IsNullOrWhiteSpace(item.Name))
+        {
+            item.ListId = new Guid(listId);
+            await ToDoListItemService.CreateItem(item);
+            BackToItems();
+        }
+    }
+
+    private void BackToItems()
+    {
+        Navigation.NavigateTo($"/ToDoList/{listId}");
+        return;
+    }
+}

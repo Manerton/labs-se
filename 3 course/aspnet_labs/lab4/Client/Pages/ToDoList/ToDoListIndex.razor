@@ -1,0 +1,58 @@
+﻿@page "/ToDoList"
+@attribute [Authorize]
+
+@using Lab4.Shared.Domain
+@using Lab4.Client.Services
+@using Microsoft.AspNetCore.Authorization
+
+@inject ToDoListService ToDoListService
+
+<h1 class="display-4">Списки дел</h1>
+
+@if (_lists != null)
+{
+    <table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Название</th>
+            <th scoep="col">Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+                int i = 1;
+            }
+            @foreach (var item in _lists)
+            {
+                <tr>
+                    <th scope="row">@(i++)</th>
+                    <td class="w-100">@item.Name</td>
+                    <td nowrap>
+                        <a class="btn btn-outline-success" href="ToDoList/@item.ListId">Открыть</a> |
+                        <a class="btn btn-outline-primary" href="ToDoList/Update/@item.ListId">Изменить</a> |
+                        <input class="btn btn-danger" type="submit" value="X" @onclick="() => DeleteToDoList(item)">
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a class="btn btn-success" href="ToDoList/Create">Создать список дел</a>
+}
+
+
+@code {
+    IEnumerable<ToDoListModel> _lists;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _lists = await ToDoListService.GetToDoList();
+    }
+
+    private async Task DeleteToDoList(ToDoListModel toDoList)
+    {
+        await ToDoListService.DeleteToDoList(toDoList);
+        _lists = await ToDoListService.GetToDoList();
+        StateHasChanged();
+    }
+}

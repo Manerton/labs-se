@@ -1,0 +1,40 @@
+﻿@page "/ToDoList/Create"
+@attribute [Authorize]
+
+@using Lab4.Client.Services
+@using Lab4.Shared.DTO
+@using Microsoft.AspNetCore.Authorization
+
+@inject NavigationManager Navigation
+@inject ToDoListService ToDoListService
+
+<div class="text-center">
+    <h1 class="display-4">Добавление нового списка</h1>
+    <EditForm Model="toDoList">
+        <p>
+            <label for="Name"><b>Название:</b></label><br>
+            <InputText name="Name" id="Name" class="w-100" @bind-Value="@toDoList.Name" required />
+        </p>
+        <input type="submit" class="btn btn-success" value="Добавить" @onclick="() => Create(toDoList)">
+        <a class="btn btn-danger" href="/ToDoList">Назад</a>
+    </EditForm>
+</div>
+
+@code {
+    private CreateToDoListDTO toDoList { get; set; }
+            = new CreateToDoListDTO();
+    private async Task Create(CreateToDoListDTO toDoList)
+    {
+        if (!String.IsNullOrWhiteSpace(toDoList.Name))
+        {
+            await ToDoListService.CreateToDoList(toDoList);
+            BackToList();
+        }
+    }
+
+    private void BackToList()
+    {
+        Navigation.NavigateTo("/ToDoList");
+        return;
+    }
+}

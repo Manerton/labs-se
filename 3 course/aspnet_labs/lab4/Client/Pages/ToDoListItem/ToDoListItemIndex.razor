@@ -1,0 +1,63 @@
+﻿@page "/ToDoList/{listId}"
+@attribute [Authorize]
+
+@using Lab4.Shared.Domain
+@using Lab4.Client.Services
+@using Microsoft.AspNetCore.Authorization
+
+@inject ToDoListItemService ToDoListItemService
+@inject ToDoListService ToDoListService
+
+@if (_items != null)
+{
+    <h1 class="display-4">Список - @listName</h1>
+    <table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Название дела</th>
+            <th scope="col">Выполнено?</th>
+            <th scoep="col">Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+                int i = 1; 
+            }
+            @foreach (var item in _items)
+            {
+                <tr>
+                    <th scope="row">@(i++)</th>
+                    <td class="w-100">@item.Name</td>
+                    <td>@item.Done</td>
+                    <td nowrap>
+                        <a class="btn btn-outline-primary" href="ToDoList/@listId/Update/@item.ItemId">Изменить</a> |
+                        <input class="btn btn-danger" type="submit" value="X" @onclick="() => Delete(item)">
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a class="btn btn-success" href="/ToDoList/@listId/Create">Добавить новое дело</a>
+    <a class="btn btn-danger" href="/ToDoList">Назад</a>
+}
+
+@code {
+    [Parameter]
+    public string listId { get; set; }
+    private string listName { get; set; }
+    IEnumerable<ToDoListItemModel> _items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _items = await ToDoListItemService.GetItems(listId);
+        listName = await ToDoListService.GetNameOfList(listId);
+    }
+
+    private async Task Delete(ToDoListItemModel item)
+    {
+        await ToDoListItemService.DeleteItem(item);
+        _items = await ToDoListItemService.GetItems(listId);
+        StateHasChanged();
+    }
+}

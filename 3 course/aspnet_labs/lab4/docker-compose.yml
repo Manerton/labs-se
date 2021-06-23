@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  lab4:
+    image: lab4
+    depends_on: 
+      - "db"
+    build:
+      context: .
+      dockerfile: Server/Dockerfile
+  db:
+    image: postgres
+
+volumes:
+  lab4-db-data:

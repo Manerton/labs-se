@@ -1,0 +1,56 @@
+﻿@page "/ToDoList/Update/{listId}"
+@attribute [Authorize]
+
+@using Lab4.Client.Services
+@using Lab4.Shared.Domain
+@using Microsoft.AspNetCore.Authorization
+
+@inject NavigationManager Navigation
+@inject ToDoListService ToDoListService
+
+<div class="text-center">
+    <h1 class="display-4">Изменение списка дел</h1>
+    <EditForm Model="toDoList">
+        <p>
+            <label for="Name"><b>Название:</b></label><br>
+            <InputText name="Name" id="Name" class="w-100" @bind-Value="@toDoList.Name" required />
+        </p>
+        <input type="submit" class="btn btn-success" value="Изменить" @onclick="() => Update(toDoList)">
+        <a class="btn btn-danger" href="/ToDoList">Назад</a>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public string listId { get; set; }
+
+    private ToDoListModel toDoList { get; set; }
+    = new ToDoListModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            toDoList = await ToDoListService.GetToDoListById(listId);
+        }
+        catch (HttpRequestException)
+        {
+            BackToList();
+        }
+    }
+
+    private async Task Update(ToDoListModel toDoList)
+    {
+        if (!String.IsNullOrWhiteSpace(toDoList.Name))
+        {
+            await ToDoListService.UpdateToDoList(toDoList);
+            BackToList();
+        }
+    }
+
+    private void BackToList()
+    {
+        Navigation.NavigateTo("/ToDoList");
+        return;
+    }
+}
