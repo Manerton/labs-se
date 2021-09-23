@@ -13,9 +13,19 @@ Widget::Widget(QWidget *parent)
     // готовим графики
     this->prepareChart(ui->widget_chart);
     this->prepareChart(ui->widget_chart_crypt);
+    this->prepareChart(ui->widget_chart_decode);
+
+    ui->widget_chart->plotLayout()->insertRow(0);
+    ui->widget_chart->plotLayout()->addElement(0, 0, new QCPTextElement(ui->widget_chart, "Оригинальный сигнал", 12));
+
+    ui->widget_chart_crypt->plotLayout()->insertRow(0);
+    ui->widget_chart_crypt->plotLayout()->addElement(0, 0, new QCPTextElement(ui->widget_chart_crypt, "Зашифрованный сигнал", 12));
+
+    ui->widget_chart_decode->plotLayout()->insertRow(0);
+    ui->widget_chart_decode->plotLayout()->addElement(0, 0, new QCPTextElement(ui->widget_chart_decode, "Расшифрованный сигнал", 12));
 
     // запрещаем вводить символы кроме цифр в поле для ключа
-    QRegExpValidator* valid = new QRegExpValidator(QRegExp("\\d*"), this);
+    auto valid = new QRegExpValidator(QRegExp("\\d*"), this);
     ui->key_LineEdit->setValidator(valid);
 
     // выключаем кнопку показа
@@ -23,7 +33,7 @@ Widget::Widget(QWidget *parent)
 }
 
 // вычисляем функцию из задания
-QVector<Widget::interval> Widget::calc_func()
+QVector<Widget::interval> Widget::calc_func() const
 {
     // константы из полей
     const double A = ui->a_DoubleSpinBox->value();
@@ -54,11 +64,8 @@ QVector<Widget::interval> Widget::calc_func()
 }
 
 // отрисовать функцию на графике customplot, с порядком интервалов key
-void Widget::render_func(QCustomPlot *customplot, const QVector<int> &key)
+void Widget::render_func(QCustomPlot *customplot, const QVector<interval>& data) const
 {
-    // получаем интервалы
-    auto data = calc_func();
-
     //areas*2 так как включаются и точки начала и точки конца для areas интервалов, т.е areas*2 точек
 
     // для рендера x
@@ -69,16 +76,13 @@ void Widget::render_func(QCustomPlot *customplot, const QVector<int> &key)
     QVector<double> values;
     values.reserve(areas*2);
 
-    // записываем игрики для t и t+1 на интервале j
     for (int t = 0; t < areas; ++t)
     {
-        int j = key[t];
-
         keys.push_back(t);
-        values.push_back(data[j].y1());
+        values.push_back(data[t].y1());
 
         keys.push_back(t+1);
-        values.push_back(data[j].y2());
+        values.push_back(data[t].y2());
     }
 
     // рисуем график
@@ -103,10 +107,9 @@ Widget::~Widget()
     delete ui;
 }
 
-void Widget::on_pushButton_show_clicked()
+// получаем порядок интервалов из ключа
+QVector<int> Widget::get_key_intervals() const
 {
-    this->render_func(ui->widget_chart, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
-
     QVector<int> key_intervals;
     key_intervals.reserve(areas);
 
@@ -117,7 +120,51 @@ void Widget::on_pushButton_show_clicked()
         key_intervals.push_back(c.digitValue());
     }
 
-    this->render_func(ui->widget_chart_crypt, key_intervals);
+    return key_intervals;
+}
+
+QVector<Widget::interval> Widget::crypt_data(const QVector<interval> &data, const QVector<int>& key_intervals) const
+{
+    QVector<interval> crypted_data(areas);
+
+    // зашифровываем по ключу
+    for (int i = 0; i < areas; ++i)
+    {
+        crypted_data[i] = data[key_intervals[i]];
+    }
+
+    return crypted_data;
+}
+
+QVector<Widget::interval> Widget::decode_data(const QVector<interval> &crypted_data, const QVector<int>& key_intervals) const
+{
+    QVector<interval> decoded_data(areas);
+
+    // расшифровываем по ключу
+    for (int i = 0; i < areas; ++i)
+    {
+        decoded_data[key_intervals[i]] = crypted_data[i];
+    }
+
+    return decoded_data;
+}
+
+void Widget::on_pushButton_show_clicked()
+{
+    // получаем интервалы (оригинальный сигнал)
+    auto orig_data = calc_func();
+    this->render_func(ui->widget_chart, orig_data);
+
+    // получить порядок интервалов из ключа
+    auto key_intervals = get_key_intervals();
+
+    // зашифровываем сигнал
+    auto crypted_data = crypt_data(orig_data, key_intervals);
+    this->render_func(ui->widget_chart_crypt, crypted_data);
+
+    // расшифровываем сигнал
+    auto decoded_data = decode_data(crypted_data, key_intervals);
+    this->render_func(ui->widget_chart_decode, decoded_data);
 }
 
 void Widget::on_key_LineEdit_textEdited(const QString &arg1)

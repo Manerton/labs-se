@@ -20,11 +20,17 @@ private:
     // количество интервалов
     const uint16_t areas = 10;
     // функция из задания
-    QVector<interval> calc_func();
-    // отрисовать функцию на графике customplot, с порядком интервалов key
-    void render_func(QCustomPlot *customplot, const QVector<int> &key);
+    QVector<interval> calc_func() const;
+    // отрисовать функцию на графике customplot
+    void render_func(QCustomPlot *customplot, const QVector<interval> &data) const;
     // подготовить графики (диапазон оси x и так далее)
     void prepareChart(QCustomPlot* customplot) const;
+    // зашифровать по ключу
+    QVector<interval> crypt_data(const QVector<interval> &data, const QVector<int>& key_intervals) const;
+    // расшифровать по ключу
+    QVector<interval> decode_data(const QVector<interval> &crypted_data, const QVector<int>& key_intervals) const;
+    // получить порядок интервалов из ключа
+    QVector<int> get_key_intervals() const;
 public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
