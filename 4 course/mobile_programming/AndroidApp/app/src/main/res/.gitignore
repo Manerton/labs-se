@@ -1,3 +1,5 @@
 /mipmap*
-/values*
+/values/themes.xml
+/values/colors.xml
+/values-night/themes.xml
 /drawable*
