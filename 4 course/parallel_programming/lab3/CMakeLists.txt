@@ -24,4 +24,5 @@ else()
         target_link_libraries(${PROJECT_NAME}  ${Boost_LIBRARIES})
 endif()
 
+target_link_libraries(${PROJECT_NAME} pthread)
 

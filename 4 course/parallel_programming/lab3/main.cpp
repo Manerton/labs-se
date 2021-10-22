@@ -1,24 +1,30 @@
+/** \defgroup main Главный модуль программы
+    @{
+*/
+
 #include <iostream>
 #include <cmath>
 #include <vector>
 #include <algorithm>
-#include <random>
 #include <chrono>
 #include <thread>
 #include <sstream>
 #include <fstream>
 #include <list>
 
+//#define debug
+
 using namespace std;
 using namespace chrono;
 
-using d_seconds = duration<double, seconds::period>;
+/// Миллисекунды в формате дробного числа.
 using d_milliseconds = duration<double, milliseconds::period>;
 
+/// Массив с базовыми простыми числами (результат первого этапа алгоритма).
 using FirstStepResult = vector<size_t>;
-using SecondStepResult = vector<uint64_t>;
 
-#define debug
+/// Массив с найденными простыми числами в ходе выполнения второго этапа алгоритма.
+using SecondStepResult = vector<uint64_t>;
 
 /// Вывести содержимое контейнера (где есть begin и end).
 template <typename C>
@@ -38,7 +44,12 @@ string displayContainer(const C& container)
     return ss.str();
 }
 
-/// Бенчмарк.
+/**
+ * @brief Бенчмарк.
+ * @param func Выполняемая функция.
+ * @param args Аргументы выполняемой функции.
+ * @return Результат вычисления и время выполнения функции.
+ */
 template <typename Result, typename Function, typename... Args>
 pair<double, Result> timeBenchmark(const Function& func, const Args&... args)
 {
@@ -53,11 +64,12 @@ pair<double, Result> timeBenchmark(const Function& func, const Args&... args)
     // заканчиваем считать время
     auto end = steady_clock::now();
 
-    auto res = duration_cast<d_milliseconds>(end-start).count();
+    auto time = duration_cast<d_milliseconds>(end-start).count();
 
-    return make_pair(res, calc);
+    return make_pair(time, calc);
 }
 
+/// Запись данных в файл.
 template <typename T>
 void writeToFile(const string& filename, const T& data)
 {
@@ -72,7 +84,14 @@ void writeToFile(const string& filename, const T& data)
     }
 }
 
-/// Классический метод решета Эратосфена (базовые простые числа).
+/**
+ * @brief Первый этап модицифированного последовательного поиска простых чисел.
+ * @details
+ * Классический метод - решето Эратосфена.
+ * Поиск в интервале [2; n]
+ * @param n Верхняя граница поиска простых чисел.
+ * @return Массив с базовыми простыми числами.
+ */
 FirstStepResult getBasePrimeBySieveOfEratosthenes(size_t n)
 {
     FirstStepResult basePrime;
@@ -95,15 +114,22 @@ FirstStepResult getBasePrimeBySieveOfEratosthenes(size_t n)
     return basePrime;
 }
 
-/// Последовательная декомпозиция по данным
-SecondStepResult seqDecompositionByData(uint64_t i_start,
-                                        uint64_t i_end,
-                                        const FirstStepResult &basePrime
-                                        )
+
+/**
+ * @brief Второй этап модифицированного последовательного поиска простых чисел.
+ * @param i_begin Начальный индекс поиска
+ * @param i_end Конечный индекс поиска
+ * @param basePrime Массив с базовыми простыми числами
+ * @return Массив с простыми числами, найденные в диапазоне от (i_begin; i_end]
+ */
+SecondStepResult seqModSearch(uint64_t i_begin,
+                              uint64_t i_end,
+                              const FirstStepResult &basePrime
+                              )
 {
     SecondStepResult primeNumbers;
 
-    for (uint64_t number = i_start + 1; number <= i_end; ++number)
+    for (uint64_t number = i_begin + 1; number <= i_end; ++number)
     {
         auto isDivide = [&](uint64_t basePrimeNumber)
         {
@@ -121,7 +147,41 @@ SecondStepResult seqDecompositionByData(uint64_t i_start,
     return primeNumbers;
 }
 
-/// Параллельная декомпозиция по данным
+/**
+ * @brief Второй этап модифицированного последовательного поиска простых чисел по полному диапазону.
+ * @param[in] i_begin Начальный индекс поиска
+ * @param[in] i_end Конечный индекс поиска
+ * @param[in] basePrime Массив с базовыми простыми числами
+ * @param[in] basePrimeBegin Начальный индекс массива с базовыми простыми числами
+ * @param[in] basePrimeEnd Конечный индекс массива с базовыми простыми числами
+ * @param[out] fullRange Полный диапазон чисел, где false - простое, true - составное число.
+ */
+void seqModSearchInFullRange(uint64_t i_begin,
+                             uint64_t i_end,
+                             const FirstStepResult &basePrime,
+                             ptrdiff_t basePrimeBegin,
+                             ptrdiff_t basePrimeEnd,
+                             vector<bool> &fullRange
+                             )
+{
+    uint64_t firstNumber = i_begin + 1;
+    for (uint64_t number = firstNumber; number <= i_end; ++number)
+    {
+        auto isDivide = [&](uint64_t basePrimeNumber)
+        {
+            return number % basePrimeNumber == 0;
+        };
+
+        const auto res = find_if(basePrime.begin() + basePrimeBegin, basePrime.begin() + basePrimeEnd, isDivide);
+
+        if (res != basePrime.begin() + basePrimeEnd)
+        {
+            fullRange[number - firstNumber] = true;
+        }
+    }
+}
+
+/// Параллельная декомпозиция по данным.
 SecondStepResult parDecompositionByData(uint64_t begin,
                                         uint64_t n,
                                         const FirstStepResult &basePrime,
@@ -132,7 +192,7 @@ SecondStepResult parDecompositionByData(uint64_t begin,
     cout << "> Par decomposition by data [" << int(threadCount) << " threads] start..." << endl;
 #endif
 
-    /// результат - массив с простыми числами из диапазона от (begin, n]
+    // Результат - массив с простыми числами из диапазона от (begin, n].
     SecondStepResult prime;
 
     list<SecondStepResult> results;
@@ -156,7 +216,7 @@ SecondStepResult parDecompositionByData(uint64_t begin,
 
         const auto threadHandler = [i_begin, i_end, &basePrime, &results]()
         {
-            results.push_back(seqDecompositionByData(i_begin, i_end, ref(basePrime)));
+            results.push_back(seqModSearch(i_begin, i_end, ref(basePrime)));
         };
 
         thread t { threadHandler };
@@ -181,6 +241,101 @@ SecondStepResult parDecompositionByData(uint64_t begin,
     return prime;
 }
 
+/// Последовательная декомпозиция набора простых чисел.
+SecondStepResult seqDecompositionByBasePrime(uint64_t begin,
+                                             uint64_t n,
+                                             const FirstStepResult &basePrime
+                                             )
+{
+    const auto diff = n - begin;
+    // диапазон чисел (begin, n]
+    // true  - если составное
+    // false - если простое
+    vector<bool> fullRange(diff, false);
+
+    // Результат - массив с простыми числами из диапазона от (begin, n].
+    SecondStepResult prime;
+
+    seqModSearchInFullRange(begin, n, basePrime, ptrdiff_t(0), ptrdiff_t(basePrime.size()-1), fullRange);
+
+    for (size_t i = 0; i < diff; ++i)
+    {
+        if (!fullRange[i])
+        {
+            prime.push_back(i + (begin + 1));
+        }
+    }
+
+    return prime;
+}
+
+/// Параллельная декомпозиция набора простых чисел.
+SecondStepResult parDecompositionByBasePrime(uint64_t begin,
+                                             uint64_t n,
+                                             const FirstStepResult &basePrime,
+                                             uint8_t threadCount
+                                             )
+{
+
+#ifdef debug
+    cout << "> Par decomposition by base prime [" << int(threadCount) << " threads] start..." << endl;
+#endif
+
+    const auto diff = n - begin;
+    // диапазон чисел (begin, n]
+    // true  - если составное
+    // false - если простое
+    vector<bool> fullRange(diff, false);
+
+    // Результат - массив с простыми числами из диапазона от (begin, n].
+    SecondStepResult prime;
+
+    double rangeForThread = double(basePrime.size()) / double(threadCount);
+
+#ifdef debug
+    cout << "base prime range for thread: " << rangeForThread << endl;
+#endif
+
+    list<thread> threads;
+
+    for (size_t i = 0; i < threadCount; ++i)
+    {
+        const auto i_begin = ptrdiff_t(llround(double(i) * rangeForThread));
+        const auto i_end = ptrdiff_t(llround(double(i) * rangeForThread + rangeForThread));
+
+#ifdef debug
+        cout << i << " thread - " << "begin: " << i_begin << " " << "end: " << i_end << endl;
+#endif
+
+        if (i_begin == i_end)
+        {
+
+#ifdef debug
+            cout << "skip thread, because i_begin == i_end" << endl;
+#endif
+            continue;
+        }
+
+        thread t { seqModSearchInFullRange, begin, n, ref(basePrime), i_begin, i_end, ref(fullRange) };
+        threads.push_back(move(t));
+    }
+
+    for (auto &t : threads)
+    {
+        t.join();
+    }
+
+    for (size_t i = 0; i < diff; ++i)
+    {
+        if (!fullRange[i])
+        {
+            prime.push_back(i + (begin + 1));
+        }
+    }
+
+    return prime;
+}
+
 int main(int argc, char *argv[])
 {
     constexpr size_t default_n = 100;
@@ -200,25 +355,40 @@ int main(int argc, char *argv[])
     writeToFile("firstStep.txt", firstStepRes.second);
 
     // Последовательная декомпозиция по данным
-    const auto seqDecompositionByDataRes = timeBenchmark<SecondStepResult>(seqDecompositionByData, sqrtN, n, ref(firstStepRes.second));
+    const auto seqDecompositionByDataRes = timeBenchmark<SecondStepResult>(seqModSearch, sqrtN, n, ref(firstStepRes.second));
     cout << "> Seq decomposition by data: " << seqDecompositionByDataRes.first << " ms" << endl;
     writeToFile("SeqDecompositionByData.txt", seqDecompositionByDataRes.second);
 
-    // Параллельная декомпозиция по данным: 2 потока
-    const auto parDecompositionByDataRes_2t = timeBenchmark<SecondStepResult>(parDecompositionByData, sqrtN, n, ref(firstStepRes.second), uint8_t(2));
-    cout << "> Par decomposition by data [2 threads]: " << parDecompositionByDataRes_2t.first << " ms" << endl;
-    writeToFile("ParDecompositionByData_2t.txt", parDecompositionByDataRes_2t.second);
+    // Параллельная декомпозиция по данным: threadCount потоков
+    const auto doParDecompositionByData = [&](uint8_t threadCount)
+    {
+        const auto parDecompositionByDataRes = timeBenchmark<SecondStepResult>(parDecompositionByData, sqrtN, n, ref(firstStepRes.second), threadCount);
+        cout << "> Par decomposition by data [" + to_string(threadCount) + " threads]: " << parDecompositionByDataRes.first << " ms" << endl;
+        writeToFile("ParDecompositionByData_" + to_string(threadCount) + "t.txt", parDecompositionByDataRes.second);
+    };
 
-    // Параллельная декомпозиция по данным: 4 потока
-    const auto parDecompositionByDataRes_4t = timeBenchmark<SecondStepResult>(parDecompositionByData, sqrtN, n, ref(firstStepRes.second), uint8_t(4));
-    cout << "> Par decomposition by data [4 threads]: " << parDecompositionByDataRes_4t.first << " ms" << endl;
-    writeToFile("ParDecompositionByData_4t.txt", parDecompositionByDataRes_4t.second);
+    doParDecompositionByData(2);
+    doParDecompositionByData(4);
+    doParDecompositionByData(8);
 
-    // Параллельная декомпозиция по данным: 8 потоков
-    const auto parDecompositionByDataRes_8t = timeBenchmark<SecondStepResult>(parDecompositionByData, sqrtN, n, ref(firstStepRes.second), uint8_t(8));
-    cout << "> Par decomposition by data [8 threads]: " << parDecompositionByDataRes_8t.first << " ms" << endl;
-    writeToFile("ParDecompositionByData_8t.txt", parDecompositionByDataRes_8t.second);
+    // Последовательная декомпозиция набора простых чисел
+    const auto seqDecompositionByBasePrimeRes = timeBenchmark<SecondStepResult>(seqDecompositionByBasePrime, sqrtN, n, ref(firstStepRes.second));
+    cout << "> Seq decomposition by base prime set: " << seqDecompositionByBasePrimeRes.first << " ms" << endl;
+    writeToFile("SeqDecompositionByBasePrime.txt", seqDecompositionByBasePrimeRes.second);
+
+    // Параллельная декомпозиция набора простых чисел: threadCount потоков
+    const auto doParDecompositionByBasePrime = [n, sqrtN, &firstStepRes](uint8_t threadCount)
+    {
+        const auto parDecompositionByBasePrimeRes = timeBenchmark<SecondStepResult>(parDecompositionByBasePrime, sqrtN, n, ref(firstStepRes.second), threadCount);
+        cout << "> Par decomposition by base prime set [" + to_string(threadCount) + " threads]: " << parDecompositionByBasePrimeRes.first << " ms" << endl;
+        writeToFile("ParDecompositionByBasePrime_" + to_string(threadCount) + "t.txt", parDecompositionByBasePrimeRes.second);
+    };
+
+    doParDecompositionByBasePrime(2);
+    doParDecompositionByBasePrime(4);
+    doParDecompositionByBasePrime(8);
 
     system("pause");
     return 0;
 }
+/** @} */
