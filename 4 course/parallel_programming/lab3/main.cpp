@@ -12,6 +12,9 @@
 #include <fstream>
 #include <list>
 
+#include <boost/asio/thread_pool.hpp>
+#include <boost/asio/post.hpp>
+
 //#define debug
 
 using namespace std;
@@ -92,11 +95,11 @@ void writeToFile(const string& filename, const T& data)
  * @param n Верхняя граница поиска простых чисел.
  * @return Массив с базовыми простыми числами.
  */
-FirstStepResult getBasePrimeBySieveOfEratosthenes(size_t n)
+FirstStepResult getBasePrimeBySieveOfEratosthenes(const size_t n)
 {
     FirstStepResult basePrime;
 
-    vector<bool> range(n+1, false);
+    vector<uint8_t> range(n+1, 0);
     for (size_t i = 2; i <= n; ++i)
     {
         // если непомеченное простое число
@@ -106,7 +109,7 @@ FirstStepResult getBasePrimeBySieveOfEratosthenes(size_t n)
             // пометим другие числа на расстоянии шага i как составные
             for (size_t j = i + i; j <= n; j += i)
             {
-                range[j] = true;
+                range[j] = 1;
             }
         }
     }
@@ -122,8 +125,8 @@ FirstStepResult getBasePrimeBySieveOfEratosthenes(size_t n)
  * @param basePrime Массив с базовыми простыми числами
  * @return Массив с простыми числами, найденные в диапазоне от (i_begin; i_end]
  */
-SecondStepResult seqModSearch(uint64_t i_begin,
-                              uint64_t i_end,
+SecondStepResult seqModSearch(const uint64_t i_begin,
+                              const uint64_t i_end,
                               const FirstStepResult &basePrime
                               )
 {
@@ -148,20 +151,20 @@ SecondStepResult seqModSearch(uint64_t i_begin,
 }
 
 /**
- * @brief Второй этап модифицированного последовательного поиска простых чисел по полному диапазону.
+ * @brief Второй этап модифицированного последовательного поиска простых чисел в полном диапазоне.
  * @param[in] i_begin Начальный индекс поиска
  * @param[in] i_end Конечный индекс поиска
  * @param[in] basePrime Массив с базовыми простыми числами
  * @param[in] basePrimeBegin Начальный индекс массива с базовыми простыми числами
  * @param[in] basePrimeEnd Конечный индекс массива с базовыми простыми числами
- * @param[out] fullRange Полный диапазон чисел, где false - простое, true - составное число.
+ * @param[out] fullRange Полный диапазон чисел, где 0 - простое, 1 - составное число.
  */
-void seqModSearchInFullRange(uint64_t i_begin,
-                             uint64_t i_end,
+void seqModSearchInFullRange(const uint64_t i_begin,
+                             const uint64_t i_end,
                              const FirstStepResult &basePrime,
-                             ptrdiff_t basePrimeBegin,
-                             ptrdiff_t basePrimeEnd,
-                             vector<bool> &fullRange
+                             const ptrdiff_t basePrimeBegin,
+                             const ptrdiff_t basePrimeEnd,
+                             vector<uint8_t> &fullRange
                              )
 {
     uint64_t firstNumber = i_begin + 1;
@@ -176,7 +179,30 @@ void seqModSearchInFullRange(uint64_t i_begin,
 
         if (res != basePrime.begin() + basePrimeEnd)
         {
-            fullRange[number - firstNumber] = true;
+            fullRange[number - firstNumber] = 1;
+        }
+    }
+}
+
+/**
+ * @brief Второй этап модифицированного последовательного поиска простых чисел в полном диапазоне по одному простому числу.
+ * @param[in] i_begin Начальный индекс поиска
+ * @param[in] i_end Конечный индекс поиска
+ * @param[in] prime Простое число
+ * @param[out] fullRange Полный диапазон чисел, где 0 - простое, 1 - составное число.
+ */
+void seqModSearchInFullRangeByOnePrime(const uint64_t i_begin,
+                                       const uint64_t i_end,
+                                       const size_t prime,
+                                       vector<uint8_t> &fullRange
+                                       )
+{
+    uint64_t firstNumber = i_begin + 1;
+    for (uint64_t number = firstNumber; number <= i_end; ++number)
+    {
+        if (number % prime == 0)
+        {
+            fullRange[number - firstNumber] = 1;
         }
     }
 }
@@ -242,16 +268,16 @@ SecondStepResult parDecompositionByData(uint64_t begin,
 }
 
 /// Последовательная декомпозиция набора простых чисел.
-SecondStepResult seqDecompositionByBasePrime(uint64_t begin,
-                                             uint64_t n,
+SecondStepResult seqDecompositionByBasePrime(const uint64_t begin,
+                                             const uint64_t n,
                                              const FirstStepResult &basePrime
                                              )
 {
     const auto diff = n - begin;
     // диапазон чисел (begin, n]
-    // true  - если составное
-    // false - если простое
-    vector<bool> fullRange(diff, false);
+    // 1  - если составное
+    // 0 - если простое
+    vector<uint8_t> fullRange(diff, 0);
 
     // Результат - массив с простыми числами из диапазона от (begin, n].
     SecondStepResult prime;
@@ -270,10 +296,10 @@ SecondStepResult seqDecompositionByBasePrime(uint64_t begin,
 }
 
 /// Параллельная декомпозиция набора простых чисел.
-SecondStepResult parDecompositionByBasePrime(uint64_t begin,
-                                             uint64_t n,
+SecondStepResult parDecompositionByBasePrime(const uint64_t begin,
+                                             const uint64_t n,
                                              const FirstStepResult &basePrime,
-                                             uint8_t threadCount
+                                             const uint8_t threadCount
                                              )
 {
 
@@ -283,9 +309,9 @@ SecondStepResult parDecompositionByBasePrime(uint64_t begin,
 
     const auto diff = n - begin;
     // диапазон чисел (begin, n]
-    // true  - если составное
-    // false - если простое
-    vector<bool> fullRange(diff, false);
+    // 1  - если составное
+    // 0 - если простое
+    vector<uint8_t> fullRange(diff, 0);
 
     // Результат - массив с простыми числами из диапазона от (begin, n].
     SecondStepResult prime;
@@ -336,8 +362,61 @@ SecondStepResult parDecompositionByBasePrime(uint64_t begin,
     return prime;
 }
 
+/// Параллельная декомпозиция набора простых чисел.
+SecondStepResult parThreadPool(uint64_t begin,
+                               uint64_t n,
+                               const FirstStepResult &basePrime,
+                               const uint8_t threadCount
+                               )
+{
+
+#ifdef debug
+    cout << "> Par thread pool start..." << endl;
+#endif
+
+    const auto diff = n - begin;
+    // диапазон чисел (begin, n]
+    // 1  - если составное
+    // 0 - если простое
+    vector<uint8_t> fullRange(diff, 0);
+
+    // Результат - массив с простыми числами из диапазона от (begin, n].
+    SecondStepResult prime;
+
+    const auto basePrimeSize = basePrime.size();
+
+    boost::asio::thread_pool pool(threadCount);
+
+    for (size_t i = 0; i < basePrimeSize; ++i)
+    {
+        const auto prime = basePrime[i];
+
+        boost::asio::post(pool, [prime, begin, n, &fullRange]()
+        {
+            seqModSearchInFullRangeByOnePrime(begin, n, prime, fullRange);
+        });
+
+    }
+
+    // ожидаем все потоки в пуле
+    pool.join();
+
+    for (size_t i = 0; i < diff; ++i)
+    {
+        if (!fullRange[i])
+        {
+            prime.push_back(i + (begin + 1));
+        }
+    }
+
+    return prime;
+}
+
 int main(int argc, char *argv[])
 {
+    SYSTEM_INFO system_info;
+    GetSystemInfo(&system_info);
+
     constexpr size_t default_n = 100;
 
     auto n = default_n;
@@ -387,6 +466,16 @@ int main(int argc, char *argv[])
     doParDecompositionByBasePrime(2);
     doParDecompositionByBasePrime(4);
     doParDecompositionByBasePrime(8);
+
+    // С применением Thread Pool
+    const auto doParThreadPool = [n, sqrtN, &firstStepRes, &system_info]()
+    {
+        const auto parThreadPoolRes = timeBenchmark<SecondStepResult>(parThreadPool, sqrtN, n, ref(firstStepRes.second), uint8_t(system_info.dwNumberOfProcessors));
+        cout << "> Par thread pool [" << system_info.dwNumberOfProcessors << " threads] [" + to_string(firstStepRes.second.size()) + " tasks]: " << parThreadPoolRes.first << " ms" << endl;
+        writeToFile("ParThreadPool.txt", parThreadPoolRes.second);
+    };
+
+    doParThreadPool();
 
     system("pause");
     return 0;
