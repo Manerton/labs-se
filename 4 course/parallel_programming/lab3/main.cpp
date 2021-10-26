@@ -11,6 +11,7 @@
 #include <sstream>
 #include <fstream>
 #include <list>
+#include <mutex>
 
 #include <boost/asio/thread_pool.hpp>
 #include <boost/asio/post.hpp>
@@ -362,7 +363,7 @@ SecondStepResult parDecompositionByBasePrime(const uint64_t begin,
     return prime;
 }
 
-/// Параллельная декомпозиция набора простых чисел.
+/// Параллельный алгоритм с использованием Thread Pool
 SecondStepResult parThreadPool(uint64_t begin,
                                uint64_t n,
                                const FirstStepResult &basePrime,
@@ -400,6 +401,77 @@ SecondStepResult parThreadPool(uint64_t begin,
 
     // ожидаем все потоки в пуле
     pool.join();
+
+    for (size_t i = 0; i < diff; ++i)
+    {
+        if (!fullRange[i])
+        {
+            prime.push_back(i + (begin + 1));
+        }
+    }
+
+    return prime;
+}
+
+/// Параллельный алгоритм с использованием Thread Pool
+SecondStepResult parPrimeEnumeration(uint64_t begin,
+                                     uint64_t n,
+                                     const FirstStepResult &basePrime,
+                                     const uint8_t threadCount
+                                     )
+{
+
+#ifdef debug
+    cout << "> Par prime enumeration [" << int(threadCount) << " threads] start..." << endl;
+#endif
+
+    const auto diff = n - begin;
+    // диапазон чисел (begin, n]
+    // 1  - если составное
+    // 0 - если простое
+    vector<uint8_t> fullRange(diff, 0);
+
+    const auto basePrimeSize = basePrime.size();
+
+    list<thread> threads;
+
+    size_t currentPrimeIndex = 0;
+    mutex m;
+
+    for (size_t i = 0; i < threadCount; ++i)
+    {
+        auto handler = [begin, n, basePrimeSize, &basePrime, &m, &currentPrimeIndex, &fullRange]()
+        {
+            while (true)
+            {
+                unique_lock lck {m};
+
+                if (currentPrimeIndex >= basePrimeSize)
+                {
+                    break;
+                }
+
+                auto prime = basePrime[currentPrimeIndex++];
+
+                // разблокируем мьютекс, так как перестали работать
+                // с разделяемым ресурсом (индекс)
+                lck.unlock();
+
+                seqModSearchInFullRangeByOnePrime(begin, n, prime, fullRange);
+            }
+        };
+
+        thread t { handler };
+        threads.push_back(move(t));
+    }
+
+    for (auto &t : threads)
+    {
+        t.join();
+    }
+
+    // Результат - массив с простыми числами из диапазона от (begin, n].
+    SecondStepResult prime;
 
     for (size_t i = 0; i < diff; ++i)
     {
@@ -475,7 +547,20 @@ int main(int argc, char *argv[])
         writeToFile("ParThreadPool.txt", parThreadPoolRes.second);
     };
 
+    // Пул потоков
     doParThreadPool();
+
+    // С последовательным перебором простых чисел
+    const auto doParPrimeEnumeration = [n, sqrtN, &firstStepRes](uint8_t threadCount)
+    {
+        const auto parPrimeEnumerationRes = timeBenchmark<SecondStepResult>(parPrimeEnumeration, sqrtN, n, ref(firstStepRes.second), threadCount);
+        cout << "> Par prime enumeration [" << int(threadCount) << " threads]: " << parPrimeEnumerationRes.first << " ms" << endl;
+        writeToFile("ParPrimeEnumeration_" + to_string(threadCount) + "t.txt", parPrimeEnumerationRes.second);
+    };
+
+    doParPrimeEnumeration(2);
+    doParPrimeEnumeration(4);
+    doParPrimeEnumeration(8);
 
     system("pause");
     return 0;
