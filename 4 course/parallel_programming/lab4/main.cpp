@@ -12,6 +12,7 @@
 #include <fstream>
 #include <list>
 #include <mutex>
+#include <atomic>
 
 #define debug
 
@@ -73,7 +74,7 @@ pair<double, Result> timeBenchmark(const Function& func, const Args&... args)
  * @param data Контейнер с данными.
  */
 template <typename T>
-void writeToFile(const string& filename, const T& data)
+void writeToFile(const string& filename, const T& data, const string& delim = "\r\n")
 {
     ofstream f(filename);
 
@@ -81,7 +82,7 @@ void writeToFile(const string& filename, const T& data)
     {
         for (const auto& c: data)
         {
-            f << c << " ";
+            f << c << delim;
         }
     }
 }
@@ -106,19 +107,17 @@ MessageList withoutSync(const size_t messageCount,
                         const uint8_t threadCount
                         )
 {
-    mutex m;
-
     // буфер для сообщения
     Message buffer;
 
     // буфер чист?
-    volatile bool bEmpty = true;
+    atomic<bool> bEmpty = true;
 
     // индекс текущего сообщения
-    size_t messageIndex = 0;
+    atomic<size_t> messageIndex = 0;
 
     // сигнал о завершении работы писателей
-    volatile bool finish = false;
+    atomic<bool> finish = false;
 
     // список сообщений
     MessageList messages;
@@ -139,7 +138,7 @@ MessageList withoutSync(const size_t messageCount,
     {
         while (messageIndex < messageCount)
         {
-            if (bEmpty)
+            if (bEmpty && messageIndex < messageCount)
             {
                 Message newMessage = string(messageLength, threadId) + to_string(messageIndex++);
                 buffer = newMessage;
@@ -182,9 +181,224 @@ MessageList withoutSync(const size_t messageCount,
     return messages;
 }
 
+/**
+ * @brief Взаимодействие читателей и писателей с синхронизацией с помощью мьютекса (блокировка, lock).
+ * @details Переменные-флаги bEmpty, finish и счётчик messageIndex должны быть атомарными (atomic),
+ * поскольку они явно не защищены блокировкой (мьютексом)
+ * и к ним осуществляется параллельный одновременный доступ из разных потоков,
+ * то есть возникает гонка данных.
+ *
+ * Буфер buffer и сообщения messages не требуют атомарности (их и нельзя сделать атомарными), поскольку явно защищаются мьютексом.
+ *
+ * @param messageCount Общее количество сообщений.
+ * @param messageLength Длина одного сообщения.
+ * @param threadCount Количество потоков.
+ * @return Список сообщений.
+ */
+MessageList withMutexSync(const size_t messageCount,
+                          const size_t messageLength,
+                          const uint8_t threadCount
+                          )
+{
+    mutex m;
+
+    // буфер для сообщения
+    Message buffer;
+
+    // буфер чист?
+    atomic<bool> bEmpty = true;
+
+    // индекс текущего сообщения
+    atomic<size_t> messageIndex = 0;
+
+    // сигнал о завершении работы писателей
+    atomic<bool> finish = false;
+
+    // список сообщений
+    MessageList messages;
+
+    const auto readerWork = [&]()
+    {
+        while (!finish)
+        {
+            if (!bEmpty)
+            {
+                scoped_lock readLock {m};
+                if (!bEmpty)
+                {
+                    messages.push_back(buffer);
+                    bEmpty = true;
+                }
+            }
+        }
+    };
+
+    const auto writerWork = [&](char threadId)
+    {
+        while (messageIndex < messageCount)
+        {
+            if (bEmpty)
+            {
+                scoped_lock writeLock {m};
+                if (bEmpty && messageIndex < messageCount)
+                {
+                    Message newMessage = string(messageLength, threadId) + to_string(messageIndex++);
+                    buffer = newMessage;
+                    bEmpty = false;
+                }
+            }
+        }
+    };
+
+    // Запускаем читателей и писателей
+    list<thread> writers;
+    for (uint8_t i = 0; i < threadCount; ++i)
+    {
+        uint8_t threadId = 'A' + i;
+        thread t { writerWork, threadId };
+        writers.push_back(move(t));
+    }
+
+    list<thread> readers;
+    for (size_t i = 0; i < threadCount; ++i)
+    {
+        thread t { readerWork };
+        readers.push_back(move(t));
+    }
+
+    // Ожидаем завершения работы писателей
+    for (auto &t : writers)
+    {
+        t.join();
+    }
+
+    // Сигнал о завершении работы писателей
+    finish = true;
+
+    // Ожидаем завершения работы для читателей
+    for (auto &t : readers)
+    {
+        t.join();
+    }
+
+    return messages;
+}
+
+/**
+ * @brief Взаимодействие читателей и писателей с синхронизацией с помощью атомарных переменных и операций.
+ *
+ * Буфер и список сообщений невозможно сделать атомарными, так как тип буфера - string.
+ * Соответственно в данной функции атомарная переменная usingResource используется для блокировки критической секции
+ * (флаг барьер, самодельный lock).
+ *
+ * @param messageCount Общее количество сообщений.
+ * @param messageLength Длина одного сообщения.
+ * @param threadCount Количество потоков.
+ * @return Список сообщений.
+ */
+MessageList withAtomicSync(const size_t messageCount,
+                           const size_t messageLength,
+                           const uint8_t threadCount
+                           )
+{
+    // занят ли потоком буфер?
+    atomic<bool> usingResource = false;
+
+    // буфер для сообщения
+    Message buffer;
+
+    // буфер чист?
+    atomic<bool> bEmpty = true;
+
+    // индекс текущего сообщения
+    atomic<size_t> messageIndex = 0;
+
+    // сигнал о завершении работы писателей
+    atomic<bool> finish = false;
+
+    // список сообщений
+    MessageList messages;
+
+    const auto readerWork = [&]()
+    {
+        while (!finish)
+        {
+            if (!bEmpty)
+            {
+                // занимаем ресурс,
+                // и если он был не занят до этого,
+                // то работаем с ним
+                if (!usingResource.exchange(true))
+                {
+                    if (!bEmpty)
+                    {
+                        messages.push_back(buffer);
+                        bEmpty = true;
+                    }
+                    // освобождаем ресурс
+                    usingResource.store(false);
+                }
+            }
+        }
+    };
+
+    const auto writerWork = [&](char threadId)
+    {
+        while (messageIndex < messageCount)
+        {
+            if (bEmpty)
+            {
+                if (!usingResource.exchange(true))
+                {
+                    if (bEmpty && messageIndex < messageCount)
+                    {
+                        Message newMessage = string(messageLength, threadId) + to_string(messageIndex++);
+                        buffer = newMessage;
+                        bEmpty = false;
+                    }
+                    usingResource.store(false);
+                }
+            }
+        }
+    };
+
+    // Запускаем читателей и писателей
+    list<thread> writers;
+    for (uint8_t i = 0; i < threadCount; ++i)
+    {
+        uint8_t threadId = 'A' + i;
+        thread t { writerWork, threadId };
+        writers.push_back(move(t));
+    }
+
+    list<thread> readers;
+    for (size_t i = 0; i < threadCount; ++i)
+    {
+        thread t { readerWork };
+        readers.push_back(move(t));
+    }
+
+    // Ожидаем завершения работы писателей
+    for (auto &t : writers)
+    {
+        t.join();
+    }
+
+    // Сигнал о завершении работы писателей
+    finish = true;
+
+    // Ожидаем завершения работы для читателей
+    for (auto &t : readers)
+    {
+        t.join();
+    }
+
+    return messages;
+}
+
 int main(int argc, char *argv[])
 {
-    constexpr size_t default_messageCount = 10;
+    constexpr size_t default_messageCount = 100;
     constexpr size_t default_messageLength = 10;
 
     auto messageCount = default_messageCount;
@@ -199,16 +413,39 @@ int main(int argc, char *argv[])
     // Без средств синхронизации: threadCount потоков
     const auto doWithoutSync = [&](uint8_t threadCount)
     {
-        const auto withoutSyncRes = timeBenchmark<MessageList>(withoutSync, messageCount, messageLength, threadCount);
+        const auto withoutSyncRes = timeBenchmark<MessageList>(withoutSync, default_messageCount, default_messageLength, threadCount);
         cout << "> without sync [" + to_string(threadCount) + " threads]: " << withoutSyncRes.first << " ms" << endl;
         writeToFile("withoutSync_" + to_string(threadCount) + "t.txt", withoutSyncRes.second);
     };
 
+    doWithoutSync(1);
     doWithoutSync(2);
     doWithoutSync(4);
-    doWithoutSync(8);
 
-    system("pause");
+    // Синхронизация мьютексом (блокировка): threadCount потоков
+    const auto doWithMutexSync = [&](uint8_t threadCount)
+    {
+        const auto withMutexSyncRes = timeBenchmark<MessageList>(withMutexSync, messageCount, messageLength, threadCount);
+        cout << "> with Mutex Sync [" + to_string(threadCount) + " threads]: " << withMutexSyncRes.first << " ms" << endl;
+        writeToFile("withMutexSync_" + to_string(threadCount) + "t.txt", withMutexSyncRes.second);
+    };
+
+    doWithMutexSync(1);
+    doWithMutexSync(2);
+    doWithMutexSync(4);
+
+    // Синхронизация атомарными операциями: threadCount потоков
+    const auto doWithAtomicSync = [&](uint8_t threadCount)
+    {
+        const auto withAtomicSyncRes = timeBenchmark<MessageList>(withAtomicSync, messageCount, messageLength, threadCount);
+        cout << "> with Atomic Sync [" + to_string(threadCount) + " threads]: " << withAtomicSyncRes.first << " ms" << endl;
+        writeToFile("withAtomicSync_" + to_string(threadCount) + "t.txt", withAtomicSyncRes.second);
+    };
+
+    doWithAtomicSync(1);
+    doWithAtomicSync(2);
+    doWithAtomicSync(4);
+
     return 0;
 }
 /** @} */
