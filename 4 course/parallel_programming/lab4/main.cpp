@@ -13,6 +13,7 @@
 #include <list>
 #include <mutex>
 #include <atomic>
+#include <condition_variable>
 
 #define debug
 
@@ -285,6 +286,136 @@ MessageList withMutexSync(const size_t messageCount,
 }
 
 /**
+ * @brief Взаимодействие читателей и писателей с синхронизацией с помощью событий (conditional variable).
+ * @param messageCount Общее количество сообщений.
+ * @param messageLength Длина одного сообщения.
+ * @param threadCount Количество потоков.
+ * @return Список сообщений.
+ */
+MessageList withEventSync(const size_t messageCount,
+                          const size_t messageLength,
+                          const uint8_t threadCount
+                          )
+{
+    mutex m;
+
+    // События пустого и заполненного буфера
+    condition_variable evFull;
+    condition_variable evEmpty;
+
+    // Буфер для сообщения
+    Message buffer;
+
+    // Буфер чист?
+    bool bEmpty = true;
+
+    // Индекс текущего сообщения
+    atomic<size_t> messageIndex = 0;
+
+    // Сигнал о завершении работы писателей
+    atomic<bool> finish = false;
+
+    // Список сообщений
+    MessageList messages;
+
+    const auto readerWork = [&]()
+    {
+        while (true)
+        {
+            // Захватываем мьютекс
+            unique_lock lck {m};
+
+            // Освобождаем мьютекс и ожидаем событие
+            // пробуждаемся по событию,
+            // при пробуждении проверяем флаг (на случай ложных пробуждений),
+            // повторно захватываем мьютекс при пробуждении и работаем с критической секцией.
+            evFull.wait(lck, [&]{ return !bEmpty || finish; });
+
+            // Сигнал о завершении работы
+            if (finish)
+            {
+                break;
+            }
+
+            messages.push_back(buffer);
+            bEmpty = true;
+
+            // Сообщаем одному из писателей, что буфер опустошен.
+            evEmpty.notify_one();
+        }
+    };
+
+    const auto writerWork = [&](char threadId)
+    {
+        while (messageIndex < messageCount)
+        {
+            unique_lock lck {m};
+
+            evEmpty.wait(lck, [&]{ return bEmpty; });
+
+            // Несколько потоков могли успеть попасть в этот участок кода
+            // когда messageIndex был меньше чем messageCount.
+
+            // Один из таких потоков захватил мьютекс, увеличил индекс сообщения, и когда он освободил мьютекс
+            // и другой поток получил управление, то индекс messageIndex оказался уже больше или равен messageCount.
+            if (messageIndex >= messageCount)
+            {
+                break;
+            }
+
+            Message newMessage = string(messageLength, threadId) + to_string(messageIndex++);
+            buffer = newMessage;
+            bEmpty = false;
+
+            // Сообщаем одному из читателей, что буфер заполнен.
+            evFull.notify_one();
+        }
+
+       // Остальные потоки, индекс сообщения которых вышел за пределы в следствие работы других потоков
+       // до сих пор ожидают сигнала от читателей.
+       // Поэтому "разбудим" оставшиеся "спящие" потоки с неправильными индексами самостоятельно.
+       if (messageIndex >= messageCount)
+       {
+           evEmpty.notify_all();
+       }
+    };
+
+    // Запускаем читателей и писателей
+    list<thread> writers;
+    for (uint8_t i = 0; i < threadCount; ++i)
+    {
+        uint8_t threadId = 'A' + i;
+        thread t { writerWork, threadId };
+        writers.push_back(move(t));
+    }
+
+    list<thread> readers;
+    for (size_t i = 0; i < threadCount; ++i)
+    {
+        thread t { readerWork };
+        readers.push_back(move(t));
+    }
+
+    // Ожидаем завершения работы писателей
+    for (auto &t : writers)
+    {
+        t.join();
+    }
+
+    // Сигнал о завершении работы писателей
+    finish = true;
+    evFull.notify_all();
+
+    // Ожидаем завершения работы для читателей
+    for (auto &t : readers)
+    {
+        t.join();
+    }
+
+    return messages;
+}
+
+/**
  * @brief Взаимодействие читателей и писателей с синхронизацией с помощью атомарных переменных и операций.
  *
  * Буфер и список сообщений невозможно сделать атомарными, так как тип буфера - string.
@@ -433,6 +564,18 @@ int main(int argc, char *argv[])
     doWithMutexSync(1);
     doWithMutexSync(2);
     doWithMutexSync(4);
+
+    // Синхронизация событиями (condition variables): threadCount потоков
+    const auto doWithEventSync = [&](uint8_t threadCount)
+    {
+        const auto withEventSyncRes = timeBenchmark<MessageList>(withEventSync, messageCount, messageLength, threadCount);
+        cout << "> with Event Sync [" + to_string(threadCount) + " threads]: " << withEventSyncRes.first << " ms" << endl;
+        writeToFile("withEventSync_" + to_string(threadCount) + "t.txt", withEventSyncRes.second);
+    };
+
+    doWithEventSync(1);
+    doWithEventSync(2);
+    doWithEventSync(4);
 
     // Синхронизация атомарными операциями: threadCount потоков
     const auto doWithAtomicSync = [&](uint8_t threadCount)
