@@ -15,6 +15,8 @@
 #include <atomic>
 #include <condition_variable>
 
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
+
 #define debug
 
 using namespace std;
@@ -371,13 +373,13 @@ MessageList withEventSync(const size_t messageCount,
             evFull.notify_one();
         }
 
-       // Остальные потоки, индекс сообщения которых вышел за пределы в следствие работы других потоков
-       // до сих пор ожидают сигнала от читателей.
-       // Поэтому "разбудим" оставшиеся "спящие" потоки с неправильными индексами самостоятельно.
-       if (messageIndex >= messageCount)
-       {
-           evEmpty.notify_all();
-       }
+        // Остальные потоки, индекс сообщения которых вышел за пределы в следствие работы других потоков
+        // до сих пор ожидают сигнала от читателей.
+        // Поэтому "разбудим" оставшиеся "спящие" потоки с неправильными индексами самостоятельно.
+        if (messageIndex >= messageCount)
+        {
+            evEmpty.notify_all();
+        }
     };
 
     // Запускаем читателей и писателей
@@ -405,6 +407,106 @@ MessageList withEventSync(const size_t messageCount,
     // Сигнал о завершении работы писателей
     finish = true;
     evFull.notify_all();
+
+    // Ожидаем завершения работы для читателей
+    for (auto &t : readers)
+    {
+        t.join();
+    }
+
+    return messages;
+}
+
+/**
+ * @brief Взаимодействие читателей и писателей с синхронизацией с помощью семафора (из Boost).
+ * @param messageCount Общее количество сообщений.
+ * @param messageLength Длина одного сообщения.
+ * @param threadCount Количество потоков.
+ * @return Список сообщений.
+ */
+MessageList withSemaphoreSync(const size_t messageCount,
+                              const size_t messageLength,
+                              const uint8_t threadCount
+                              )
+{
+    // Семафоры для читателей и писателей
+    boost::interprocess::interprocess_semaphore semReader(1);
+    boost::interprocess::interprocess_semaphore semWriter(1);
+
+    // буфер для сообщения
+    Message buffer;
+
+    // буфер чист?
+    atomic<bool> bEmpty = true;
+
+    // индекс текущего сообщения
+    atomic<size_t> messageIndex = 0;
+
+    // сигнал о завершении работы писателей
+    atomic<bool> finish = false;
+
+    // список сообщений
+    MessageList messages;
+
+    const auto readerWork = [&]()
+    {
+        while (!finish)
+        {
+            if (!bEmpty)
+            {
+                semReader.wait();
+                if (!bEmpty)
+                {
+                    messages.push_back(buffer);
+                    bEmpty = true;
+                }
+                semReader.post();
+            }
+        }
+    };
+
+    const auto writerWork = [&](char threadId)
+    {
+        while (messageIndex < messageCount)
+        {
+            if (bEmpty)
+            {
+                semWriter.wait();
+                if (bEmpty && messageIndex < messageCount)
+                {
+                    Message newMessage = string(messageLength, threadId) + to_string(messageIndex++);
+                    buffer = newMessage;
+                    bEmpty = false;
+                }
+                semWriter.post();
+            }
+        }
+    };
+
+    // Запускаем читателей и писателей
+    list<thread> writers;
+    for (uint8_t i = 0; i < threadCount; ++i)
+    {
+        uint8_t threadId = 'A' + i;
+        thread t { writerWork, threadId };
+        writers.push_back(move(t));
+    }
+
+    list<thread> readers;
+    for (size_t i = 0; i < threadCount; ++i)
+    {
+        thread t { readerWork };
+        readers.push_back(move(t));
+    }
+
+    // Ожидаем завершения работы писателей
+    for (auto &t : writers)
+    {
+        t.join();
+    }
+
+    // Сигнал о завершении работы писателей
+    finish = true;
 
     // Ожидаем завершения работы для читателей
     for (auto &t : readers)
@@ -576,6 +678,18 @@ int main(int argc, char *argv[])
     doWithEventSync(1);
     doWithEventSync(2);
     doWithEventSync(4);
+
+    // Синхронизация семафорами: threadCount потоков
+    const auto doWithSemaphoreSync = [&](uint8_t threadCount)
+    {
+        const auto withSemaphoreSyncRes = timeBenchmark<MessageList>(withSemaphoreSync, messageCount, messageLength, threadCount);
+        cout << "> with Semaphore Sync [" + to_string(threadCount) + " threads]: " << withSemaphoreSyncRes.first << " ms" << endl;
+        writeToFile("withSemaphoreSync_" + to_string(threadCount) + "t.txt", withSemaphoreSyncRes.second);
+    };
+
+    doWithSemaphoreSync(1);
+    doWithSemaphoreSync(2);
+    doWithSemaphoreSync(4);
 
     // Синхронизация атомарными операциями: threadCount потоков
     const auto doWithAtomicSync = [&](uint8_t threadCount)
