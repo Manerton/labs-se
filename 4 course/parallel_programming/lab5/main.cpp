@@ -6,9 +6,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-#include <chrono>
 #include <thread>
-#include <sstream>
 #include <fstream>
 #include <list>
 #include <mutex>
@@ -18,113 +16,24 @@
 
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
 
+#include "../utils.hpp"
+
 using namespace std;
-using namespace chrono;
 
-/// Миллисекунды в формате дробного числа.
-using d_milliseconds = duration<double, milliseconds::period>;
-
+/// Сообщение.
 using Message = std::string;
 using MessageList = std::list<Message>;
+using MessageVector = std::vector<Message>;
 
 using Semaphore = boost::interprocess::interprocess_semaphore;
 using SemaphorePtr = unique_ptr<Semaphore>;
 
+using PriorityVector = std::vector<uint8_t>;
+
 const static auto WrongIndex = numeric_limits<size_t>::max();
 
-/// Вывести содержимое контейнера (где есть begin и end).
-template <typename C>
-string displayContainer(const C& container)
-{
-    typename C::const_iterator it;
-
-    stringstream ss;
-
-    for (it = container.begin(); it != container.end(); ++it)
-    {
-        ss << *it << "\n";
-    }
-
-    ss << endl;
-
-    return ss.str();
-}
-
-/**
- * @brief Бенчмарк.
- * @param func Выполняемая функция.
- * @param args Аргументы выполняемой функции.
- * @return Результат вычисления и время выполнения функции.
- */
-template <typename Result, typename Function, typename... Args>
-pair<double, Result> timeBenchmark(const Function& func, const Args&... args)
-{
-    Result calc;
-
-    // начинаем считать время
-    auto start = steady_clock::now();
-
-    // что-то вычисляем
-    calc = func(args...);
-
-    // заканчиваем считать время
-    auto end = steady_clock::now();
-
-    auto time = duration_cast<d_milliseconds>(end-start).count();
-
-    return make_pair(time, calc);
-}
-
-/**
- * @brief Запись данных в файл.
- * @param filename Название файла.
- * @param data Контейнер с данными.
- */
-template <typename T>
-void writeToFile(const string& filename, const T& data, const string& delim = "\r\n")
-{
-    ofstream f(filename);
-
-    if (f)
-    {
-        for (const auto& c: data)
-        {
-            f << c << delim;
-        }
-    }
-}
-
-/// Массив с индексами для читателей
-static vector<size_t> ReadIndexCopy;
-
-/// Массив с индексами для писателей
-static vector<size_t> WriteIndexCopy;
-
-/// Кольцевой буфер
-static vector<Message> buffer;
-
-static deque<mutex> mBuffer;
-
-/// Буфер заполнен?
-static atomic<bool> bFull = false;
-
-/// Буфер пуст?
-static atomic<bool> bEmpty = true;
-
-/// Конец работы писателей
-static atomic<bool> finishWriters = false;
-
-/// Конец работы читателей
-static atomic<bool> finishReaders = false;
-
-/// Количество сообщений
-static size_t messageCount = 50;
-
 /// Длина сообщений
-static size_t messageLength = 10;
-
-/// Номер текущего сообщения
-static atomic<size_t> messageIndex = 0;
+const static size_t messageLength = 10;
 
 static deque<atomic<bool>> evReadyToRead;
 static vector<SemaphorePtr> evStartReading;
@@ -132,68 +41,63 @@ static vector<SemaphorePtr> evStartReading;
 static deque<atomic<bool>> evReadyToWrite;
 static vector<SemaphorePtr> evStartWriting;
 
-/// Приоритеты писателей
-static vector<uint8_t> writerPriority;
-
-/// Приоритеты читателей
-static vector<uint8_t> readerPriority;
-
-/// Потоки читатели
-static vector<thread> tReaders;
-
-/// Потоки писатели
-static vector<thread> tWriters;
-
-/// список сообщений
-static MessageList readedMessages;
-
-static atomic<uint64_t> writerCounter;
-static atomic<uint64_t> readerCounter;
-static atomic<uint64_t> readerAttemptCounter;
-
 /**
- * @brief Работа потока-читателя.
- * @param iReader Индекс читателя.
+ * Работа читателя.
+ * @param iReader Номер потока-читателя.
+ * @param buffer Кольцевой буфер.
+ * @param readIndexCopy Массив с индексами буферных ячеек для читателей.
+ * @param bFull Буфер заполнен?
+ * @param finish Работа завершена?
+ * @return
  */
-MessageList readerThread(const size_t iReader)
+MessageList readerThread(const size_t iReader,
+                         const vector<Message>& buffer,
+                         vector<size_t> &readIndexCopy,
+                         atomic_bool &bFull,
+                         const atomic_bool &finish
+                         )
 {
     MessageList localMessages;
 
     // Рабочий цикл чтения
-    while (true)
+    while (!finish)
     {
         // Сигнализируем о готовности менеджеру
         evReadyToRead[iReader] = true;
-
-        ++readerAttemptCounter;
 
         // Ждем сигнала от менеджера
         evStartReading[iReader]->wait();
 
         // Проверяем статус завершения работы
-        if (finishReaders)
+        if (finish && evReadyToRead[iReader])
         {
             break;
         }
 
-        // Разрешено чтение по текущему индексу
-        size_t k = ReadIndexCopy[iReader];
-
-        scoped_lock readLck {mBuffer[k]};
+        const size_t k = readIndexCopy[iReader];
         localMessages.push_back(buffer[k]);
-
         bFull = false;
 
-        ++readerCounter;
+        readIndexCopy[iReader] = WrongIndex;
     }
+
     return localMessages;
 }
 
 /**
- * @brief Работа потока-писателя.
- * @param iWriter Индекс писателя.
+ * Работа писателя.
+ * @param iWriter Номер потока-писателя.
+ * @param messageCount Количество сообщений писателя.
+ * @param buffer Кольцевой буфер.
+ * @param writeIndexCopy Массив с индексами буферных ячеек для писателей.
+ * @param bEmpty Буфер пуст?
  */
-void writerThread(const size_t iWriter)
+void writerThread(const size_t iWriter,
+                  const size_t messageCount,
+                  vector<Message> &buffer,
+                  vector<size_t> &writeIndexCopy,
+                  atomic_bool &bEmpty
+                  )
 {
     // Буква потока
     uint8_t threadId = 'A' + uint8_t(iWriter);
@@ -201,8 +105,18 @@ void writerThread(const size_t iWriter)
     // Кол-во сообщений этого потока
     size_t thisMessageIndex = 0;
 
+    MessageVector messages(messageCount);
+
+    const size_t messageCountStrLen = to_string(messageCount).length();
+
+    for (size_t i = 0; i < messageCount; ++i)
+    {
+        auto number = to_string(i);
+        messages[i] = string(messageLength, char(threadId)) + string(messageCountStrLen - number.length(), '0') + number;
+    }
+
     // Рабочий цикл записи
-    while(true)
+    while (thisMessageIndex < messageCount)
     {
         // Сигнализируем о готовности менеджеру
         evReadyToWrite[iWriter] = true;
@@ -210,39 +124,28 @@ void writerThread(const size_t iWriter)
         // Ждем сигнала от менеджера
         evStartWriting[iWriter]->wait();
 
-        if (finishWriters)
-        {
-            break;
-        }
-
         // Разрешена запись по текущему индексу
-        size_t k = WriteIndexCopy[iWriter];
-
-        Message newMessage = string(messageLength, char(threadId)) + to_string(thisMessageIndex++);
-
-        scoped_lock writeLck {mBuffer[k]};
-        buffer[k] = newMessage;
-
+        const size_t k = writeIndexCopy[iWriter];
+        buffer[k] = messages[thisMessageIndex++];
         bEmpty = false;
 
-        ++messageIndex;
-        ++writerCounter;
+        writeIndexCopy[iWriter] = WrongIndex;
     }
 }
 
-size_t getBufferIndex(const size_t i)
+size_t getBufferIndex(const size_t i, const size_t bufferSize)
 {
-    size_t newIndex = (i + 1) % buffer.size();
+    const size_t newIndex = (i + 1) % bufferSize;
     return newIndex;
 }
 
 /// Получение готового писателя с учетом приоритетов
-size_t getWriter(const size_t nWriter)
+size_t getWriter(const size_t nWriter, const PriorityVector& writerPriority)
 {
     list<size_t> ready;
     for (size_t i = 0; i < nWriter; ++i)
     {
-        if (evReadyToWrite[i].load())
+        if (evReadyToWrite[i])
         {
             ready.push_back(i);
         }
@@ -262,7 +165,7 @@ size_t getWriter(const size_t nWriter)
 }
 
 /// Получение готового читателя с учетом приоритетов
-size_t getReader(const size_t nReader)
+size_t getReader(const size_t nReader, const PriorityVector& readerPriority)
 {
     list<size_t> ready;
     for (size_t i = 0; i < nReader; ++i)
@@ -286,18 +189,48 @@ size_t getReader(const size_t nReader)
     return ready.front();
 }
 
-MessageList managerWork(const size_t nReaders, const size_t nWriters, const size_t bufferSize)
+bool allWriterThreadsCompleted(const vector<atomic_bool>& v)
 {
-    list<MessageList> threadMessagesList;
+    return std::all_of(v.begin(), v.end(), [](const bool completed){ return completed; });
+}
 
-    buffer.resize(bufferSize);
-    mBuffer.resize(bufferSize);
+/**
+ * Работа менеджера.
+ * @param nReaders Количество читателей.
+ * @param nWriters Количество писателей.
+ * @param bufferSize Размер буфера.
+ * @param messageCount Количество сообщений для одного писателя.
+ * @return
+ */
+MessageList managerWork(const size_t nReaders,
+                        const size_t nWriters,
+                        const size_t bufferSize,
+                        const size_t messageCount
+                        )
+{
+    // Кольцевой буфер
+    vector<Message> buffer(bufferSize);
 
+    // Буфер заполнен?
+    atomic<bool> bFull = false;
+
+    // Буфер пуст?
+    atomic<bool> bEmpty = true;
+
+    // Конец работы
+    atomic<bool> finish = false;
+
+    // --- Подготовка читателей ---
     evReadyToRead.resize(nReaders);
     evStartReading.resize(nReaders);
-    readerPriority.resize(nReaders, 1);
-    ReadIndexCopy.resize(nReaders);
-    tReaders.resize(nReaders);
+    PriorityVector readerPriority(nReaders, 1);
+
+    // Массив с индексами для читателей
+    vector<size_t> readIndexCopy(nReaders, WrongIndex);
+    vector<thread> tReaders(nReaders);
+
+    // Список со списками сообщений от каждого потока
+    list<MessageList> threadMessagesList;
 
     // Запуск читателей
     for (size_t i = 0; i < nReaders; ++i)
@@ -305,27 +238,36 @@ MessageList managerWork(const size_t nReaders, const size_t nWriters, const size
         evReadyToRead[i] = false;
         evStartReading[i] = make_unique<Semaphore>(0);
 
-        auto threadHandler = [i, &threadMessagesList]()
+        size_t i_copy = i;
+
+        auto threadHandler = [i_copy, &buffer, &readIndexCopy, &bFull, &finish, &threadMessagesList]()
         {
-            const MessageList localMessages = readerThread(i);
+            const MessageList localMessages = readerThread(i_copy, buffer, readIndexCopy, bFull, finish);
             threadMessagesList.emplace_back(localMessages);
         };
 
         thread t { threadHandler };
         tReaders[i] = move(t);
     }
+    // ----------------------------
 
+    // --- Подготовка писателей ---
     evReadyToWrite.resize(nWriters);
     evStartWriting.resize(nWriters);
-    writerPriority.resize(nWriters, 1);
-    WriteIndexCopy.resize(nWriters);
-    tWriters.resize(nWriters);
+    PriorityVector writerPriority(nWriters, 1);
+
+    // Массив с индексами для писателей
+    vector<size_t> writeIndexCopy(nWriters, WrongIndex);
+
+    vector<thread> tWriters(nWriters);
+    vector<atomic_bool> tWritersCompleted(nWriters);
 
     // Запуск писателей
     for (size_t i = 0; i < nWriters; ++i)
     {
         evReadyToWrite[i] = false;
         evStartWriting[i] = make_unique<Semaphore>(0);
+        tWritersCompleted[i] = false;
 
         // TODO: Приоритеты перенести в функцию main
         if (i == 1)
@@ -333,129 +275,120 @@ MessageList managerWork(const size_t nReaders, const size_t nWriters, const size
             writerPriority[i] = 4;
         }
 
-        thread t { writerThread, i };
+        size_t i_copy = i;
+
+        auto threadHandler = [i_copy, messageCount, &buffer, &writeIndexCopy, &bEmpty, &tWritersCompleted]()
+        {
+            writerThread(i_copy, messageCount, buffer, writeIndexCopy, bEmpty);
+            tWritersCompleted[i_copy] = true;
+        };
+
+        thread t { threadHandler };
+        t.detach();
         tWriters[i] = move(t);
     }
+    // ----------------------------
 
-    size_t iW = WrongIndex;
-    size_t iR = WrongIndex;
-
-    size_t iWriter = WrongIndex;
-    size_t iReader = WrongIndex;
+    atomic<size_t> iW = 0;
+    atomic<size_t> iR = 0;
 
     // Рабочий цикл
-    while (true)
+    while (!finish)
     {
         // Если в буфере есть свободные ячейки
         // пытаемся обработать готовых писателей
-        if (!bFull && (messageIndex < messageCount))
+        if (!bFull && !contains(readIndexCopy, iW))
         {
             // Устанавливаем писателя, которому разрешаем работать
-            iWriter = getWriter(nWriters);
+            size_t iWriter = getWriter(nWriters, writerPriority);
 
             if (iWriter != WrongIndex)
             {
-                if (getBufferIndex(iW) != iR)
-                {
-                    iW = getBufferIndex(iW);
+                evReadyToWrite[iWriter] = false;
 
-                    // Сохраняем индекс для записи
-                    WriteIndexCopy[iWriter] = iW;
+                // Сохраняем индекс для записи
+                writeIndexCopy[iWriter] = iW;
 
-                    evReadyToWrite[iWriter] = false;
-                    // Разрешаем писателю начать работу
-                    evStartWriting[iWriter]->post();
-                }
-                else
+                // Разрешаем писателю начать работу
+                evStartWriting[iWriter]->post();
+
+                iW = getBufferIndex(iW, bufferSize);
+
+                if (iW == iR)
                 {
                     bFull = true;
-                    bEmpty = false;
                 }
             }
         }
 
         // Если буфер не пуст, пытаемся
         // обработать готовых писателей
-        if (!bEmpty)
+        if (!bEmpty && !contains(writeIndexCopy, iR))
         {
             // Устанавливаем читателя, которому разрешаем работать
-            iReader = getReader(nReaders);
+            size_t iReader = getReader(nReaders, readerPriority);
 
             if (iReader != WrongIndex)
             {
-                if (getBufferIndex(iR) != iW)
-                {
-                    iR = getBufferIndex(iR);
+                // Отмечаем, что теперь поток занят
+                evReadyToRead[iReader] = false;
 
-                    // Сохраняем индекс для чтения
-                    ReadIndexCopy[iReader] = iR;
+                // Сохраняем индекс для чтения
+                readIndexCopy[iReader] = iR;
 
-                    evReadyToRead[iReader] = false;
-                    // Разрешаем читателю начать работу
-                    evStartReading[iReader]->post();
-                }
-                else
+                // Разрешаем читателю начать работу
+                evStartReading[iReader]->post();
+
+                iR = getBufferIndex(iR, bufferSize);
+
+                if (iR == iW)
                 {
                     bEmpty = true;
-                    bFull = false;
                 }
+
             }
         }
 
         // Если писатели закончили работу
-        if (!finishWriters && (messageIndex >= messageCount))
+        if (allWriterThreadsCompleted(tWritersCompleted) && bEmpty)
         {
-            finishWriters = true;
-            for (auto& event : evStartWriting)
-            {
-                event->post();
-            }
-
-            for (auto &t : tWriters)
-            {
-                t.join();
-            }
-        }
-
-        // Если читатели закончили работу
-        if (finishWriters && bEmpty)
-        {
-            finishReaders = true;
-
-            for (auto& event : evStartReading)
-            {
-                event->post();
-            }
-
-            for (auto &t : tReaders)
-            {
-                t.join();
-            }
-
-            break;
+            finish = true;
         }
     }
+
+    for (auto& event : evStartReading)
+    {
+        event->post();
+    }
+
+    for (auto &t : tReaders)
+    {
+        t.join();
+    }
+
+    MessageList readedMessages;
 
     for (auto &l : threadMessagesList)
     {
         readedMessages.insert(readedMessages.end(), l.begin(), l.end());
     }
 
-    readedMessages.unique();
-    cout << writerCounter << endl;
     cout << readedMessages.size() << endl;
-    cout << readerCounter << endl;
-    cout << readerAttemptCounter << endl;
-
-    //cout << displayContainer(steps) << endl;
 
     return readedMessages;
 }
 
 int main(int argc, char *argv[])
 {
+    // Дефолтные значения
     size_t default_bufferSize = 10;
+    size_t default_messageCount = 400;
+
+    // Размер буфера
     auto bufferSize = default_bufferSize;
+
+    // Количество сообщений для одного писателя
+    auto messageCount = default_messageCount;
 
     if (argc >= 3)
     {
@@ -463,14 +396,18 @@ int main(int argc, char *argv[])
         bufferSize = stoull(argv[2]);
     }
 
-    const auto doManagerSync = [&](uint8_t threadCount)
+    const auto doManagerSync = [&](const uint8_t _threadCount, const size_t _messageCount)
     {
-        const auto withManagerSyncRes = timeBenchmark<MessageList>(managerWork, threadCount, threadCount, bufferSize);
-        cout << "> Manager Sync [" + to_string(threadCount) + " threads]: " << withManagerSyncRes.first << " ms" << endl;
-        writeToFile("managerSync_" + to_string(threadCount) + "t.txt", withManagerSyncRes.second);
+        const auto withManagerSyncRes = timeBenchmark<MessageList>(managerWork, _threadCount, _threadCount, bufferSize, _messageCount);
+        cout << "> Manager Sync [" + to_string(_threadCount) + " threads]: " << withManagerSyncRes.first << " ms" << endl;
+
+        auto messages = withManagerSyncRes.second;
+        messages.sort();
+
+        writeToFile("managerSync_" + to_string(_threadCount) + "t.txt", messages);
     };
 
-    doManagerSync(4);
+    doManagerSync(4, (messageCount/4));
 
     return 0;
 }
