@@ -36,13 +36,11 @@ string displayContainer(const C& container)
 template <typename Result, typename Function, typename... Args>
 pair<double, Result> timeBenchmark(const Function& func, const Args&... args)
 {
-    Result calc;
-
     // начинаем считать время
     auto start = std::chrono::steady_clock::now();
 
     // что-то вычисляем
-    calc = func(args...);
+    Result calc = func(args...);
 
     // заканчиваем считать время
     auto end = std::chrono::steady_clock::now();
