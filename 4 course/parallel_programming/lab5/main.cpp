@@ -42,9 +42,6 @@ using PriorityVector = std::vector<uint8_t>;
 /// Индекс-индикатор.
 const static auto WrongIndex = numeric_limits<size_t>::max();
 
-/// Длина сообщений.
-const static size_t messageLength = 10;
-
 static std::mt19937 mt_rand(uint32_t(time(nullptr)));
 static std::uniform_int_distribution<> dist(0, 1);
 
@@ -125,6 +122,7 @@ pair<double, MessageList> readerThread(const size_t iReader,
  * Работа писателя.
  * @param iWriter Номер потока-писателя.
  * @param messageCount Количество сообщений писателя.
+ * @param messageLength Длина сообщений.
  * @param buffer Кольцевой буфер.
  * @param writeIndexCopy Массив с индексами буферных ячеек для писателей.
  * @param evReadyToWrite Сигнал от писателя о готовности к работе.
@@ -134,6 +132,7 @@ pair<double, MessageList> readerThread(const size_t iReader,
  */
 pair<double, size_t> writerThread(const size_t iWriter,
                                   const size_t messageCount,
+                                  const size_t messageLength,
                                   vector<Message> &buffer,
                                   vector<atomic_size_t> &writeIndexCopy,
                                   vector<atomic_bool> &evReadyToWrite,
@@ -285,6 +284,7 @@ bool allWriterThreadsCompleted(const vector<atomic_bool>& v)
  * @param writerPriority Приоритеты писателей.
  * @param bufferSize Размер буфера.
  * @param messageCount Количество сообщений для одного писателя.
+ * @param messageLength Длина одного сообщения.
  * @return Список сообщений и статистика.
  */
 pair<MessageList, Stats> managerWork(const size_t nReaders,
@@ -292,7 +292,8 @@ pair<MessageList, Stats> managerWork(const size_t nReaders,
                                      const size_t nWriters,
                                      const PriorityVector &writerPriority,
                                      const size_t bufferSize,
-                                     const size_t messageCount
+                                     const size_t messageCount,
+                                     const size_t messageLength
                                      )
 {
     Stats stats(nReaders, nWriters);
@@ -387,7 +388,7 @@ pair<MessageList, Stats> managerWork(const size_t nReaders,
         auto threadHandler = [&, i_copy, messageCount]()
         {
             auto res = writerThread(i_copy,
-                                    messageCount,
+                                    messageCount, messageLength,
                                     buffer, writeIndexCopy,
                                     evReadyToWrite, evStartWriting,
                                     bEmpty
@@ -499,6 +500,7 @@ int main(int argc, char *argv[])
     // Дефолтные значения
     const size_t default_bufferSize = 10;
     const size_t default_messageCount = 400;
+    const size_t default_messageLength = 10;
 
     // Размер буфера
     auto bufferSize = default_bufferSize;
@@ -506,10 +508,22 @@ int main(int argc, char *argv[])
     // Количество сообщений для одного писателя
     auto messageCount = default_messageCount;
 
-    if (argc >= 3)
+    // Длина сообщений
+    auto messageLength = default_messageLength;
+
+    if (argc >= 2)
     {
         bufferSize = stoull(argv[1]);
+    }
+
+    if (argc >= 3)
+    {
         messageCount = stoull(argv[2]);
+    }
+
+    if (argc >= 4)
+    {
+        messageLength = stoull(argv[3]);
     }
 
     cout << "Size of the ring buffer: " << bufferSize << endl;
@@ -517,14 +531,15 @@ int main(int argc, char *argv[])
     const auto doManagerSync = [&](
             const size_t readerCount,
             const size_t writerCount,
-            const size_t messageCount,
+            const size_t _messageCount,
             const PriorityVector &readerPriority,
             const PriorityVector &writerPriority
             )
     {
         cout << "> Start manager sync [" + to_string(readerCount) + " readers; " + to_string(writerCount) + " writers]" << endl;
-        cout << "Message count for one writer: " << messageCount << endl;
-        cout << "Total message count: " << messageCount * writerCount << endl;
+        cout << "Message length: " << messageLength << endl;
+        cout << "Message count for one writer: " << _messageCount << endl;
+        cout << "Total message count: " << _messageCount * writerCount << endl;
 
         for (size_t i = 0; i < readerCount; ++i)
         {
@@ -539,7 +554,7 @@ int main(int argc, char *argv[])
         const auto res = timeBenchmark<pair<MessageList, Stats>>(managerWork,
                                                                  readerCount, readerPriority,
                                                                  writerCount, writerPriority,
-                                                                 bufferSize, messageCount
+                                                                 bufferSize, _messageCount, messageLength
                                                                  );
 
         cout << "Total time: " << res.first << " ms" << endl;
@@ -565,7 +580,15 @@ int main(int argc, char *argv[])
         writeToFile("managerSync_" + to_string(readerCount) + to_string(writerCount) + "t.txt", messages);
     };
 
+    doManagerSync(1, 1, (messageCount), {1, 1, 1, 1}, {1, 1, 1, 1});
+    doManagerSync(1, 4, (messageCount/4), {1, 1, 1, 1}, {1, 1, 1, 1});
+    doManagerSync(2, 2, (messageCount/2), {1, 1, 1, 1}, {1, 1, 1, 1});
+    doManagerSync(4, 1, (messageCount), {1, 1, 1, 1}, {1, 1, 1, 1});
+
     doManagerSync(4, 4, (messageCount/4), {1, 1, 1, 1}, {1, 1, 1, 1});
+    doManagerSync(4, 4, (messageCount/4), {1, 2, 3, 4}, {1, 2, 3, 4});
+    doManagerSync(4, 4, (messageCount/4), {1, 2, 1, 1}, {1, 1, 2, 1});
+
 
     return 0;
 }
