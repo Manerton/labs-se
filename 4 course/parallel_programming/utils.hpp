@@ -33,7 +33,7 @@ string displayContainer(const C& container)
  * @param args Аргументы выполняемой функции.
  * @return Результат вычисления и время выполнения функции.
  */
-template <typename Result, typename Function, typename... Args>
+template <typename duration, typename Result, typename Function, typename... Args>
 pair<double, Result> timeBenchmark(const Function& func, const Args&... args)
 {
     // начинаем считать время
@@ -45,7 +45,30 @@ pair<double, Result> timeBenchmark(const Function& func, const Args&... args)
     // заканчиваем считать время
     auto end = std::chrono::steady_clock::now();
 
-    auto time = std::chrono::duration_cast<d_milliseconds>(end-start).count();
+    auto time = std::chrono::duration_cast<duration>(end-start).count();
+
+    return make_pair(time, calc);
+}
+
+/**
+ * @brief Бенчмарк.
+ * @param func Выполняемая функция.
+ * @param args Аргументы выполняемой функции.
+ * @return Результат вычисления и время выполнения функции.
+ */
+template <typename duration, typename Result, typename Function, typename Object, typename... Args>
+pair<double, Result> timeBenchmarkForMemberFunc(const Function& func, const Object* obj, const Args&... args)
+{
+    // начинаем считать время
+    auto start = std::chrono::steady_clock::now();
+
+    // что-то вычисляем
+    Result calc = (obj->*func)(args...);
+
+    // заканчиваем считать время
+    auto end = std::chrono::steady_clock::now();
+
+    auto time = std::chrono::duration_cast<duration>(end-start).count();
 
     return make_pair(time, calc);
 }
