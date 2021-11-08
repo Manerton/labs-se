@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QTimer>
+#include <QThreadPool>
 #include <vector>
 
 QT_BEGIN_NAMESPACE
@@ -38,20 +39,24 @@ private:
     /// Таймер для отображения
     std::unique_ptr<QTimer> renderTimer = nullptr;
 
-    /// Время одного шага (в мс)
-    static constexpr int32_t oneStepTime = 200;
-
     /// Последняя таблица с описанием состояний клеток
     LifeTable latestTable;
 
+    /// Время одного шага (в мс)
+    static constexpr int32_t oneStepTime = 200;
+
     /// Размер виджета.
     static constexpr int32_t widgetSize = 800;
+
     /// Размер одной клетки.
     static constexpr int32_t cellSize = 20;
+
     /// Количество клеток на экране (по горизонтали или вертикали).
     static constexpr int32_t cellCount = widgetSize / cellSize;
+
     /// Ширина кнопки.
     static constexpr int32_t buttonW = 100;
+
     /// Высота кнопки.
     static constexpr int32_t buttonH = 30;
 
@@ -63,6 +68,10 @@ private:
     LifeTable getInitTable() const;
     /// Последовательный алгоритм расчета состояния каждой клетки.
     LifeTable seqCalcNewTable(const LifeTable &oldTable) const;
+    /// Паралелльный алгоритм расчета состояния каждой клетки по строкам.
+    LifeTable parCalcNewTableByRow(const LifeTable &oldTable) const;
+    /// Паралелльный алгоритм расчета состояния каждой клетки по столбцам.
+    LifeTable parCalcNewTableByColumn(const LifeTable &oldTable) const;
     /// Отрисовать таблицу на экране.
     void renderLifeTable(const LifeTable &table) const;
     /// Один шаг отображения.
