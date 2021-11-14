@@ -1,6 +1,3 @@
 <resources>
     <string name="app_name">AndroidApp</string>
-    <string name="buttonAge">Возраст</string>
-    <string name="txtViewAge">Ваш возраст будет здесь!</string>
-    <string name="editTextDateYear">введите год рождения...</string>
 </resources>
