@@ -70,38 +70,39 @@ void Widget::prepareKeys()
 
 void Widget::prepareProbabilityTable()
 {
-    probabilityTable[' '] = 175;
-    probabilityTable[L'О'] = 90;
-    probabilityTable[L'Е'] = 72;
-    probabilityTable[L'А'] = 62;
-    probabilityTable[L'И'] = 62;
-    probabilityTable[L'Н'] = 53;
-    probabilityTable[L'Т'] = 53;
-    probabilityTable[L'С'] = 45;
-    probabilityTable[L'Р'] = 40;
+    probabilityTable[' '] = 146;
+    probabilityTable[L'О'] = 94;
+    probabilityTable[L'Е'] = 71;
+    probabilityTable[L'А'] = 69;
+    probabilityTable[L'И'] = 64;
+    probabilityTable[L'Н'] = 57;
+    probabilityTable[L'Т'] = 54;
+    probabilityTable[L'С'] = 46;
+    probabilityTable[L'Р'] = 42;
     probabilityTable[L'В'] = 38;
-    probabilityTable[L'Л'] = 35;
-    probabilityTable[L'К'] = 28;
-    probabilityTable[L'М'] = 26;
-    probabilityTable[L'Д'] = 25;
-    probabilityTable[L'П'] = 23;
-    probabilityTable[L'У'] = 21;
-    probabilityTable[L'Я'] = 18;
-    probabilityTable[L'Ы'] = 16;
+    probabilityTable[L'Л'] = 39;
+    probabilityTable[L'К'] = 29;
+    probabilityTable[L'М'] = 27;
+    probabilityTable[L'Д'] = 24;
+    probabilityTable[L'П'] = 26;
+    probabilityTable[L'У'] = 23;
+    probabilityTable[L'Я'] = 17;
+    probabilityTable[L'Ы'] = 15;
     probabilityTable[L'З'] = 16;
-    probabilityTable[L'Ъ'] = 14;
-    probabilityTable[L'Б'] = 14;
-    probabilityTable[L'Г'] = 13;
+    probabilityTable[L'Ъ'] = 1;
+    probabilityTable[L'Ь'] = 13;
+    probabilityTable[L'Б'] = 13;
+    probabilityTable[L'Г'] = 14;
     probabilityTable[L'Ч'] = 12;
     probabilityTable[L'Й'] = 10;
-    probabilityTable[L'Х'] = 9;
+    probabilityTable[L'Х'] = 8;
     probabilityTable[L'Ж'] = 7;
-    probabilityTable[L'Ю'] = 6;
+    probabilityTable[L'Ю'] = 5;
     probabilityTable[L'Ш'] = 6;
-    probabilityTable[L'Ц'] = 4;
-    probabilityTable[L'Щ'] = 3;
-    probabilityTable[L'Э'] = 3;
-    probabilityTable[L'Ф'] = 2;
+    probabilityTable[L'Ц'] = 5;
+    probabilityTable[L'Щ'] = 4;
+    probabilityTable[L'Э'] = 2;
+    probabilityTable[L'Ф'] = 3;
 }
 
 Widget::Text Widget::readFromFile(const QString &filename)
