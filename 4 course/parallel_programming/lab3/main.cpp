@@ -486,8 +486,7 @@ SecondStepResult parPrimeEnumeration(uint64_t begin,
 
 int main(int argc, char *argv[])
 {
-    SYSTEM_INFO system_info;
-    GetSystemInfo(&system_info);
+    cout << thread::hardware_concurrency() << endl;
 
     constexpr size_t default_n = 100;
 
@@ -540,10 +539,10 @@ int main(int argc, char *argv[])
     doParDecompositionByBasePrime(8);
 
     // С применением Thread Pool
-    const auto doParThreadPool = [n, sqrtN, &firstStepRes, &system_info]()
+    const auto doParThreadPool = [n, sqrtN, &firstStepRes]()
     {
-        const auto parThreadPoolRes = timeBenchmark<SecondStepResult>(parThreadPool, sqrtN, n, ref(firstStepRes.second), uint8_t(system_info.dwNumberOfProcessors));
-        cout << "> Par thread pool [" << system_info.dwNumberOfProcessors << " threads] [" + to_string(firstStepRes.second.size()) + " tasks]: " << parThreadPoolRes.first << " ms" << endl;
+        const auto parThreadPoolRes = timeBenchmark<SecondStepResult>(parThreadPool, sqrtN, n, ref(firstStepRes.second), uint8_t(thread::hardware_concurrency()));
+        cout << "> Par thread pool [" << thread::hardware_concurrency() << " threads] [" + to_string(firstStepRes.second.size()) + " tasks]: " << parThreadPoolRes.first << " ms" << endl;
         writeToFile("ParThreadPool.txt", parThreadPoolRes.second);
     };
 
