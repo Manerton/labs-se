@@ -4,11 +4,13 @@
 // которое будет служить сигналом прекращения работы.
 
 #include <iostream>
+#include <algorithm>
+#include <vector>
+#include <exception>
 
-#include <boost/interprocess/ipc/message_queue.hpp>
+#include "../../posix_message_queue.hpp"
 
 using namespace std;
-using namespace boost::interprocess;
 
 enum MessageType : uint8_t
 {
@@ -22,17 +24,23 @@ int main()
     try
     {
         // Создадим новую очередь сообщений.
-        message_queue mq (open_only,
-                          "lab11_mqueue"
-                          );
+        posix_message_queue mq (open_only_t(),
+                                open_mode_t::read_only,
+                                "lab11_mqueue"
+                                );
+
+        cout << "Max msg count in queue: " << mq.get_max_msg() << endl;
+        cout << "Max msg size in queue: " << mq.get_max_msg_size() << endl;
 
         while (true)
         {
-            uint32_t priority;
-            message_queue::size_type recvd_size;
+            cout << "Messages remain: " << mq.get_num_msg() << endl;
 
-            vector<uint8_t> msg;
-            msg.resize(mq.get_max_msg_size());
+            uint32_t priority;
+            posix_message_queue::signed_size_type recvd_size;
+
+            vector<char> msg;
+            msg.resize(size_t(mq.get_max_msg_size()));
 
             mq.receive(msg.data(), msg.size(), recvd_size, priority);
 
@@ -48,7 +56,7 @@ int main()
                 else if (type == MessageType::Integer32)
                 {
                     int32_t number = 0;
-                    auto numberPtr = reinterpret_cast<uint8_t*>(&number);
+                    auto numberPtr = reinterpret_cast<char*>(&number);
                     copy_n(msg.begin()+1, sizeof(int32_t), numberPtr);
                     cout << number << endl;
                 }
@@ -56,24 +64,25 @@ int main()
                 {
                     cout << "Got message with unknown type!" << endl;
                 }
+
             }
             else
             {
                 cout << "End of work!" << endl;
 
-                //message_queue::remove("lab11_mqueue");
+                posix_message_queue::remove("lab11_mqueue");
 
                 return 0;
             }
         }
     }
-    catch (interprocess_exception &ex)
+    catch (std::exception &ex)
     {
         // Сообщаем об ошибке.
         cout << "Error: " << ex.what() << endl;
 
         // Удалим очередь сообщений из-за ошибки.
-        message_queue::remove("lab11_mqueue");
+        posix_message_queue::remove("lab11_mqueue");
 
         return 1;
     }

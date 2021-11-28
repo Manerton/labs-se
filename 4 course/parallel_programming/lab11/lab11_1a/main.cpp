@@ -4,11 +4,11 @@
 // для второй программы сигналом прекращения работы.
 
 #include <iostream>
+#include <vector>
 
-#include <boost/interprocess/ipc/message_queue.hpp>
+#include "../../posix_message_queue.hpp"
 
 using namespace std;
-using namespace boost::interprocess;
 
 enum MessageType : uint8_t
 {
@@ -18,10 +18,10 @@ enum MessageType : uint8_t
 };
 
 // Отослать текстовое сообщение в очередь.
-void sendText(message_queue& mq, const uint32_t priority, const string &text)
+void sendText(posix_message_queue& mq, const uint32_t priority, const string &text)
 {
     // Готовим массив с байтами.
-    vector<uint8_t> msg;
+    vector<char> msg;
     msg.reserve(sizeof(MessageType) + text.size());
 
     // Указываем тип сообщения.
@@ -35,12 +35,12 @@ void sendText(message_queue& mq, const uint32_t priority, const string &text)
 }
 
 // Отослать целое 32-битное число в очередь.
-void sendInteger32(message_queue& mq, const uint32_t priority, int32_t number)
+void sendInteger32(posix_message_queue& mq, const uint32_t priority, int32_t number)
 {
     const auto numberPtr = reinterpret_cast<uint8_t*>(&number);
 
     // Готовим массив с байтами.
-    vector<uint8_t> msgWithNumber;
+    vector<char> msgWithNumber;
     msgWithNumber.reserve(sizeof(MessageType) + sizeof(int32_t));
 
     // Указываем тип сообщение.
@@ -61,7 +61,7 @@ int main()
     try
     {
         // Удалим предыдущую очередь сообщений, если была.
-        message_queue::remove("lab11_mqueue");
+        posix_message_queue::remove("lab11_mqueue");
 
         // Размер: 5 текстовых сообщений, 1 число, и 1 сигнал о завершении работы
         const size_t maxQueueSize = 7;
@@ -69,11 +69,11 @@ int main()
         const size_t maxMsgLength = sizeof(MessageType) + 100;
 
         // Создадим новую очередь сообщений.
-        message_queue mq (create_only,
-                          "lab11_mqueue",
-                          maxQueueSize,
-                          maxMsgLength
-                          );
+        posix_message_queue mq (create_only_t(),
+                                open_mode_t::write_only,
+                                "lab11_mqueue",
+                                maxQueueSize,
+                                maxMsgLength);
 
         // Отсылаем 5 сообщений в очередь.
         for (int i = 1; i <= 5; ++i)
@@ -85,15 +85,15 @@ int main()
 
         // Отсылаем сообщение о прекращении работы.
         auto endOfWorkMsg = MessageType::EndOfWork;
-        mq.send(&endOfWorkMsg, sizeof(endOfWorkMsg), priority);
+        mq.send(reinterpret_cast<char*>(&endOfWorkMsg), sizeof(endOfWorkMsg), priority);
     }
-    catch (interprocess_exception &ex)
+    catch (std::exception &ex)
     {
         // Сообщаем об ошибке.
         cout << ex.what() << endl;
 
         // Удалим очередь сообщений из-за ошибки.
-        message_queue::remove("lab11_mqueue");
+        posix_message_queue::remove("lab11_mqueue");
 
         return 1;
     }
