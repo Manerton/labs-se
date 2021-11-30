@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(PROJECT_NAME lab11_1a)
+set(PROJECT_NAME lab11_1)
 
 project(${PROJECT_NAME} LANGUAGES CXX)
 
