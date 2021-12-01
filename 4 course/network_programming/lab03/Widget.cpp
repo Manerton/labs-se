@@ -6,6 +6,7 @@
 
 #include <QtNetwork/QHostAddress>
 #include <QTimer>
+#include <QMessageBox>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -13,7 +14,7 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
 
-    this->getOpenPorts_DoStep();
+    this->allowStartButton();
 }
 
 Widget::~Widget()
@@ -23,60 +24,86 @@ Widget::~Widget()
 
 void Widget::checkConnected(QTcpSocket *socket)
 {
+
+    // Иногда в этой функции сокет уже в состоянии "отключён",
+    // обрабатываем этот случай.
+    if (socket->state() == QTcpSocket::UnconnectedState)
+    {
+        handleDisconnectedSocket(socket);
+        return;
+    }
+
     if (socket->state() == QTcpSocket::ConnectedState)
     {
-        qDebug() << socket->peerPort();
+        ui->listWidget_ports->addItem(QString::number(socket->peerPort()));
     }
 
     socket->abort();
 }
 
-
-void Widget::disconnected(QTcpSocket *socket)
-{
-    --countPendingConnections;
-}
-
 void Widget::stateChanged(QTcpSocket *socket)
 {
-    // Если состояние "не подключен" и "не подключается", то
-    // уменьшаем счётчик обрабатываемых подключений и помечаем сокет на удаление.
-    if (socket->state() != QTcpSocket::ConnectedState
-            && socket->state() != QTcpSocket::ConnectingState)
+    if (socket->state() == QTcpSocket::UnconnectedState)
     {
-        --countPendingConnections;
-        socket->deleteLater();
-    }
-
-    // Выполняем новый шаг алгоритма, если больше никаких подключений не обрабатывается.
-    if (countPendingConnections == 0)
-    {
-        getOpenPorts_DoStep();
+        this->handleDisconnectedSocket(socket);
     }
 }
 
 void Widget::getOpenPorts_DoStep()
 {
-    if (step >= countSteps) return;
-
-    // Диапазон сканируемых портов
-    const uint16_t start_port = 1;
-    const uint16_t end_port = std::numeric_limits<uint16_t>::max();
-
-    // Каких-то проверок диапазона и размера одного шага - нет.
-    // То есть необходимо подбирать такое количество шагов, чтобы диапазон делился нацело.
-    // В качестве примера: (65535 - 1) / 14 = 65534 / 14 = 4681.
-    const uint16_t steps_size = (end_port - start_port) / countSteps;
-
-    const uint16_t start = step * steps_size + 1;
-    const uint16_t end = start + steps_size;
-
-    for (uint16_t j = start; j < end; ++j)
+    if (this->step >= this->countSteps)
     {
-        checkPort(j);
+        qDebug() << "end";
+        this->isWorking = false;
+        this->allowStartButton();
+        return;
+    }
+
+    const uint16_t start = step * stepSize + this->startPort;
+    const uint16_t end = start + stepSize - 1;
+
+    QString currentStepText = QString::number(this->step + 1) + " (" + QString::number(start) + ":" + QString::number(end) + ")";
+    ui->label_currentStepValue->setText(currentStepText);
+
+    for (uint32_t j = start; j <= end; ++j)
+    {
+        checkPort(uint16_t(j));
     }
 
     ++step;
+}
+
+void Widget::allowStartButton()
+{
+    ui->pushButton_exec->setDisabled(false);
+    ui->pushButton_stop->setDisabled(true);
+}
+
+void Widget::allowStopButton()
+{
+    ui->pushButton_exec->setDisabled(true);
+    ui->pushButton_stop->setDisabled(false);
+}
+
+void Widget::handleDisconnectedSocket(QTcpSocket *socket)
+{
+    if (countPendingConnections > 0)
+    {
+        --countPendingConnections;
+    }
+    socket->deleteLater();
+
+    // Выполняем новый шаг алгоритма, если больше никаких подключений не обрабатывается.
+    // И если не нажали на "Стоп".
+    if (countPendingConnections == 0 && isWorking)
+    {
+        getOpenPorts_DoStep();
+    }
+    // Больше никаких подключений не обрабатывается, но нажали на "Стоп".
+    else if (countPendingConnections == 0 && !isWorking)
+    {
+        this->allowStartButton();
+    }
 }
 
 void Widget::checkPort(uint16_t port)
@@ -88,13 +115,65 @@ void Widget::checkPort(uint16_t port)
     auto socket = new QTcpSocket(this);
     socket->connectToHost(QHostAddress(QHostAddress::LocalHost), port);
 
-    // Ждём 10 миллисекунд и проверяем - удалось ли соединение.
-    QTimer timer(this);
-    const int time = 10;
-    timer.singleShot(time, this, [this, socket]{ this->checkConnected(socket); });
+    // Ждём 'timeout' миллисекунд и проверяем - удалось ли соединение.
+    QTimer::singleShot(timeout, this, [this, socket]{ this->checkConnected(socket); });
 
     // Также привязываем обработку событий отключения соединения и изменение состояния соединения.
-    connect(socket, &QTcpSocket::disconnected, this, [this, socket]{ this->disconnected(socket); } );
     connect(socket, &QTcpSocket::stateChanged, this, [this, socket]{ this->stateChanged(socket); } );
 }
 
+void Widget::on_pushButton_exec_clicked()
+{
+    this->startPort = uint16_t(ui->spinBox_start->value());
+    this->endPort =  uint16_t(ui->spinBox_end->value());
+    this->countSteps = uint16_t(ui->spinBox_steps->value());
+    const uint16_t diff = (endPort - startPort + 1);
+
+    // Если нацело делится
+    if (diff % countSteps == 0)
+    {
+        this->stepSize = diff / countSteps;
+
+        if (!this->isWorking)
+        {
+            this->step = 0;
+            ui->listWidget_ports->clear();
+            this->isWorking = true;
+            this->getOpenPorts_DoStep();
+            this->allowStopButton();
+        }
+    }
+    else
+    {
+        QMessageBox::warning(this, "Неправильные параметры",
+                             "Указанный диапазон не делится на количество шагов. "
+                             "Измените параметры и попробуйте снова.");
+    }
+}
+
+
+void Widget::on_pushButton_stop_clicked()
+{
+    this->isWorking = false;
+}
+
+
+void Widget::on_spinBox_start_editingFinished()
+{
+    int start = ui->spinBox_start->value();
+    int end = ui->spinBox_end->value();
+    if (start >= end)
+    {
+        ui->spinBox_start->setValue(end-1);
+    }
+}
+
+void Widget::on_spinBox_end_editingFinished()
+{
+    int start = ui->spinBox_start->value();
+    int end = ui->spinBox_end->value();
+    if (end <= start)
+    {
+        ui->spinBox_end->setValue(start+1);
+    }
+}
