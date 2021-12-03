@@ -69,11 +69,22 @@ void Widget::initIpRange(const QNetworkAddressEntry &localAddress)
 
 bool Widget::checkIp(const QHostAddress &ip) const
 {
-    QString nParam = "-n";
-    QString pingCount = "1";
-    QString wParam = "-w";
+   QString pingCount = "1";
 
-    auto code = QProcess::execute("ping", QStringList({ip.toString(), nParam, pingCount, wParam, QString::number(this->timeout)}));
+   // Для кроссплатформенности (у команды ping немного разные параметры в разных ОС).
+#ifdef WIN32
+    QString countParam = "-n";
+    QString wParam = "-w";
+    QString timeout = QString::number(this->timeout);
+#else
+    QString countParam = "-c";
+    QString wParam = "-W";
+    QString timeout = "0.1";
+    qDebug() << timeout;
+#endif
+
+    QStringList appNameWithParams({ip.toString(), countParam, pingCount, wParam, timeout});
+    auto code = QProcess::execute("ping", appNameWithParams);
 
     return (code == 0);
 }
@@ -100,7 +111,7 @@ void Widget::execNewSearchingForNextIp(const QHostAddress &ip, const QHostAddres
     this->currentStep = 0;
     qDebug() << "Trying work for " << ip << "...";
 
-    const auto nextAfterEndIp = QHostAddress(this->endIp.toIPv4Address() + 1);
+    const auto nextAfterEndIp = QHostAddress(endIp.toIPv4Address() + 1);
 
     // Если перебрали все Ip, то завершаем поиск.
     if (ip == nextAfterEndIp)
@@ -137,6 +148,13 @@ void Widget::checkConnected(QTcpSocket *socket)
         ui->tableWidget_ports->setItem(rowIndex, 1, new QTableWidgetItem(QString::number(socket->peerPort())));
     }
 
+    // Также привязываемся к событию изменения состояния соединения.
+    // Поскольку мы все ещё не отключились от этого порта (не "UnconnectedState"),
+    // а значит нужно обработать событие когда состояние изменится на "UnconnectedState".
+    connect(socket, &QTcpSocket::stateChanged, this, [this, socket]{ this->stateChanged(socket); } );
+
+    // Принудительно отключаем, поскольку "timeout" прошел
+    // и за это время мы уже должны были подключиться.
     socket->abort();
 }
 
@@ -228,9 +246,6 @@ void Widget::execCheckingPort(uint16_t port, const QHostAddress &ip)
 
     // Ждём 'timeout' миллисекунд и проверяем - удалось ли соединение.
     QTimer::singleShot(timeout, this, [this, socket]{ this->checkConnected(socket); });
-
-    // Также привязываем обработку событий отключения соединения и изменение состояния соединения.
-    connect(socket, &QTcpSocket::stateChanged, this, [this, socket]{ this->stateChanged(socket); } );
 }
 
 void Widget::on_pushButton_exec_clicked()
