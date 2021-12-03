@@ -24,7 +24,6 @@ Widget::~Widget()
 
 void Widget::checkConnected(QTcpSocket *socket)
 {
-
     // Иногда в этой функции сокет уже в состоянии "отключён",
     // обрабатываем этот случай.
     if (socket->state() == QTcpSocket::UnconnectedState)
@@ -33,11 +32,19 @@ void Widget::checkConnected(QTcpSocket *socket)
         return;
     }
 
+    // В случае, если удалось соединится, то добавляем порт в список.
     if (socket->state() == QTcpSocket::ConnectedState)
     {
         ui->listWidget_ports->addItem(QString::number(socket->peerPort()));
     }
 
+    // Также привязываемся к событию изменения состояния соединения.
+    // Поскольку мы все ещё не отключились от этого порта (не "UnconnectedState"),
+    // а значит нужно обработать событие когда состояние изменится на "UnconnectedState".
+    connect(socket, &QTcpSocket::stateChanged, this, [this, socket]{ this->stateChanged(socket); } );
+
+    // Принудительно отключаем, поскольку "timeout" прошел
+    // и за это время мы уже должны были подключиться.
     socket->abort();
 }
 
@@ -91,6 +98,7 @@ void Widget::handleDisconnectedSocket(QTcpSocket *socket)
     {
         --countPendingConnections;
     }
+
     socket->deleteLater();
 
     // Выполняем новый шаг алгоритма, если больше никаких подключений не обрабатывается.
@@ -117,9 +125,6 @@ void Widget::checkPort(uint16_t port)
 
     // Ждём 'timeout' миллисекунд и проверяем - удалось ли соединение.
     QTimer::singleShot(timeout, this, [this, socket]{ this->checkConnected(socket); });
-
-    // Также привязываем обработку событий отключения соединения и изменение состояния соединения.
-    connect(socket, &QTcpSocket::stateChanged, this, [this, socket]{ this->stateChanged(socket); } );
 }
 
 void Widget::on_pushButton_exec_clicked()
@@ -151,12 +156,10 @@ void Widget::on_pushButton_exec_clicked()
     }
 }
 
-
 void Widget::on_pushButton_stop_clicked()
 {
     this->isWorking = false;
 }
-
 
 void Widget::on_spinBox_start_editingFinished()
 {
