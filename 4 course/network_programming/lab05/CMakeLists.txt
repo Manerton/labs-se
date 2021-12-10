@@ -9,8 +9,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(${PROJECT_NAME}
     main.cpp
+    Sniffer.h
     WinSniffer.h WinSniffer.cpp
+    LinuxSniffer.h LinuxSniffer.cpp
     PacketParser.hpp
     )
 
-target_link_libraries(${PROJECT_NAME} pthread ws2_32)
+target_link_libraries(${PROJECT_NAME} pthread)
+
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} ws2_32)
+endif()

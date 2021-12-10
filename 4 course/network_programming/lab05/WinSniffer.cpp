@@ -1,3 +1,4 @@
+#ifdef WIN32
 #include "WinSniffer.h"
 #include "PacketParser.hpp"
 
@@ -117,3 +118,4 @@ void WinSniffer::start()
         }
     }
 }
+#endif

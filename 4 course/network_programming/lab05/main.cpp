@@ -1,5 +1,5 @@
 #include <iostream>
-#include "WinSniffer.h"
+#include "Sniffer.h"
 
 using namespace std;
 
@@ -7,7 +7,7 @@ int main()
 {
     try
     {
-        WinSniffer sniffer;
+        Sniffer sniffer;
         sniffer.start();
     }
     catch(std::exception& e)
