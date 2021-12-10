@@ -1,15 +1,21 @@
 #include "WinSniffer.h"
-
+#include "PacketParser.hpp"
 
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <limits>
 
 #include <winsock2.h>
 #include <inaddr.h>
 #include <mstcpip.h>
 
 using namespace std;
+
+void WinSniffer::throwError(const std::string &msg)
+{
+    throw runtime_error(msg + " | Error code: " + to_string(WSAGetLastError()));
+}
 
 WinSniffer::WinSniffer()
 {
@@ -23,14 +29,15 @@ WinSniffer::WinSniffer()
 
     // Создаем сырой сокет.
     cout << "> Creating RAW socket..." << endl;
-    auto sock = socket(AF_INET, SOCK_RAW, IPPROTO_IP);
+    sock = socket(AF_INET, SOCK_RAW, IPPROTO_IP);
     if (sock == INVALID_SOCKET)
     {
         throwError("Failed to create raw socket.");
     }
 
     // Определяем название хоста.
-    string hostname(100, ' ');
+    const size_t hostname_len = 100;
+    string hostname(hostname_len, ' ');
     if (gethostname(hostname.data(), int(hostname.size())) == SOCKET_ERROR)
     {
         throwError("Gethostname error.");
@@ -67,13 +74,12 @@ WinSniffer::WinSniffer()
     sockaddr_in dest {};
     dest.sin_addr = interfaces[ch];
     dest.sin_family = AF_INET;
-    dest.sin_port = 0;
 
     // Привязываем сокет к этому адресу.
-    cout << "> Binding socket to local address and port 0..." << endl;
+    cout << "> Binding socket to local address..." << endl;
     if (bind(sock, reinterpret_cast<sockaddr*>(&dest), sizeof(dest)) == SOCKET_ERROR)
     {
-        throwError("Bind failed.");
+        throwError("bind() failed.");
     }
 
     cout << "> Try to enable SIO_RCVALL..." << endl;
@@ -88,18 +94,26 @@ WinSniffer::WinSniffer()
                  ) == SOCKET_ERROR
             )
     {
-        throwError("ioctl failed.");
-    }
-
-    for (int i = 0; i < 10; ++i)
-    {
-        array<char, 65535> buf {};
-        auto size = recvfrom(sock, buf.data(), 65535, 0, nullptr, nullptr);
-        cout.write(buf.data(), size);
+        throwError("WSAIoctl() failed.");
     }
 }
 
-void WinSniffer::throwError(const std::string &msg)
+void WinSniffer::start()
 {
-    throw runtime_error(msg + " | Error code: " + to_string(WSAGetLastError()));
+    const size_t packageSize = 65536;
+
+    vector<char> buf(packageSize);
+    while (true)
+    {
+        auto recvSize = recvfrom(sock, buf.data(), packageSize, 0, nullptr, nullptr);
+        if (recvSize > 0)
+        {
+            cout << endl << "//----------------------------------------------//" << endl << endl;
+            cout << PacketParser::parsePacket(buf) << endl;
+        }
+        else
+        {
+            throwError("recvfrom() failed.");
+        }
+    }
 }

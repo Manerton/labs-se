@@ -8,6 +8,7 @@ int main()
     try
     {
         WinSniffer sniffer;
+        sniffer.start();
     }
     catch(std::exception& e)
     {

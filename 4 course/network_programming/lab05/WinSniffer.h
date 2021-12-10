@@ -7,7 +7,11 @@ class WinSniffer
 {
 public:
     WinSniffer();
+    void start();
+
 private:
+    uintptr_t sock = 0;
+
     void throwError(const std::string &msg);
 };
 
