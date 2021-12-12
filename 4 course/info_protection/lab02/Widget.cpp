@@ -4,6 +4,9 @@
 #include <cmath>
 #include "thirdparty/qcustomplot.h"
 
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
+
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
@@ -25,7 +28,7 @@ Widget::Widget(QWidget *parent)
     ui->widget_chart_decode->plotLayout()->addElement(0, 0, new QCPTextElement(ui->widget_chart_decode, "Расшифрованный сигнал", 12));
 
     // запрещаем вводить символы кроме цифр в поле для ключа
-    auto valid = new QRegExpValidator(QRegExp("\\d*"), this);
+    auto valid = new QRegularExpressionValidator(QRegularExpression("\\d*"), this);
     ui->key_LineEdit->setValidator(valid);
 
     // выключаем кнопку показа
