@@ -1,10 +1,15 @@
 package ru.sgakerru.androidapp
 
+import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Build
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,19 +17,25 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import java.lang.Exception
 
 class MapsFragment : Fragment()
 {
+    /// Код реквеста на разрешение к геолокации.
     private val requestAccessLocationCode = 123;
 
-    private val callback = OnMapReadyCallback { googleMap ->
-        val sydney = LatLng(-34.0, 151.0);
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    /// Гугл карта.
+    private var googleMap: GoogleMap? = null;
+
+    private val callback = OnMapReadyCallback { map ->
+        this.googleMap = map;
+
+        checkPermission();
     }
 
     override fun onCreateView(
@@ -41,10 +52,9 @@ class MapsFragment : Fragment()
         super.onViewCreated(view, savedInstanceState);
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?;
         mapFragment?.getMapAsync(callback);
-
-        checkPermission();
     }
 
+    /// Проверяем разрешение к геолокации.
     private fun checkPermission()
     {
         if (Build.VERSION.SDK_INT >= 23)
@@ -58,19 +68,14 @@ class MapsFragment : Fragment()
                     arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
                     requestAccessLocationCode
                 );
+                return;
             }
-            return;
         }
 
-        getUserLocation();
+        handleUserLocation();
     }
 
-    private fun getUserLocation()
-    {
-        Toast.makeText(activity, "Геолокация.", Toast.LENGTH_LONG).show();
-        // TODO: ...
-    }
-
+    /// Результат реквеста на разрешение доступа к геолокации.
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -81,14 +86,95 @@ class MapsFragment : Fragment()
         {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
-                getUserLocation();
+                handleUserLocation();
             }
             else
             {
-                Toast.makeText(activity, "Не удалось получить доступ к вашей геолокации!", Toast.LENGTH_LONG).show();
+                Toast.makeText(
+                    activity,
+                    "Не удалось получить доступ к вашей геолокации!",
+                    Toast.LENGTH_LONG
+                ).show();
             }
         }
 
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    /// Переместить карту к новой точке.
+    private fun moveMapToNewLocation(location: Location)
+    {
+        googleMap!!.clear();
+        val locationPos = LatLng(location.latitude, location.longitude);
+        googleMap!!.addMarker(
+            MarkerOptions()
+                .position(locationPos)
+                .title("Это вы!")
+        );
+        googleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(locationPos, 15f));
+    }
+
+    /// Привязываемся к изменениям геолокации юзера.
+    private fun handleUserLocation()
+    {
+        val myLocation = MyLocationListener();
+        val locationManager: LocationManager =
+            activity!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager;
+        // Привязываемся к геолокации по сети.
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3, 5f, myLocation);
+        // Привязываемся к GPS геолокации.
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3, 5f, myLocation);
+    }
+
+    inner class MyLocationListener : LocationListener
+    {
+        /// Текущая геолокация.
+        private var location: Location? = null;
+
+        constructor()
+        {
+            location = Location("Start");
+            location!!.latitude = 0.0;
+            location!!.longitude = 0.0;
+        }
+
+        override fun onLocationChanged(loc: Location?)
+        {
+            location = loc;
+            moveMapToNewLocation(location!!);
+            Log.i("MYLOG", "onLocationChanged: ${loc.toString()}");
+            if (activity != null)
+            {
+                Toast.makeText(activity, "onLocationChanged: ${loc.toString()}", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "onLocationChanged: ${loc.toString()}", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?)
+        {
+            Log.i("MYLOG", "onStatusChanged: $provider, $status");
+            if (activity != null)
+            {
+                Toast.makeText(activity, "onStatusChanged: $provider, $status", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        override fun onProviderEnabled(provider: String?)
+        {
+            Log.i("MYLOG", "onProviderEnabled: $provider");
+            if (activity != null)
+            {
+                Toast.makeText(activity, "onProviderEnabled: $provider", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        override fun onProviderDisabled(provider: String?)
+        {
+            Log.i("MYLOG", "onProviderDisabled: $provider");
+            if (activity != null)
+            {
+                Toast.makeText(activity, "onProviderDisabled: $provider", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
