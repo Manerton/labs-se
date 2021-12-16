@@ -15,5 +15,10 @@
         android:name="ru.sgakerru.androidapp.TicTacFragment"
         android:label="@string/menu_tic_tac"
         tools:layout="@layout/fragment_tic_tac" />
+    <fragment
+        android:id="@+id/nav_map"
+        android:name="ru.sgakerru.androidapp.MapsFragment"
+        android:label="@string/menu_map"
+        tools:layout="@layout/fragment_maps" />
 
 </navigation>

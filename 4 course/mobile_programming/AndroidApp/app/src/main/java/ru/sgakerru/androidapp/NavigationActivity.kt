@@ -2,11 +2,11 @@ package ru.sgakerru.androidapp
 
 import android.os.Bundle
 import android.view.Menu
-import android.support.design.widget.Snackbar
-import android.support.design.widget.NavigationView
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.*
 import ru.sgakerru.androidapp.databinding.ActivityNavigationBinding
 
@@ -25,7 +25,7 @@ class NavigationActivity : AppCompatActivity()
 
         setSupportActionBar(binding.appBarNavigation.toolbar);
 
-        val drawerLayout: DrawerLayout = binding.drawerLayout;
+        val drawerLayout: androidx.drawerlayout.widget.DrawerLayout = binding.drawerLayout;
         val navView: NavigationView = binding.navView;
         val navController = findNavController(R.id.nav_host_fragment_content_navigation);
 

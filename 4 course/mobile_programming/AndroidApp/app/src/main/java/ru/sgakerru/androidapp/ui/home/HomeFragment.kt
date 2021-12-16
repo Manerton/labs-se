@@ -1,20 +1,20 @@
 package ru.sgakerru.androidapp.ui.home
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.support.v4.app.Fragment
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import android.widget.Button
 import android.widget.Toast
 import ru.sgakerru.androidapp.R
 import ru.sgakerru.androidapp.databinding.FragmentHomeBinding
 
-class HomeFragment : Fragment()
+class HomeFragment : androidx.fragment.app.Fragment()
 {
     private lateinit var homeViewModel: HomeViewModel;
     private var _binding: FragmentHomeBinding? = null;

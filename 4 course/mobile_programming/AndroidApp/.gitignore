@@ -11,3 +11,4 @@ local.properties
 gradle/wrapper
 gradlew.bat
 gradlew
+**/google_maps_api.xml

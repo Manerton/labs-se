@@ -11,5 +11,9 @@
         <item
             android:id="@+id/nav_tic_tac"
             android:title="@string/menu_tic_tac" />
+
+        <item
+            android:id="@+id/nav_map"
+            android:title="@string/menu_map" />
     </group>
 </menu>

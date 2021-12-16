@@ -2,7 +2,7 @@ package ru.sgakerru.androidapp
 
 import android.graphics.Color
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +11,7 @@ import android.widget.Button
 import android.widget.Toast
 import ru.sgakerru.androidapp.databinding.FragmentTicTacBinding;
 
-class TicTacFragment : Fragment()
+class TicTacFragment : androidx.fragment.app.Fragment()
 {
     private lateinit var binding: FragmentTicTacBinding;
 
