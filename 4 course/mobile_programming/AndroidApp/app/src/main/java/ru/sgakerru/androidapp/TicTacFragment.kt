@@ -1,21 +1,48 @@
-package ru.sgakerru.androidapp;
+package ru.sgakerru.androidapp
 
 import android.graphics.Color
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import ru.sgakerru.androidapp.databinding.ActivityMainBinding;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-import android.widget.Toast;
-import android.widget.Button;
+import android.view.ViewGroup;
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.Toast
+import ru.sgakerru.androidapp.databinding.FragmentTicTacBinding;
 
-class MainActivity : AppCompatActivity()
+class TicTacFragment : Fragment()
 {
-    private lateinit var binding: ActivityMainBinding;
+    private lateinit var binding: FragmentTicTacBinding;
 
     private var firstPlayerActions = ArrayList<Int>();
     private var secondPlayerActions = ArrayList<Int>();
     private var isFirstPlayerActive = true;
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState);
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View?
+    {
+        binding = FragmentTicTacBinding.inflate(inflater, container, false);
+
+        binding.button1.setOnClickListener(buttonOnClickListener);
+        binding.button2.setOnClickListener(buttonOnClickListener);
+        binding.button3.setOnClickListener(buttonOnClickListener);
+        binding.button4.setOnClickListener(buttonOnClickListener);
+        binding.button5.setOnClickListener(buttonOnClickListener);
+        binding.button6.setOnClickListener(buttonOnClickListener);
+        binding.button7.setOnClickListener(buttonOnClickListener);
+        binding.button8.setOnClickListener(buttonOnClickListener);
+        binding.button9.setOnClickListener(buttonOnClickListener);
+
+        return binding.root;
+    }
 
     private val buttonOnClickListener = (View.OnClickListener
     { v: View ->
@@ -37,24 +64,6 @@ class MainActivity : AppCompatActivity()
 
         this.playGame(cellId, selectedBtn);
     });
-
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState);
-        this.binding = ActivityMainBinding.inflate(layoutInflater);
-
-        this.binding.button1.setOnClickListener(buttonOnClickListener);
-        this.binding.button2.setOnClickListener(buttonOnClickListener);
-        this.binding.button3.setOnClickListener(buttonOnClickListener);
-        this.binding.button4.setOnClickListener(buttonOnClickListener);
-        this.binding.button5.setOnClickListener(buttonOnClickListener);
-        this.binding.button6.setOnClickListener(buttonOnClickListener);
-        this.binding.button7.setOnClickListener(buttonOnClickListener);
-        this.binding.button8.setOnClickListener(buttonOnClickListener);
-        this.binding.button9.setOnClickListener(buttonOnClickListener);
-
-        this.setContentView(binding.root);
-    }
 
     private fun playGame(cellId: Int, btn: Button)
     {
@@ -105,15 +114,11 @@ class MainActivity : AppCompatActivity()
 
         if (winner == 1)
         {
-            Toast.makeText(this, "Player 1 won the game!", Toast.LENGTH_LONG).show();
-            window.setFlags(
-                FLAG_NOT_TOUCHABLE,
-                FLAG_NOT_TOUCHABLE
-            );
+            Toast.makeText(activity, "Player 1 won the game!", Toast.LENGTH_LONG).show();
         }
         else if (winner == 2)
         {
-            Toast.makeText(this, "Player 2 won the game!", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "Player 2 won the game!", Toast.LENGTH_LONG).show();
         }
     }
 }

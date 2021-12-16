@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AndroidApp</string>
+    <string name="nav_header_title">Android Labs</string>
+
+    <string name="menu_home">Главная</string>
+    <string name="menu_tic_tac">Игра \"Крестики-нолики\"</string>
 </resources>
