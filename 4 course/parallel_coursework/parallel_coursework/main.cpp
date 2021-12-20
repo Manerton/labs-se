@@ -290,6 +290,18 @@ Matrix loadMatrixFromFile(const size_t size, ifstream& file)
     return m;
 }
 
+void saveMatrixToFile(const Matrix& m, ofstream& file)
+{
+    for (auto& row: m)
+    {
+        for (auto e: row)
+        {
+            file << e << " ";
+        }
+        file << endl;
+    }
+}
+
 int main(int argc, char *argv[])
 {
     if (argc < 4)
@@ -313,14 +325,24 @@ int main(int argc, char *argv[])
         // Умножаем матрицы.
         if (threadCount == 1)
         {
-            C = seqAlg(A, B);
+            Matrix transposedB(size);
+            for (size_t i = 0; i < size; ++i)
+            {
+                transposedB[i] = copyColumnFromMatrix(B, i);
+            }
+            C = seqAlgWithTransposedB(A, transposedB);
         }
         else
         {
             C = parAlg(uint16_t(threadCount), A, B);
         }
 
-        displayMatrix(C);
+        //displayMatrix(C);
+        ofstream out("./result.txt");
+        if (out)
+        {
+            saveMatrixToFile(C, out);
+        }
     }
     else
     {
