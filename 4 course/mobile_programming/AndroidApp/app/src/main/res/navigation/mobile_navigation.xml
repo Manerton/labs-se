@@ -20,5 +20,19 @@
         android:name="ru.sgakerru.androidapp.MapsFragment"
         android:label="@string/menu_map"
         tools:layout="@layout/fragment_maps" />
+    <fragment
+        android:id="@+id/nav_notes"
+        android:name="ru.sgakerru.androidapp.notes.NotesFragment"
+        android:label="@string/menu_notes"
+        tools:layout="@layout/fragment_notes" >
+        <action
+            android:id="@+id/action_nav_notes_to_nav_notes_add_note"
+            app:destination="@id/nav_notes_add_note" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_notes_add_note"
+        android:name="ru.sgakerru.androidapp.notes.AddNoteFragment"
+        android:label="@string/label_notes_add_new_note"
+        tools:layout="@layout/fragment_add_note" />
 
 </navigation>
