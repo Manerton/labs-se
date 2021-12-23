@@ -28,11 +28,26 @@
         <action
             android:id="@+id/action_nav_notes_to_nav_notes_add_note"
             app:destination="@id/nav_notes_add_note" />
+        <action
+            android:id="@+id/action_nav_notes_to_nav_notes_edit_note"
+            app:destination="@id/nav_notes_edit_note" />
     </fragment>
     <fragment
         android:id="@+id/nav_notes_add_note"
         android:name="ru.sgakerru.androidapp.notes.AddNoteFragment"
         android:label="@string/label_notes_add_new_note"
         tools:layout="@layout/fragment_add_note" />
+    <fragment
+        android:id="@+id/nav_notes_edit_note"
+        android:name="ru.sgakerru.androidapp.notes.EditNoteFragment"
+        android:label="@string/label_notes_edit_new_note"
+        tools:layout="@layout/fragment_edit_note" >
+        <argument android:name="noteId"
+            app:argType="integer" />
+        <argument android:name="title"
+            app:argType="string" />
+        <argument android:name="content"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

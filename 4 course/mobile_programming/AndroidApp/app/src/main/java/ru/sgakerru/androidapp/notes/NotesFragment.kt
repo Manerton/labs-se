@@ -19,14 +19,15 @@ class NotesFragment : Fragment()
     /** Список заметок. */
     private var notesList = ArrayList<Note>();
 
+    /** Адаптер для заметок, чтобы поместить их в ListView */
+    private var notesAdapter = NotesAdapter(notesList);
+
     /** Обработка нажатий на кнопки. */
     private val buttonOnClickListener = (View.OnClickListener
     { v: View ->
-        val selectedBtn = v as Button;
-
-        when (selectedBtn.id)
+        when (v as Button)
         {
-            R.id.button_addNewNote ->
+            binding.buttonAddNewNote ->
             {
                 // Переходим на другую страницу,
                 // где можно будет добавить новую запись
@@ -47,30 +48,30 @@ class NotesFragment : Fragment()
     {
         binding = FragmentNotesBinding.inflate(inflater, container, false);
 
+        // Обрабатываем нажатия на кнопки.
         binding.buttonAddNewNote.setOnClickListener(buttonOnClickListener);
 
-        // Добавляем тестовые данные
-        notesList.add(Note(1, "Записка 1",
-            "съешь же ещё этих мягких французских булок, да выпей чаю"));
-        notesList.add(Note(2, "Записка 2",
-            "съешь же ещё этих мягких французских булок, да выпей чаю"));
-        notesList.add(Note(3, "Записка 3",
-            "съешь же ещё этих мягких французских булок, да выпей чаю"));
-        notesList.add(Note(4, "Записка 4",
-            "съешь же ещё этих мягких французских булок, да выпей чаю"));
-        notesList.add(Note(5, "Записка 5",
-            "съешь же ещё этих мягких французских булок, да выпей чаю"));
-
-        var notesAdapter = NotesAdapter(notesList);
-        binding.lvNotes.adapter = notesAdapter;
+        // Перезагружаем данные из базы.
+        loadAllFromDB();
 
         return binding.root;
+    }
+
+    private fun loadAllFromDB()
+    {
+        val dbManager = DbManager(context!!);
+        notesList.clear();
+        notesList.addAll(dbManager.getList());
+
+        // Привязываем список к адаптеру.
+        binding.lvNotes.adapter = notesAdapter;
     }
 
     /** Адаптер для списка заметок для ListView. */
     inner class NotesAdapter : BaseAdapter
     {
         private var notesList = ArrayList<Note>();
+
         constructor(_notesList: ArrayList<Note>):super()
         {
             this.notesList = _notesList;
@@ -83,6 +84,25 @@ class NotesFragment : Fragment()
 
             binding.textViewTitle.text = note.title;
             binding.textViewContent.text = note.content;
+
+            binding.buttonDelete.setOnClickListener( View.OnClickListener
+            {
+                val dbManager = DbManager(context!!);
+                dbManager.remove(note.noteId!!);
+                // Так как удалили запись, перезагрузим список
+                loadAllFromDB();
+            });
+
+            binding.buttonEdit.setOnClickListener( View.OnClickListener
+            {
+                // Переходим на страницу редактирования
+                // и передаём текущие данные заметки.
+                var bundle = Bundle();
+                bundle.putInt("noteId", note.noteId!!);
+                bundle.putString("title", note.title);
+                bundle.putString("content", note.content);
+                findNavController().navigate(R.id.action_nav_notes_to_nav_notes_edit_note, bundle);
+            });
 
             return binding.root;
         }

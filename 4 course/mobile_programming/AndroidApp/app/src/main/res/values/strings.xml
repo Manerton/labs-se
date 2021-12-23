@@ -6,6 +6,6 @@
     <string name="menu_tic_tac">1. Игра \"Крестики-нолики\"</string>
     <string name="menu_notes">6. Заметки</string>
     <string name="menu_map">8. Карта</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="label_notes_add_new_note">Создание новой заметки</string>
+    <string name="label_notes_edit_new_note">Изменение заметки</string>
 </resources>

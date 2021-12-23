@@ -1,6 +1,5 @@
 package ru.sgakerru.androidapp.notes
 
-import android.content.ContentValues
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,13 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import androidx.navigation.fragment.findNavController
-import ru.sgakerru.androidapp.R
 import ru.sgakerru.androidapp.databinding.FragmentAddNoteBinding
+import ru.sgakerru.androidapp.databinding.FragmentEditNoteBinding
 
-class AddNoteFragment : Fragment()
+private const val ARG_NOTE_ID = "noteId";
+private const val ARG_TITLE = "title";
+private const val ARG_CONTENT = "content";
+
+class EditNoteFragment : Fragment()
 {
-    private lateinit var binding: FragmentAddNoteBinding;
+    private lateinit var binding: FragmentEditNoteBinding;
+
+    private var noteId: Int? = null;
+    private var title: String? = null;
+    private var content: String? = null;
 
     /** Обработка нажатий на кнопки. */
     private val buttonOnClickListener = (View.OnClickListener
@@ -22,26 +28,26 @@ class AddNoteFragment : Fragment()
         when (v as Button)
         {
             // Создать (добавить) новую заметку.
-            binding.buttonCreate ->
+            binding.buttonEdit ->
             {
                 // Класс для работы с БД.
                 val dbManager = DbManager(context!!);
 
-                // Добавляем запись в БД.
-                val note = Note(null,
+                // Изменяем запись в БД.
+                val note = Note(noteId,
                     binding.editTextTitle.text.toString(),
                     binding.editTextContent.text.toString()
                 );
 
-                val id = dbManager.insert(note);
+                val id = dbManager.update(note);
 
                 if (id > 0)
                 {
-                    Toast.makeText(context, "Была добавлена новая заметка!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Заметка была изменена!", Toast.LENGTH_LONG).show();
                 }
                 else
                 {
-                    Toast.makeText(context, "Не удалось добавить новую заметку!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Не удалось изменить заметку!", Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -50,6 +56,11 @@ class AddNoteFragment : Fragment()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+        arguments?.let {
+            noteId = it.getInt(ARG_NOTE_ID);
+            title = it.getString(ARG_TITLE);
+            content = it.getString(ARG_CONTENT);
+        }
     }
 
     override fun onCreateView(
@@ -57,9 +68,12 @@ class AddNoteFragment : Fragment()
         savedInstanceState: Bundle?
     ): View?
     {
-        binding = FragmentAddNoteBinding.inflate(inflater, container, false);
+        binding = FragmentEditNoteBinding.inflate(inflater, container, false);
 
-        binding.buttonCreate.setOnClickListener(this.buttonOnClickListener);
+        binding.buttonEdit.setOnClickListener(this.buttonOnClickListener);
+
+        binding.editTextTitle.setText(this.title);
+        binding.editTextContent.setText(this.content);
 
         return binding.root;
     }

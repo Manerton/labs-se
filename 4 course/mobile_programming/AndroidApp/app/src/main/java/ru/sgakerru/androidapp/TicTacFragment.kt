@@ -1,15 +1,13 @@
 package ru.sgakerru.androidapp
 
 import android.graphics.Color
-import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import ru.sgakerru.androidapp.databinding.FragmentTicTacBinding;
+import ru.sgakerru.androidapp.databinding.FragmentTicTacBinding
 
 class TicTacFragment : androidx.fragment.app.Fragment()
 {
@@ -49,17 +47,17 @@ class TicTacFragment : androidx.fragment.app.Fragment()
         val selectedBtn = v as Button;
         var cellId = 0;
 
-        when (selectedBtn.id)
+        when (selectedBtn)
         {
-            R.id.button1 -> cellId = 1
-            R.id.button2 -> cellId = 2
-            R.id.button3 -> cellId = 3
-            R.id.button4 -> cellId = 4
-            R.id.button5 -> cellId = 5
-            R.id.button6 -> cellId = 6
-            R.id.button7 -> cellId = 7
-            R.id.button8 -> cellId = 8
-            R.id.button9 -> cellId = 9
+            binding.button1 -> cellId = 1
+            binding.button2 -> cellId = 2
+            binding.button3 -> cellId = 3
+            binding.button4 -> cellId = 4
+            binding.button5 -> cellId = 5
+            binding.button6 -> cellId = 6
+            binding.button7 -> cellId = 7
+            binding.button8 -> cellId = 8
+            binding.button9 -> cellId = 9
         }
 
         this.playGame(cellId, selectedBtn);
