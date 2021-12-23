@@ -54,5 +54,10 @@
         android:name="ru.sgakerru.androidapp.CameraFragment"
         android:label="@string/menu_camera"
         tools:layout="@layout/fragment_camera" />
+    <fragment
+        android:id="@+id/nav_network"
+        android:name="ru.sgakerru.androidapp.NetworkFragment"
+        android:label="@string/menu_network"
+        tools:layout="@layout/fragment_network" />
 
 </navigation>
