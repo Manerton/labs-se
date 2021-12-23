@@ -4,6 +4,7 @@
 
     <string name="menu_home">Главная</string>
     <string name="menu_tic_tac">1. Игра \"Крестики-нолики\"</string>
+    <string name="menu_camera">5. Камера</string>
     <string name="menu_notes">6. Заметки</string>
     <string name="menu_map">8. Карта</string>
     <string name="label_notes_add_new_note">Создание новой заметки</string>

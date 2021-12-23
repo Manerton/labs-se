@@ -13,6 +13,10 @@
             android:title="@string/menu_tic_tac" />
 
         <item
+            android:id="@+id/nav_camera"
+            android:title="@string/menu_camera" />
+
+        <item
             android:id="@+id/nav_notes"
             android:title="@string/menu_notes" />
 
