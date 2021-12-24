@@ -12,15 +12,19 @@ import ru.sgakerru.androidapp.R
 import ru.sgakerru.androidapp.databinding.FragmentNotesBinding
 import ru.sgakerru.androidapp.databinding.NotesRecordBinding
 
+private const val ARG_DB_TYPE = "dbType";
+
 class NotesFragment : Fragment()
 {
     private lateinit var binding: FragmentNotesBinding;
 
-    /** Список заметок. */
-    private var notesList = ArrayList<Note>();
+    /** Тип базы данных (SQLite или Firebase). */
+    private lateinit var dbType: DbManagerType;
 
     /** Адаптер для заметок, чтобы поместить их в ListView */
-    private var notesAdapter = NotesAdapter(notesList);
+    private var notesAdapter = NotesAdapter();
+
+    private lateinit var dbManager: DbManager;
 
     /** Обработка нажатий на кнопки. */
     private val buttonOnClickListener = (View.OnClickListener
@@ -31,7 +35,9 @@ class NotesFragment : Fragment()
             {
                 // Переходим на другую страницу,
                 // где можно будет добавить новую запись
-                findNavController().navigate(R.id.action_nav_notes_to_nav_notes_add_note);
+                var bundle = Bundle();
+                bundle.putSerializable("dbType", dbType);
+                findNavController().navigate(R.id.action_nav_notes_to_nav_notes_add_note, bundle);
             }
         }
     });
@@ -39,6 +45,12 @@ class NotesFragment : Fragment()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState);
+
+        arguments?.let {
+            dbType = it.get(ARG_DB_TYPE) as DbManagerType;
+        }
+
+        dbManager = DbManager.create(dbType, context!!, notesAdapter);
     }
 
     override fun onCreateView(
@@ -51,30 +63,19 @@ class NotesFragment : Fragment()
         // Обрабатываем нажатия на кнопки.
         binding.buttonAddNewNote.setOnClickListener(buttonOnClickListener);
 
-        // Перезагружаем данные из базы.
-        loadAllFromDB();
-
-        return binding.root;
-    }
-
-    private fun loadAllFromDB()
-    {
-        val dbManager = DbManager(context!!);
-        notesList.clear();
-        notesList.addAll(dbManager.getList());
-
         // Привязываем список к адаптеру.
         binding.lvNotes.adapter = notesAdapter;
+
+        return binding.root;
     }
 
     /** Адаптер для списка заметок для ListView. */
     inner class NotesAdapter : BaseAdapter
     {
-        private var notesList = ArrayList<Note>();
+        public var notesList = ArrayList<Note>();
 
-        constructor(_notesList: ArrayList<Note>):super()
+        constructor() : super()
         {
-            this.notesList = _notesList;
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View
@@ -85,23 +86,24 @@ class NotesFragment : Fragment()
             binding.textViewTitle.text = note.title;
             binding.textViewContent.text = note.content;
 
-            binding.buttonDelete.setOnClickListener( View.OnClickListener
+            binding.buttonDelete.setOnClickListener(View.OnClickListener
             {
-                val dbManager = DbManager(context!!);
                 dbManager.remove(note.noteId!!);
-                // Так как удалили запись, перезагрузим список
-                loadAllFromDB();
             });
 
-            binding.buttonEdit.setOnClickListener( View.OnClickListener
+            binding.buttonEdit.setOnClickListener(View.OnClickListener
             {
                 // Переходим на страницу редактирования
                 // и передаём текущие данные заметки.
                 var bundle = Bundle();
-                bundle.putInt("noteId", note.noteId!!);
+                bundle.putSerializable("dbType", dbType);
+                bundle.putString("noteId", note.noteId!!);
                 bundle.putString("title", note.title);
                 bundle.putString("content", note.content);
-                findNavController().navigate(R.id.action_nav_notes_to_nav_notes_edit_note, bundle);
+                findNavController().navigate(
+                    R.id.action_nav_notes_to_nav_notes_edit_note,
+                    bundle
+                );
             });
 
             return binding.root;

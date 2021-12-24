@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "886124636647",
+    "project_id": "androidapp-2cae1",
+    "storage_bucket": "androidapp-2cae1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886124636647:android:c740c09e156c4e3921b542",
+        "android_client_info": {
+          "package_name": "ru.sgakerru.androidapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "886124636647-0ea7cn3jdumedicibs1a21mefjl5n7bl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAX0wcobQ5aUsUN7b9AWG3ZEOZHSNeeMP8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "886124636647-0ea7cn3jdumedicibs1a21mefjl5n7bl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

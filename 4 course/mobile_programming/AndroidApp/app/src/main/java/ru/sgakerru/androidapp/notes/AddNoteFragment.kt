@@ -1,6 +1,5 @@
 package ru.sgakerru.androidapp.notes
 
-import android.content.ContentValues
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,13 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import androidx.navigation.fragment.findNavController
-import ru.sgakerru.androidapp.R
 import ru.sgakerru.androidapp.databinding.FragmentAddNoteBinding
+
+private const val ARG_DB_TYPE = "dbType";
 
 class AddNoteFragment : Fragment()
 {
     private lateinit var binding: FragmentAddNoteBinding;
+
+    private lateinit var dbManager: DbManager;
 
     /** Обработка нажатий на кнопки. */
     private val buttonOnClickListener = (View.OnClickListener
@@ -24,18 +25,15 @@ class AddNoteFragment : Fragment()
             // Создать (добавить) новую заметку.
             binding.buttonCreate ->
             {
-                // Класс для работы с БД.
-                val dbManager = DbManager(context!!);
-
                 // Добавляем запись в БД.
                 val note = Note(null,
                     binding.editTextTitle.text.toString(),
                     binding.editTextContent.text.toString()
                 );
 
-                val id = dbManager.insert(note);
+                val result = dbManager.insert(note);
 
-                if (id > 0)
+                if (result)
                 {
                     Toast.makeText(context, "Была добавлена новая заметка!", Toast.LENGTH_LONG).show();
                 }
@@ -49,7 +47,11 @@ class AddNoteFragment : Fragment()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
-        super.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState);
+        arguments?.let {
+            val dbManagerType = it.get(ARG_DB_TYPE) as DbManagerType;
+            dbManager = DbManager.getInstance(dbManagerType)!!;
+        }
     }
 
     override fun onCreateView(

@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import ru.sgakerru.androidapp.databinding.FragmentAddNoteBinding
 import ru.sgakerru.androidapp.databinding.FragmentEditNoteBinding
 
+private const val ARG_DB_TYPE = "dbType";
 private const val ARG_NOTE_ID = "noteId";
 private const val ARG_TITLE = "title";
 private const val ARG_CONTENT = "content";
@@ -18,7 +18,8 @@ class EditNoteFragment : Fragment()
 {
     private lateinit var binding: FragmentEditNoteBinding;
 
-    private var noteId: Int? = null;
+    private lateinit var dbManager: DbManager;
+    private var noteId: String? = null;
     private var title: String? = null;
     private var content: String? = null;
 
@@ -30,18 +31,15 @@ class EditNoteFragment : Fragment()
             // Создать (добавить) новую заметку.
             binding.buttonEdit ->
             {
-                // Класс для работы с БД.
-                val dbManager = DbManager(context!!);
-
                 // Изменяем запись в БД.
                 val note = Note(noteId,
                     binding.editTextTitle.text.toString(),
                     binding.editTextContent.text.toString()
                 );
 
-                val id = dbManager.update(note);
+                val result = dbManager.update(note);
 
-                if (id > 0)
+                if (result)
                 {
                     Toast.makeText(context, "Заметка была изменена!", Toast.LENGTH_LONG).show();
                 }
@@ -57,9 +55,12 @@ class EditNoteFragment : Fragment()
     {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            noteId = it.getInt(ARG_NOTE_ID);
+            val dbManagerType = it.get(ARG_DB_TYPE) as DbManagerType;
+            noteId = it.getString(ARG_NOTE_ID);
             title = it.getString(ARG_TITLE);
             content = it.getString(ARG_CONTENT);
+
+            dbManager = DbManager.getInstance(dbManagerType)!!;
         }
     }
 
