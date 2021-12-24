@@ -29,10 +29,7 @@ class FirebaseDbManager : DbManager
         {
             override fun onDataChange(dataSnapshot: DataSnapshot)
             {
-                if (dataSnapshot.value != null)
-                {
-                    updateUi(dataSnapshot);
-                }
+                updateUi(dataSnapshot);
             }
 
             override fun onCancelled(databaseError: DatabaseError)
@@ -66,15 +63,19 @@ class FirebaseDbManager : DbManager
 
     private fun updateUi(dataSnapshot: DataSnapshot)
     {
-        val valueMap = dataSnapshot.value as HashMap<String, HashMap<String, String>>;
+        val valueMap = dataSnapshot.value as HashMap<String, HashMap<String, String>>?;
 
         this.notesAdapter.notesList.clear();
 
-        for (mapValue in valueMap.values)
+        if (valueMap != null)
         {
-            val note = Note(mapValue["noteId"], mapValue["title"]!!, mapValue["content"]!!);
-            this.notesAdapter.notesList.add(note);
+            for (mapValue in valueMap.values)
+            {
+                val note = Note(mapValue["noteId"], mapValue["title"]!!, mapValue["content"]!!);
+                this.notesAdapter.notesList.add(note);
+            }
         }
+
         this.notesAdapter.notifyDataSetChanged();
     }
 }
