@@ -6,10 +6,13 @@
     <string name="menu_tic_tac">1. Игра \"Крестики-нолики\"</string>
     <string name="menu_permissions">2. Работа с разрешениями</string>
     <string name="menu_network">3. Работа с сетью</string>
+    <string name="menu_file_system">4. Работа с файловой системой</string>
     <string name="menu_camera">5. Камера</string>
     <string name="menu_local_notes">6. Заметки (SQLite)</string>
     <string name="menu_remote_notes">7. Заметки (Firebase)</string>
     <string name="menu_map">8. Карта</string>
     <string name="label_notes_add_new_note">Создание новой заметки</string>
     <string name="label_notes_edit_new_note">Изменение заметки</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

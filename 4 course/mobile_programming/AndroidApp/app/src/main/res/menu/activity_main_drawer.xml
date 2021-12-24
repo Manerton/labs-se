@@ -21,6 +21,10 @@
             android:title="@string/menu_network" />
 
         <item
+            android:id="@+id/nav_file_system"
+            android:title="@string/menu_file_system" />
+
+        <item
             android:id="@+id/nav_camera"
             android:title="@string/menu_camera" />
 
