@@ -11,8 +11,8 @@
     <string name="menu_local_notes">6. Заметки (SQLite)</string>
     <string name="menu_remote_notes">7. Заметки (Firebase)</string>
     <string name="menu_map">8. Карта</string>
+    <string name="menu_sensor">9. Работа с датчиками</string>
+    <string name="menu_notification">10. Работа с уведомлениями</string>
     <string name="label_notes_add_new_note">Создание новой заметки</string>
     <string name="label_notes_edit_new_note">Изменение заметки</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

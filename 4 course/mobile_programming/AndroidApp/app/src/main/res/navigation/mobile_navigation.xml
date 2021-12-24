@@ -96,5 +96,15 @@
         android:name="ru.sgakerru.androidapp.FileSystemFragment"
         android:label="@string/menu_file_system"
         tools:layout="@layout/fragment_file_system" />
+    <fragment
+        android:id="@+id/nav_sensor"
+        android:name="ru.sgakerru.androidapp.SensorFragment"
+        android:label="@string/menu_sensor"
+        tools:layout="@layout/fragment_sensor" />
+    <fragment
+        android:id="@+id/nav_notification"
+        android:name="ru.sgakerru.androidapp.NotificationFragment"
+        android:label="@string/menu_notification"
+        tools:layout="@layout/fragment_notification" />
 
 </navigation>
