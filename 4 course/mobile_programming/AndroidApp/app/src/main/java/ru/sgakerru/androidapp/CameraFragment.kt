@@ -17,7 +17,7 @@ class CameraFragment : Fragment()
 {
     private lateinit var binding: FragmentCameraBinding;
 
-    private val requestCameraAccessCode = 1;
+    private val requestCameraAccessCode = 4;
 
     override fun onCreate(savedInstanceState: Bundle?)
     {

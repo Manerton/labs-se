@@ -26,7 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 class MapsFragment : Fragment()
 {
     /// Код реквеста на разрешение к геолокации.
-    private val requestAccessLocationCode = 123;
+    private val requestAccessLocationCode = 1;
 
     /// Гугл карта.
     private var googleMap: GoogleMap? = null;
@@ -56,7 +56,7 @@ class MapsFragment : Fragment()
     /// Проверяем разрешение к геолокации.
     private fun checkPermission()
     {
-        if (Build.VERSION.SDK_INT >= 23)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             if (ActivityCompat.checkSelfPermission
                     (activity!!, android.Manifest.permission.ACCESS_FINE_LOCATION)
