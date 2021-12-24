@@ -58,7 +58,9 @@ class FirebaseDbManager : DbManager
 
     override fun update(note: Note): Boolean
     {
-        TODO("Not yet implemented")
+        ref.child("note").child(note.noteId!!).setValue(note);
+
+        return true;
     }
 
     private fun updateUi(dataSnapshot: DataSnapshot)

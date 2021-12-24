@@ -19,19 +19,16 @@ interface DbManager
             notesAdapter: NotesFragment.NotesAdapter
         ): DbManager
         {
-            if (instances[dbType] == null)
+            when (dbType)
             {
-                when (dbType)
+                DbManagerType.SQLite ->
                 {
-                    DbManagerType.SQLite ->
-                    {
-                        instances[dbType] = SQLiteDbManager(context, notesAdapter);
-                    }
-                    DbManagerType.Firebase ->
-                    {
-                        instances[dbType] = FirebaseDbManager(notesAdapter)
-                    };
+                    instances[dbType] = SQLiteDbManager(context, notesAdapter);
                 }
+                DbManagerType.Firebase ->
+                {
+                    instances[dbType] = FirebaseDbManager(notesAdapter)
+                };
             }
 
             return instances[dbType]!!;
