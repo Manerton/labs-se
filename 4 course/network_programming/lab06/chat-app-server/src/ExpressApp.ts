@@ -11,9 +11,9 @@ export class ExpressApp
 
     constructor()
     {
-        //this.app.use(ExpressApp.wwwMiddleware);
+        this.app.use(ExpressApp.wwwMiddleware);
 
-        //this.app.use(ExpressApp.httpsMiddleware);
+        this.app.use(ExpressApp.httpsMiddleware);
 
         this.app.disable('x-powered-by');
 

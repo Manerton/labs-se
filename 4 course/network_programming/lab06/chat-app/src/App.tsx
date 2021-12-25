@@ -1,27 +1,40 @@
-import React, { useEffect, useState } from "react";
+// Стили
 import "bootstrap/dist/css/bootstrap.min.css";
+
+// Готовые компоненты
+import React, { useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 import { BrowserRouter } from "react-router-dom";
+import { Container, Row, Spinner } from "react-bootstrap";
 
-import { Navbar } from "./components/Navbar";
+// Мои компоненты
+import { AppNavbar } from "./components/AppNavbar";
 import { MyPageRouter } from "./components/MyPageRouter";
+
+const WEBSOCKET_SERVER_PATH = "https://192.168.1.4/";
 
 const App: React.FC = () =>
 {
-    /// Веб-сокет соединение.
+
+    /** Веб-сокет соединение. */
     const [socket, setSocket] = useState<Socket>();
-    /// Активно ли соединение?
+
+    /** Удалось ли веб-сокет соединение? */
     const [socketConnected, setSocketConnected] = useState<boolean>(false);
 
-    useEffect(() =>
+    /**
+     * Создать веб-сокет подключение к серверу.
+     */
+    const createSocket = () =>
     {
-        console.log("AppUseEffect");
-        const newSocket = io("https://192.168.1.4/", { 'transports': ['websocket'] });
+        console.log("Создаю веб-сокет соединение...");
+        const newSocket = io(WEBSOCKET_SERVER_PATH, { 'transports': ['websocket'] });
+
         setSocket(newSocket);
 
         newSocket.on('connect', () =>
         {
-            console.log(newSocket.id);
+            console.log(`Соединение установлено: ${newSocket.id}`);
             setSocketConnected(true);
         });
 
@@ -32,18 +45,28 @@ const App: React.FC = () =>
 
         return () =>
         {
+            console.log("Закрываю веб-сокет соединение...");
             newSocket.close();
         };
+    };
+
+    useEffect(() =>
+    {
+        return createSocket();
     }, [setSocket]);
 
     return (
         <BrowserRouter>
-            <Navbar />
-            {(socketConnected) ? (
-                <MyPageRouter socket={socket!} />
-            ) : (
-                <div>Нет соединения...</div>
-            )}
+            <Container id="app" fluid className="d-flex flex-column vh-100">
+                <AppNavbar />
+                {(socketConnected) ? (
+                    <MyPageRouter socket={socket!} />
+                ) : (
+                    <Row className="flex-grow-1 align-items-center justify-content-center">
+                        <Spinner animation="border" />
+                    </Row>
+                )}
+            </Container>
         </BrowserRouter>
     );
 };
