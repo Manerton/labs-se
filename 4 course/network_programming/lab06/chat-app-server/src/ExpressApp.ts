@@ -1,5 +1,6 @@
 import express = require('express');
 import path = require('path');
+import { FileHandler } from "./FileHandler";
 
 const REACT_BUILD_PATH = path.join(__dirname, "../../chat-app/build");
 
@@ -8,6 +9,8 @@ export class ExpressApp
 {
     /** Приложение Express. */
     public app: express.Express = express();
+
+    private fileHandler = new FileHandler();
 
     constructor()
     {
@@ -20,6 +23,8 @@ export class ExpressApp
         this.app.use(ExpressApp.rejectRequestWithBodyMiddleware);
 
         this.handleStatic();
+
+        this.handleFiles();
 
         this.handleRoutes();
 
@@ -111,6 +116,21 @@ export class ExpressApp
     private handleStatic(): void
     {
         this.app.use(express.static(path.join(REACT_BUILD_PATH)));
+    }
+
+    /** Обрабатываем загрузку файлов. */
+    private handleFiles(): void
+    {
+        this.app.get("/files/:fileId", (req: express.Request, res: express.Response) =>
+        {
+            this.fileHandler.handleFileDownload(req, res);
+        });
+
+        this.app.post("/files", (req: express.Request, res: express.Response) =>
+        {
+            this.fileHandler.handleFileUpload(req, res);
+        });
+
     }
 
     /** Обрабатываем маршруты. */

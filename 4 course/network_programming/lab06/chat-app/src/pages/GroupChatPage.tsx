@@ -13,9 +13,9 @@ export const GroupChatPage: React.FC<GroupChatPageParams> = ({socket}) =>
     const { id } = useParams();
 
     return (
-        <Container id={`group-chat-page-${id!}`} className="d-flex flex-column h-100">
-            <h1>Групповой чат: {id}</h1>
-            <ChatContainer channelId={id!} socket={socket} ></ChatContainer>
+        <Container id="public-chat-page" className="d-flex flex-column h-100">
+            <h3 className="text-center p-4">Групповой чат: {id}</h3>
+            <ChatContainer channelId={id!} socket={socket} />
         </Container>
     );
 };

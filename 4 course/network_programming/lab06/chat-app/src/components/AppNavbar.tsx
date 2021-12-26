@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Nav, Navbar, Row } from "react-bootstrap";
+import { Nav, Navbar, Row } from "react-bootstrap";
 import { NavLink } from 'react-router-dom';
 
 export const AppNavbar: React.FC = () =>
@@ -18,7 +18,7 @@ export const AppNavbar: React.FC = () =>
                 </Navbar.Brand>
                 <Nav className="me-auto">
                     <NavLink to="/" className="nav-link">Общий</NavLink>
-                    <NavLink to="/group-chat" className="nav-link">Групповой</NavLink>
+                    <NavLink to="/channels" className="nav-link">Групповой</NavLink>
                     <NavLink to="/private-chat" className="nav-link">Личный</NavLink>
                 </Nav>
             </div>

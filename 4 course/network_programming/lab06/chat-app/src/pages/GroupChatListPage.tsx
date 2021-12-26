@@ -1,10 +1,19 @@
 import React from 'react';
+import { Container } from "react-bootstrap";
+import { Socket } from "socket.io-client";
+import { ChatChannelContainer } from "../components/ChatChannelContainer";
 
-export const GroupChatListPage: React.FC = () =>
+interface GroupChatListPageParams
+{
+    /** Веб-сокет соединение с сервером. */
+    socket: Socket;
+}
+export const GroupChatListPage: React.FC<GroupChatListPageParams> = ({ socket }) =>
 {
     return (
-        <>
-            <h1>Список групповых чатов</h1>
-        </>
+        <Container id="public-chat-page" className="d-flex flex-column h-100">
+            <h3 className="text-center p-4">Список групповых чатов</h3>
+            <ChatChannelContainer socket={socket} />
+        </Container>
     );
 };

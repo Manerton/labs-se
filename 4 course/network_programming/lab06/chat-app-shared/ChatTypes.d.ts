@@ -1,11 +1,27 @@
 export interface Message
 {
-    /** Веб-сокет Id пользователя. */
-    socketId: string;
-    /** Имя пользователя. */
-    username: string;
     /** Текст сообщения. */
     content: string;
     /** Через Date.now(). */
-    time: number
+    time: number;
+}
+export interface User
+{
+    id: string;
+    name: string;
+}
+export interface MessageWithUser extends Message
+{
+    user: User;
+}
+export interface ChatChannel
+{
+    channelId: string;
+    title: string;
+}
+
+export interface P2PChatChannel extends ChatChannel
+{
+    firstUserId : string;
+    secondUserId: string;
 }

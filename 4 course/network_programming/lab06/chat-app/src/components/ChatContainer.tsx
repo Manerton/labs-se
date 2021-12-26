@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Container, FormControl, InputGroup } from "react-bootstrap";
+import { Button, Container, Form, FormControl, InputGroup } from "react-bootstrap";
 import { Socket } from "socket.io-client";
-import { Message } from "../../../chat-app-shared/ChatTypes";
+import { Message, MessageWithUser } from "../../../chat-app-shared/ChatTypes";
 import { subscribeToNewMessages } from "../hooks/ChatContainerHooks";
+import { messageEv, newUsernameEv } from "../SocketEvents";
 import { ChatMessages } from "./ChatMessages";
 
 interface ChatContainerParams
@@ -15,10 +16,11 @@ interface ChatContainerParams
 
 export const ChatContainer: React.FC<ChatContainerParams> = ({ channelId, socket }) =>
 {
-    const [messageList, setMessageList] = useState<Message[]>([]);
-    const [username, setUsername] = useState<string>("guest");
+    const [messageList, setMessageList] = useState<MessageWithUser[]>([]);
+    const [username, setUsername] = useState<string>("");
     const messageRef = useRef<HTMLTextAreaElement>(null);
     const usernameRef = useRef<HTMLInputElement>(null);
+    const fileRef = useRef<HTMLInputElement>(null);
 
     /** Выполнить после создание компонента или при изменении объекта socket. */
     useEffect(() =>
@@ -27,13 +29,37 @@ export const ChatContainer: React.FC<ChatContainerParams> = ({ channelId, socket
         return subscribeToNewMessages({ channelId, socket, setMessageList });
     }, [socket]);
 
+    useEffect(() =>
+    {
+        console.log("Восстанавливаем никнейм из локального хранилища.");
+        const name = localStorage.getItem("username");
+        if (name)
+        {
+            setUsername(name);
+            // Отправляем на сервер имя.
+            socket.emit(newUsernameEv, name);
+        }
+        else
+        {
+            setUsername("guest");
+        }
+    }, [setUsername]);
+
     /** Изменить имя пользователя. */
     const changeUsername = () =>
     {
-        // Обновляем состояние имени.
-        setUsername(usernameRef.current!.value);
+        const newName = usernameRef.current!.value;
 
-        console.log(`Изменен ник на ${username}`);
+        // Обновляем состояние имени.
+        setUsername(newName);
+
+        // Отправляем на сервер имя.
+        socket.emit(newUsernameEv, newName);
+
+        // Сохраняем его в локальном хранилище.
+        localStorage.setItem("username", newName);
+
+        console.log(`Изменен ник на ${newName}`);
     };
 
     /** Отправить сообщение. */
@@ -46,20 +72,79 @@ export const ChatContainer: React.FC<ChatContainerParams> = ({ channelId, socket
             console.log(`Отправлено сообщение: ${msg}`);
 
             const myMsg: Message = {
-                socketId: socket.id,
-                username,
+                content: msg,
+                time: Date.now()
+            };
+
+            const myMsgWithUser: MessageWithUser = {
+                user: { id: socket.id, name: username },
                 content: msg,
                 time: Date.now()
             };
 
             // Добавляем его в список сообщений на клиенте.
-            setMessageList(prev => [...prev, myMsg]);
+            setMessageList(prev => [...prev, myMsgWithUser]);
 
             // Затираем поле для ввода сообщения.
             messageRef.current.value = "";
 
             // Отправляем сообщение на сервер.
-            socket.emit("message", myMsg);
+            socket.emit(messageEv, myMsg);
+        }
+    };
+
+    const fileUpload = async (file: File) =>
+    {
+        return new Promise<string>((resolve, reject) =>
+        {
+            const utf8_to_b64 = (str: string) =>
+            {
+                return window.btoa(unescape(encodeURIComponent(str)));
+            };
+
+            console.log("Отправляем файл:", file.name, file.size);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", `${location.origin}/files`, true);
+
+            xhr.setRequestHeader("Upload-Filename", utf8_to_b64(file.name));
+
+            xhr.addEventListener("load", () =>
+            {
+                console.log(xhr.status);
+                resolve(xhr.responseText);
+            });
+
+            xhr.send(file);
+        });
+    };
+
+    /** Отправить файл. */
+    const sendFile = async () =>
+    {
+        const file = fileRef.current!.files?.item(0);
+        console.log(file);
+
+        // Если нечего загружать.
+        if (!file) return;
+
+        // загружаем файл
+        const fileId = await fileUpload(file);
+
+        console.log(location.host);
+
+        // локально добавляем ссылку на файл в чат
+        messageRef.current!.value = `${location.origin}/files/${fileId}`;
+
+        sendMessage();
+    };
+
+    const handleEnterKey = (event: React.KeyboardEvent) =>
+    {
+        if (event.key == "Enter")
+        {
+            event.preventDefault();
+            sendMessage();
         }
     };
 
@@ -81,11 +166,24 @@ export const ChatContainer: React.FC<ChatContainerParams> = ({ channelId, socket
                 <FormControl
                     as="textarea"
                     ref={messageRef}
+                    onKeyDown={handleEnterKey}
                 />
                 <Button variant="outline-warning" onClick={sendMessage}>
                     <img
                         alt=""
                         src="/send.svg"
+                        width="25"
+                        height="25"
+                        className="d-inline-block align-top"
+                    />
+                </Button>
+            </InputGroup>
+            <InputGroup>
+                <Form.Control id="input-file" type="file" ref={fileRef} />
+                <Button variant="outline-warning" onClick={sendFile}>
+                    <img
+                        alt=""
+                        src="/upload.svg"
                         width="25"
                         height="25"
                         className="d-inline-block align-top"

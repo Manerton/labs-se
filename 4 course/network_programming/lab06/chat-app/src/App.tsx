@@ -11,7 +11,7 @@ import { Container, Row, Spinner } from "react-bootstrap";
 import { AppNavbar } from "./components/AppNavbar";
 import { MyPageRouter } from "./components/MyPageRouter";
 
-const WEBSOCKET_SERVER_PATH = "https://192.168.1.4/";
+const WEBSOCKET_SERVER_PATH = "/";
 
 const App: React.FC = () =>
 {

@@ -1,10 +1,10 @@
 import { Badge, ListGroup } from "react-bootstrap";
-import { Message } from "../../../chat-app-shared/ChatTypes";
+import { MessageWithUser } from "../../../chat-app-shared/ChatTypes";
 
 interface ChatMessagesParams
 {
     /** Веб-сокет соединение с сервером. */
-    messageList: Message[];
+    messageList: MessageWithUser[];
 }
 export const ChatMessages: React.FC<ChatMessagesParams> = ({ messageList }) =>
 {
@@ -20,7 +20,7 @@ export const ChatMessages: React.FC<ChatMessagesParams> = ({ messageList }) =>
                             key={index}
                         >
                             <div className="ms-2 me-auto">
-                                <div className="fw-bold">{message.username} ({message.socketId})</div>
+                                <div className="fw-bold">{message.user.name} ({message.user.id})</div>
                                 {message.content}
                             </div>
                             <Badge bg="primary" pill>

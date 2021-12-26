@@ -21,11 +21,11 @@ export const MyPageRouter: React.FC<MyPageRouterParams> = ({ socket }) =>
         <Row id="main" className="overflow-hidden h-100">
             <Routes>
                 <Route element={<PublicChatPage socket={socket} />} path="/" />
-                <Route path="/group-chat">
+                <Route path="/channels">
                     <Route element={<GroupChatPage socket={socket} />} path=":id" />
-                    <Route index element={<GroupChatListPage />} />
+                    <Route index element={<GroupChatListPage socket={socket} />} />
                 </Route>
-                <Route element={<PrivateChatListPage />} path="/private-chat" />
+                <Route element={<PrivateChatListPage socket={socket} />} path="/private-chat" />
             </Routes>
         </Row>
     );
