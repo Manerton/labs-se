@@ -1,6 +1,7 @@
-import React, { FormEvent, useEffect, useRef, useState } from "react";
-import { Button, Container, Form, FormControl, InputGroup, Row } from "react-bootstrap";
+import React, { useEffect, useRef, useState } from "react";
+import { Button, Container, FormControl, InputGroup } from "react-bootstrap";
 import { Socket } from "socket.io-client";
+import { Message } from "../../../chat-app-shared/ChatTypes";
 import { subscribeToNewMessages } from "../hooks/ChatContainerHooks";
 import { ChatMessages } from "./ChatMessages";
 
@@ -12,60 +13,64 @@ interface ChatContainerParams
     channelId: string;
 }
 
-export interface Message
-{
-    socketId: string;
-    username: string;
-    content: string;
-    time: Date;
-}
 export const ChatContainer: React.FC<ChatContainerParams> = ({ channelId, socket }) =>
 {
     const [messageList, setMessageList] = useState<Message[]>([]);
     const [username, setUsername] = useState<string>("guest");
     const messageRef = useRef<HTMLTextAreaElement>(null);
+    const usernameRef = useRef<HTMLInputElement>(null);
 
+    /** Выполнить после создание компонента или при изменении объекта socket. */
     useEffect(() =>
     {
-        console.log(username);
+        // Подписываемся на получение сообщений.
         return subscribeToNewMessages({ channelId, socket, setMessageList });
     }, [socket]);
 
-    const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    {
-        setUsername(event.target.value);
-    };
-
+    /** Изменить имя пользователя. */
     const changeUsername = () =>
     {
+        // Обновляем состояние имени.
+        setUsername(usernameRef.current!.value);
+
         console.log(`Изменен ник на ${username}`);
     };
 
+    /** Отправить сообщение. */
     const sendMessage = () =>
     {
+        // Считываем сообщение.
         const msg = messageRef.current?.value;
         if (msg)
         {
             console.log(`Отправлено сообщение: ${msg}`);
-            const testMsg: Message = {
+
+            const myMsg: Message = {
                 socketId: socket.id,
                 username,
                 content: msg,
-                time: new Date()
+                time: Date.now()
             };
 
-            setMessageList(prev => [...prev, testMsg]);
+            // Добавляем его в список сообщений на клиенте.
+            setMessageList(prev => [...prev, myMsg]);
+
+            // Затираем поле для ввода сообщения.
+            messageRef.current.value = "";
+
+            // Отправляем сообщение на сервер.
+            socket.emit("message", myMsg);
         }
     };
 
     return (
-        <Container id="chat-container" className="d-flex flex-column align-items-center h-90">
+        <Container id="chat-container" className="d-flex flex-column align-items-center h-80">
             <InputGroup className="m-3">
                 <InputGroup.Text>Имя</InputGroup.Text>
                 <FormControl
                     placeholder="Имя пользователя"
-                    onChange={handleUsernameChange}
-                    value={username}
+                    ref={usernameRef}
+                    defaultValue={username}
                 />
                 <Button variant="secondary" onClick={changeUsername}>
                     Изменить

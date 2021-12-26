@@ -1,5 +1,5 @@
 import { Badge, ListGroup } from "react-bootstrap";
-import { Message } from "./ChatContainer";
+import { Message } from "../../../chat-app-shared/ChatTypes";
 
 interface ChatMessagesParams
 {
@@ -9,7 +9,7 @@ interface ChatMessagesParams
 export const ChatMessages: React.FC<ChatMessagesParams> = ({ messageList }) =>
 {
     return (
-        <ListGroup as="ol" className="w-100 overflow-auto h-90">
+        <ListGroup as="ol" className="w-100 overflow-auto h-80">
             {
                 messageList.map((message, index) =>
                 {
@@ -24,7 +24,7 @@ export const ChatMessages: React.FC<ChatMessagesParams> = ({ messageList }) =>
                                 {message.content}
                             </div>
                             <Badge bg="primary" pill>
-                                {message.time.toLocaleTimeString()}
+                                {new Date(message.time).toLocaleTimeString()}
                             </Badge>
                         </ListGroup.Item>
                     );
